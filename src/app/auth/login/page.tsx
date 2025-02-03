@@ -16,7 +16,7 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import AppTheme from "@/components/theme/AppTheme"
-import { GoogleIcon, SitemarkIcon } from "@/components/icons"
+import { GoogleIcon } from "@/components/icons"
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -89,7 +89,6 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
       <SignInContainer direction="column" justifyContent="space-between">
         {/* <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} /> */}
         <Card variant="outlined">
-          <SitemarkIcon />
           <Typography
             component="h1"
             variant="h4"

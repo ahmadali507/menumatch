@@ -1,4 +1,4 @@
-import { Home, Logout, Settings, VideoFile } from "@mui/icons-material";
+import { Home, Logout, Person, Restaurant, Settings } from "@mui/icons-material";
 
 
 export type SidebarNavItemProps = {
@@ -10,7 +10,8 @@ export type SidebarNavItemProps = {
 
 export const navItems: SidebarNavItemProps[] = [
   { title: "Home", href: "/", icon: Home },
-  { title: "Videos", href: "/videos", icon: VideoFile },
+  { title: "Restaurants", href: "/restaurants", icon: Restaurant },
+  {title:"Admins", href:"/admins", icon:Person},
   // { title: "Images", href: "/images", icon: ImagesIcon },
   // { title: "Schedule", href: "/schedule", icon: Palette },
   // { title: "Jaba Bot", href: "/chatbot", icon: MessageCircleIcon },

@@ -2,7 +2,6 @@ import { Typography, Card, Button, AvatarGroup, Avatar } from "@mui/material";
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import GroupIcon from '@mui/icons-material/Group';
-import TimelineIcon from '@mui/icons-material/Timeline';
 import AddIcon from '@mui/icons-material/Add';
 import Link from "next/link";
 
@@ -34,7 +33,7 @@ export default function MainPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
           icon={<RestaurantIcon className="text-blue-500" />}
           title="Total Restaurants"
@@ -44,28 +43,28 @@ export default function MainPage() {
         <StatCard
           icon={<MenuBookIcon className="text-purple-500" />}
           title="Active Menus"
-          value="287"
+          value="25"
           trend="+8.1%"
         />
         <StatCard
           icon={<GroupIcon className="text-green-500" />}
-          title="Total Customers"
-          value="15.4k"
+          title="Total Admins"
+          value="22"
           trend="+22.4%"
         />
-        <StatCard
+        {/* <StatCard
           icon={<TimelineIcon className="text-orange-500" />}
           title="Total Revenue"
           value="$45.2k"
           trend="+16.2%"
-        />
+        /> */}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
         <Card className="col-span-2 p-6">
           <Typography variant="h6" className="mb-4">Recent Activity</Typography>
           <div className="space-y-4">
-            {[1, 2, 3].map(i => (
+            {[1, 2, 3, 4].map(i => (
               <div key={i} className="flex items-center gap-4 p-3 hover:bg-gray-900 rounded-lg transition-colors">
                 <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
                   <RestaurantIcon />
@@ -104,24 +103,7 @@ export default function MainPage() {
             </div>
           </Card>
 
-          <Card className="p-6">
-            <Typography variant="h6" style={{ marginBottom: "0.75rem" }}>Quick Actions</Typography>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { icon: <AddIcon />, label: 'Create Restaurant', color: 'primary' },
-                { icon: <GroupIcon />, label: 'Create Admin', color: 'secondary' },
-              ].map(action => (
-                <Button
-                  key={action.label}
-                  variant="outlined"
-                  sx={{ display: "flex", paddingTop: "4px", gap: "4px" }}
-                >
-                  {action.icon}
-                  <span className="text-xs">{action.label}</span>
-                </Button>
-              ))}
-            </div>
-          </Card>
+
         </div>
       </div>
     </section>

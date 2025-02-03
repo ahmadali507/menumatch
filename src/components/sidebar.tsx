@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 
 import { cn } from "@/lib/utils";
-import { bottomNavItems, navItems, projectMediaItems, SidebarNavItemProps } from "@/lib/dashboard";
+import { bottomNavItems, navItems, SidebarNavItemProps } from "@/lib/dashboard";
 import { FoodBank } from "@mui/icons-material";
 
 function NavList({
@@ -64,8 +64,6 @@ export function SidebarNav() {
       <div className="flex-1 flex flex-col justify-between overflow-auto py-2">
         <div className="mt-2 space-y-4">
           <NavList items={navItems} pathname={pathname} />
-          <hr className="border-t border-gray-600 mx-3" />
-          <NavList items={projectMediaItems} pathname={pathname} />
         </div>
         <div className="space-y-4 mb-4">
           <hr className="border-t border-gray-600 mx-3" />
