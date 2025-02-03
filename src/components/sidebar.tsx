@@ -29,13 +29,13 @@ function NavList({
             href={item.href}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:bg-gray-700 hover:text-white",
-              active && showGradient && "bg-gradient-to-r from-purple-600 to-purple-400 text-white"
+              active && showGradient && "bg-gradient-to-r from-blue-600 to-blue-400 text-white"
             )}
           >
             <item.icon className="h-4 w-4" />
             <span >{item.title}</span>
             {item.badge && (
-              <span className="ml-auto rounded bg-purple-500 px-2 text-xs">
+              <span className="ml-auto rounded bg-blue-500 px-2 text-xs">
                 {item.badge}
               </span>
             )}

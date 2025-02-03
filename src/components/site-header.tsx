@@ -1,5 +1,7 @@
-import UserDropdown from "./ui/user-dropdown";
-
+import NavbarBreadcrumbs from "./breadcrumbs";
+import UserDropdown from "./user-dropdown";
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import { IconButton } from "@mui/material";
 
 export function SiteHeader() {
 
@@ -11,10 +13,13 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="pr-6 py-3 sticky top-0 h-14 flex justify-end z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-
-      <div className="flex items-center gap-4">
+    <header className="pl-4 pr-6 py-3 sticky top-0 h-14 flex justify-between z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <NavbarBreadcrumbs />
+      <div className="flex items-center gap-2">
         {/* <UserDropdown /> */}
+        <IconButton color="inherit" size="medium">
+          <NotificationsIcon />
+        </IconButton>
         <UserDropdown {...userData} />
       </div>
     </header>
