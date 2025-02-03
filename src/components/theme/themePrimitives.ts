@@ -340,7 +340,7 @@ export const colorSchemes = {
 };
 
 export const typography = {
-  fontFamily: 'Inter, sans-serif',
+  fontFamily: 'Inter, serif',
   h1: {
     fontSize: defaultTheme.typography.pxToRem(48),
     fontWeight: 600,
