@@ -1,7 +1,6 @@
 import { alpha, Theme, Components } from '@mui/material/styles';
 import { gray } from '../themePrimitives';
 
-/* eslint-disable import/prefer-default-export */
 export const surfacesCustomizations: Components<Theme> = {
   MuiAccordion: {
     defaultProps: {
@@ -12,9 +11,9 @@ export const surfacesCustomizations: Components<Theme> = {
       root: ({ theme }) => ({
         padding: 4,
         overflow: 'clip',
-        backgroundColor: (theme.vars || theme).palette.background.default,
+        backgroundColor: (theme.cssVariables || theme).palette.background.default,
         border: '1px solid',
-        borderColor: (theme.vars || theme).palette.divider,
+        borderColor: (theme.cssVariables || theme).palette.divider,
         ':before': {
           backgroundColor: 'transparent',
         },
@@ -22,12 +21,12 @@ export const surfacesCustomizations: Components<Theme> = {
           borderBottom: 'none',
         },
         '&:first-of-type': {
-          borderTopLeftRadius: (theme.vars || theme).shape.borderRadius,
-          borderTopRightRadius: (theme.vars || theme).shape.borderRadius,
+          borderTopLeftRadius: (theme.cssVariables || theme).shape.borderRadius,
+          borderTopRightRadius: (theme.cssVariables || theme).shape.borderRadius,
         },
         '&:last-of-type': {
-          borderBottomLeftRadius: (theme.vars || theme).shape.borderRadius,
-          borderBottomRightRadius: (theme.vars || theme).shape.borderRadius,
+          borderBottomLeftRadius: (theme.cssVariables || theme).shape.borderRadius,
+          borderBottomRightRadius: (theme.cssVariables || theme).shape.borderRadius,
         },
       }),
     },
@@ -63,8 +62,8 @@ export const surfacesCustomizations: Components<Theme> = {
           gap: 16,
           transition: 'all 100ms ease',
           backgroundColor: gray[50],
-          borderRadius: (theme.vars || theme).shape.borderRadius,
-          border: `1px solid ${(theme.vars || theme).palette.divider}`,
+          borderRadius: (theme.cssVariables || theme).shape.borderRadius,
+          border: `1px solid ${(theme.cssVariables || theme).palette.divider}`,
           boxShadow: 'none',
           ...theme.applyStyles('dark', {
             backgroundColor: gray[800],
@@ -75,7 +74,7 @@ export const surfacesCustomizations: Components<Theme> = {
                 variant: 'outlined',
               },
               style: {
-                border: `1px solid ${(theme.vars || theme).palette.divider}`,
+                border: `1px solid ${(theme.cssVariables || theme).palette.divider}`,
                 boxShadow: 'none',
                 background: 'hsl(0, 0%, 100%)',
                 ...theme.applyStyles('dark', {

@@ -5,9 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import CssBaseline from '@mui/material/CssBaseline';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Divider from '@mui/material/Divider';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
@@ -18,8 +16,7 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import AppTheme from "@/components/theme/AppTheme"
-import ColorModeSelect from '@/components/theme/ColorModeSelect';
-import { GoogleIcon, FacebookIcon, SitemarkIcon } from "@/components/icons"
+import { GoogleIcon, SitemarkIcon } from "@/components/icons"
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -80,7 +77,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
     resolver: zodResolver(signInSchema)
   });
 
-  const [open, setOpen] = React.useState(false);
+  const [, setOpen] = React.useState(false);
 
   const onSubmit = (data: SignInFormData) => {
     console.log(data);
