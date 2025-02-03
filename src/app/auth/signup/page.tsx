@@ -5,10 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import CssBaseline from '@mui/material/CssBaseline';
 import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
@@ -18,7 +16,7 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import AppTheme from '@/components/theme/AppTheme';
 import ColorModeSelect from '@/components/theme/ColorModeSelect';
-import { GoogleIcon, FacebookIcon, SitemarkIcon } from "@/components/icons"
+import { GoogleIcon, SitemarkIcon } from "@/components/icons"
 import Link from 'next/link';
 
 const Card = styled(MuiCard)(({ theme }) => ({

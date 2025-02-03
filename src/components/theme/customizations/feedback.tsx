@@ -1,14 +1,14 @@
 import { Theme, alpha, Components } from '@mui/material/styles';
 import { gray, orange } from '../themePrimitives';
 
-/* eslint-disable import/prefer-default-export */
+
 export const feedbackCustomizations: Components<Theme> = {
   MuiAlert: {
     styleOverrides: {
       root: ({ theme }) => ({
         borderRadius: 10,
         backgroundColor: orange[100],
-        color: (theme.vars || theme).palette.text.primary,
+        color: (theme.cssVariables || theme).palette.text.primary,
         border: `1px solid ${alpha(orange[300], 0.5)}`,
         '& .MuiAlert-icon': {
           color: orange[500],
@@ -26,7 +26,7 @@ export const feedbackCustomizations: Components<Theme> = {
         '& .MuiDialog-paper': {
           borderRadius: '10px',
           border: '1px solid',
-          borderColor: (theme.vars || theme).palette.divider,
+          borderColor: (theme.cssVariables || theme).palette.divider,
         },
       }),
     },
