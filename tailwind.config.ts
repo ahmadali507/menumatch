@@ -1,10 +1,10 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  corePlugins:{
-    preflight: false,
-  },
-  important:"#__next",
+  // corePlugins:{
+  //   preflight: false,
+  // },
+  // important:"#__next",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
