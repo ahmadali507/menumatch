@@ -1,5 +1,8 @@
 "use client";
 import * as React from 'react';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -8,7 +11,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Divider from '@mui/material/Divider';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
-import Link from '@mui/material/Link';
+import Link from "next/link"
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
@@ -17,6 +20,14 @@ import { styled } from '@mui/material/styles';
 import AppTheme from "@/components/theme/AppTheme"
 import ColorModeSelect from '@/components/theme/ColorModeSelect';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from "@/components/icons"
+
+const signInSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+  remember: z.boolean().optional(),
+});
+
+type SignInFormData = z.infer<typeof signInSchema>;
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -27,7 +38,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
   gap: theme.spacing(2),
   margin: 'auto',
   [theme.breakpoints.up('sm')]: {
-    maxWidth: '450px',
+    maxWidth: '600px',  // Change from '450px' to '600px' or your desired width
   },
   boxShadow:
     'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
@@ -61,57 +72,18 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignIn(props: { disableCustomTheme?: boolean }) {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema)
+  });
+
   const [open, setOpen] = React.useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
-
-  const validateInputs = () => {
-    const email = document.getElementById('email') as HTMLInputElement;
-    const password = document.getElementById('password') as HTMLInputElement;
-
-    let isValid = true;
-
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
-    }
-
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage('');
-    }
-
-    return isValid;
+  const onSubmit = (data: SignInFormData) => {
+    console.log(data);
   };
 
   return (
@@ -130,8 +102,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
           </Typography>
           <Box
             component="form"
-            onSubmit={handleSubmit}
-            noValidate
+            onSubmit={handleSubmit(onSubmit)}
             sx={{
               display: 'flex',
               flexDirection: 'column',
@@ -142,56 +113,59 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
             <FormControl>
               <FormLabel htmlFor="email">Email</FormLabel>
               <TextField
-                error={emailError}
-                helperText={emailErrorMessage}
+                {...register("email")}
                 id="email"
-                type="email"
-                name="email"
+                // type="email"
                 placeholder="your@email.com"
                 autoComplete="email"
                 autoFocus
                 required
                 fullWidth
                 variant="outlined"
-                color={emailError ? 'error' : 'primary'}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                color={errors.email ? 'error' : 'primary'}
               />
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="password">Password</FormLabel>
               <TextField
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                name="password"
-                placeholder="••••••"
+                {...register("password")}
                 type="password"
                 id="password"
+                placeholder="••••••"
                 autoComplete="current-password"
-                autoFocus
                 required
                 fullWidth
                 variant="outlined"
-                color={passwordError ? 'error' : 'primary'}
+                error={!!errors.password}
+                helperText={errors.password?.message}
+                color={errors.password ? 'error' : 'primary'}
               />
             </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+            {/* <FormControlLabel
+              control={
+                <Checkbox
+                  {...register("remember")}
+                  color="primary"
+                />
+              }
               label="Remember me"
-            />
-            {/* <ForgotPassword open={open} handleClose={handleClose} /> */}
+            /> */}
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              onClick={validateInputs}
             >
               Sign in
             </Button>
             <Link
-              component="button"
+              href="/auth/forgot-password"
+              // component="button"
               type="button"
-              onClick={handleClickOpen}
-              variant="body2"
-              sx={{ alignSelf: 'center' }}
+              onClick={() => setOpen(true)}
+              // variant="body2"
+              style={{ alignSelf: 'center' }}
             >
               Forgot your password?
             </Link>
@@ -206,22 +180,21 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
             >
               Sign in with Google
             </Button>
-            <Button
+            {/* <Button
               fullWidth
               variant="outlined"
               onClick={() => alert('Sign in with Facebook')}
               startIcon={<FacebookIcon />}
             >
               Sign in with Facebook
-            </Button>
+            </Button> */}
             <Typography sx={{ textAlign: 'center' }}>
               Don&apos;t have an account?{' '}
               <Link
                 href="/auth/signup"
-                variant="body2"
-                sx={{ alignSelf: 'center' }}
+                style={{ alignSelf: 'center' }}
               >
-                Sign up
+                Sign Up
               </Link>
             </Typography>
           </Box>
