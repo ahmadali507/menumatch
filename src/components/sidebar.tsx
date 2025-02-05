@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 
 import { cn } from "@/utils/utils";
-import { bottomNavItems, navItems, projectMediaItems, SidebarNavItemProps } from "@/lib/dashboard";
+import { bottomNavItems, navItems, SidebarNavItemProps } from "@/lib/dashboard";
 import { FoodBank } from "@mui/icons-material";
 
 function NavList({

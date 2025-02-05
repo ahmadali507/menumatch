@@ -17,14 +17,13 @@ import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
 import AppTheme from "@/components/theme/AppTheme";
-import { GoogleIcon, SitemarkIcon } from "@/components/icons";
+import { GoogleIcon } from "@/components/icons";
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
-  updateProfile,
 } from "firebase/auth";
 import { auth, db, provider } from "@/firebase/firebaseconfig";
-import { collection, getDoc, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 // import { Alert, Snackbar } from '@mui/material';
 
@@ -78,7 +77,7 @@ export const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-const StyledAlert = styled(Alert)(({ theme, severity }) => ({
+const StyledAlert = styled(Alert)(() => ({
   borderRadius: "8px",
   "&.MuiAlert-standardSuccess": {
     backgroundColor: "#E7F6E7",
@@ -110,7 +109,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
     severity: "success" as "success" | "error",
   });
 
-  const [open, setOpen] = React.useState(false);
+  const [, setOpen] = React.useState(false);
 
   const router = useRouter();
 
@@ -192,6 +191,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
       setTimeout(() => {
         router.push("/");
       }, 1000);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       let errorMessage = "Failed to sign in";
 
