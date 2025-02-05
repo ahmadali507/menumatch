@@ -13,7 +13,7 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="pl-4 pr-6 py-3 sticky top-0 h-14 flex justify-between z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="pl-4 pr-6 py-3 h-14 flex justify-between z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <NavbarBreadcrumbs />
       <div className="flex items-center gap-2">
         {/* <UserDropdown /> */}

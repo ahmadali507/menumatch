@@ -380,6 +380,20 @@ export const inputsCustomizations: Components<Theme> = {
     styleOverrides: {
       input: {
         padding: 0,
+        '&:-webkit-autofill': {
+          WebkitBoxShadow: '0 0 0 100px transparent inset',
+          WebkitTextFillColor: "white",
+          'transition': 'background-color 5000s ease-in-out 0s',
+        },
+        '&:-webkit-autofill:hover': {
+          WebkitBoxShadow: '0 0 0 100px transparent inset',
+        },
+        '&:-webkit-autofill:focus': {
+          WebkitBoxShadow: '0 0 0 100px transparent inset',
+        },
+        '&:-webkit-autofill:active': {
+          WebkitBoxShadow: '0 0 0 100px transparent inset',
+        },
       },
       root: ({ theme }) => ({
         padding: '8px 12px',
