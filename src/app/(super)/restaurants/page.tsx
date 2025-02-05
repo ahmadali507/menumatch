@@ -1,14 +1,17 @@
 "use client";
 import { useState } from 'react';
 import {
-  Typography, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Button, TextField, IconButton,
-  Chip, TablePagination
+  Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, Paper, TextField, IconButton,
+  Chip, TablePagination, Select, MenuItem, FormControl, InputLabel,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
+import Link from 'next/link';
+import SectionLayout from '@/components/layouts/section-layout';
+import AddRestaurant from '@/components/add-restaurant';
+
 
 // Generate 20 restaurants
 const dummyRestaurants = Array.from({ length: 20 }, (_, i) => ({
@@ -20,16 +23,37 @@ const dummyRestaurants = Array.from({ length: 20 }, (_, i) => ({
   orders: Math.floor(Math.random() * 500) + 50
 }));
 
+// Types
+type SortField = 'name' | 'orders' | 'location' | 'cuisine';
+type SortOrder = 'asc' | 'desc';
+
 export default function RestaurantsPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const filteredRestaurants = dummyRestaurants.filter(restaurant =>
-    restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    restaurant.cuisine.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    restaurant.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter restaurants
+  const filteredRestaurants = dummyRestaurants
+    .filter(restaurant => {
+      const matchesSearch =
+        restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        restaurant.cuisine.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesLocation = !locationFilter ||
+        restaurant.location.toLowerCase().includes(locationFilter.toLowerCase());
+
+      return matchesSearch && matchesLocation;
+    })
+    .sort((a, b) => {
+      const multiplier = sortOrder === 'asc' ? 1 : -1;
+      if (sortField === 'orders') {
+        return (a.orders - b.orders) * multiplier;
+      }
+      return a[sortField].localeCompare(b[sortField]) * multiplier;
+    });
 
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
@@ -41,27 +65,11 @@ export default function RestaurantsPage() {
   };
 
   return (
-    <section className="p-6">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <Typography variant="h4" component="h1">
-            Restaurants
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Manage all registered restaurants
-          </Typography>
-        </div>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => alert('Add new restaurant')}
-        >
-          Add Restaurant
-        </Button>
-      </div>
+    <SectionLayout title='Restaurant Management' description="Lists all restaurants to manage them" endButton={<AddRestaurant />}
+    >
 
 
-      <div className="flex gap-4 items-center bg-opacity-50 backdrop-blur-sm mb-2">
+      <div className="flex w-full gap-4 items-center bg-opacity-50 backdrop-blur-sm mb-2">
         <TextField
           size="small"
           placeholder="Search restaurants..."
@@ -72,6 +80,38 @@ export default function RestaurantsPage() {
           }}
           className="min-w-[300px]"
         />
+
+        <TextField
+          size="small"
+          placeholder="Filter by location..."
+          value={locationFilter}
+          onChange={(e) => setLocationFilter(e.target.value)}
+          className="min-w-[200px]"
+        />
+
+
+        <FormControl>
+          <InputLabel>Sort by</InputLabel>
+          <Select
+            value={`${sortField}-${sortOrder}`}
+            onChange={(e) => {
+              const [field, order] = e.target.value.split('-');
+              setSortField(field as SortField);
+              setSortOrder(order as SortOrder);
+            }}
+            label="Sort by"
+          >
+            <MenuItem value="name-asc">Name (A-Z)</MenuItem>
+            <MenuItem value="name-desc">Name (Z-A)</MenuItem>
+            <MenuItem value="orders-desc">Orders (High-Low)</MenuItem>
+            <MenuItem value="orders-asc">Orders (Low-High)</MenuItem>
+            <MenuItem value="location-asc">Location (A-Z)</MenuItem>
+            <MenuItem value="location-desc">Location (Z-A)</MenuItem>
+            <MenuItem value="cuisine-asc">Cuisine (A-Z)</MenuItem>
+            <MenuItem value="cuisine-desc">Cuisine (Z-A)</MenuItem>
+          </Select>
+        </FormControl>
+
       </div>
 
       <div className="flex flex-col">
@@ -89,7 +129,7 @@ export default function RestaurantsPage() {
                   <TableCell align="right" width={200}>Actions</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody sx={{ height: "500px", overflowY: "auto" }}>
+              <TableBody sx={{ maxHeight: "100px", overflowY: "auto" }}>
                 {filteredRestaurants
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((restaurant, index) => (
@@ -100,7 +140,11 @@ export default function RestaurantsPage() {
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                       <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                      <TableCell className="font-medium">{restaurant.name}</TableCell>
+                      <TableCell className="font-medium">
+                        <Link href={`/restaurants/${restaurant.id}`} className='hover:underline'>
+                          {restaurant.name}
+                        </Link>
+                      </TableCell>
                       <TableCell>{restaurant.location}</TableCell>
                       <TableCell>{restaurant.cuisine}</TableCell>
                       <TableCell>
@@ -135,6 +179,6 @@ export default function RestaurantsPage() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </div >
-    </section >
+    </SectionLayout >
   );
 }

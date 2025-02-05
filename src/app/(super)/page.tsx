@@ -1,9 +1,9 @@
-import { Typography, Card, Button, AvatarGroup, Avatar } from "@mui/material";
+import { Typography, Card, AvatarGroup, Avatar } from "@mui/material";
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import GroupIcon from '@mui/icons-material/Group';
-import AddIcon from '@mui/icons-material/Add';
 import Link from "next/link";
+import AddRestaurant from "@/components/add-restaurant";
 
 const StatCard = ({ icon, title, value, trend }: { icon: React.ReactNode, title: string, value: string, trend?: string }) => (
   <Card className="p-6 flex flex-col gap-4 hover:shadow-lg transition-shadow">
@@ -27,9 +27,7 @@ export default function MainPage() {
         </Typography>
         <div className="flex gap-2">
 
-          <Button variant="contained" startIcon={<AddIcon />}>
-            Add Restaurant
-          </Button>
+          <AddRestaurant />
         </div>
       </div>
 
