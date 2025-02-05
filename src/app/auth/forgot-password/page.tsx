@@ -11,12 +11,10 @@ import {
   Box,
   Button,
   CssBaseline,
-  Stack,
   TextField,
   Typography,
   Snackbar,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import AppTheme from "@/components/theme/AppTheme";
 import { SignInContainer } from "../login/page";
 
@@ -53,6 +51,7 @@ export default function ForgetPassword({ disableCustomTheme }: { disableCustomTh
       setTimeout(() => {
         router.push("/auth/login");
       }, 2000);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       let errorMessage = "Failed to send reset email";
       switch (error.code) {
@@ -93,9 +92,9 @@ export default function ForgetPassword({ disableCustomTheme }: { disableCustomTh
             Reset Password
           </Typography>
           <Typography variant="body1" color="text.secondary" gutterBottom>
-            Enter your email address and we'll send you a link to reset your password.
+            Enter your email address and we&apos;ll send you a link to reset your password.
           </Typography>
-          
+
           <TextField
             {...register("email")}
             label="Email"

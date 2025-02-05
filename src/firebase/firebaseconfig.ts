@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import {browserPopupRedirectResolver, browserSessionPersistence, getAuth, initializeAuth} from 'firebase/auth'
+import { getAuth} from 'firebase/auth'
 // import { AppPageRouteModule } from "next/dist/server/route-modules/app-page/module.compiled";
 import { getFirestore } from "firebase/firestore";
 import { GoogleAuthProvider } from "firebase/auth";

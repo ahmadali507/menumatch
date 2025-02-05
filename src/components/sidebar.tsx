@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 
-import { cn } from "@/utils/utils";
+import { cn } from "@/lib/utils";
 import { bottomNavItems, navItems, SidebarNavItemProps } from "@/lib/dashboard";
 import { FoodBank } from "@mui/icons-material";
 
