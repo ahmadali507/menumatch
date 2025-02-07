@@ -1,0 +1,72 @@
+'use server'
+import { cookies } from 'next/headers';
+// import { getDoc, DocumentReference, doc } from 'firebase/firestore';
+// import { db } from '@/firebase/firebaseconfig';
+import { initAdmin } from '@/firebase/adminFirebase';
+import { getFirestore } from 'firebase-admin/firestore';
+
+interface UserData {
+  uid: string;
+  role : string, 
+  email : string, 
+  restaurantId ?: string | null, 
+  name ?: string, 
+}
+
+export async function setUserCookie(uid : string | null) {
+  try {
+
+    // const userRef = doc(db, "users", uid) as DocumentReference<UserData>;
+    // const userSnap = await getDoc(userRef);
+    await initAdmin(); 
+    const firestore = getFirestore(); 
+
+    console.log("user data for setting cookie", uid);
+    const userSnap = await firestore.collection('users').doc(uid as string).get();
+    console.log("user data for setting cookie", userSnap.data());
+
+    if (!userSnap) {
+      return { error: "User not found" };
+    }
+
+    const userData = userSnap.data() as UserData;
+    console.log("this is the actual user data after snapshot", userData);
+      (await cookies()).set("auth", JSON.stringify({
+        ...userData, 
+        uid : uid,
+      }), {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      expires: new Date(Date.now() + 60 * 60 * 24 * 7 * 1000), // 7 days
+    });
+
+    return { success: true, user: userData };
+  } catch (error) {
+    console.error('Error setting user cookie:', error);
+    return { error: "Failed to set user cookie" };
+  }
+}
+
+
+export async function getUserRole() {
+    
+    try {
+      const cookieStore = await cookies();
+      const authCookie = cookieStore.get('auth');
+      
+      if (!authCookie?.value) {
+        return null;
+      }
+  
+      const user = JSON.parse(authCookie.value) as UserData;
+      console.log("This is the user data read from cookies", user);
+      if (!user?.role) {
+        return null;
+      }
+  
+      return user;
+    } catch (error) {
+      console.error('Error getting user role:', error);
+      return null;
+    }
+  }

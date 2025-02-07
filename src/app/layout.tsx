@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import AppTheme from "@/components/theme/AppTheme";
+import { UserContextProvider } from "@/context/userContext";
 
 const inter = Inter({
   variable: "--font-geist-sans",
@@ -20,12 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.className} antialiased`}
-      >
-        <AppTheme>
-          {children}
-        </AppTheme>
+      <body className={`${inter.className} antialiased`}>
+        <UserContextProvider>
+          <AppTheme>{children}</AppTheme>
+        </UserContextProvider>
       </body>
     </html>
   );

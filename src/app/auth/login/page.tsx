@@ -23,8 +23,9 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth, db, provider } from "@/firebase/firebaseconfig";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import { setUserCookie } from "@/actions/actions.cookies";
 // import { Alert, Snackbar } from '@mui/material';
 
 const signInSchema = z.object({
@@ -168,12 +169,14 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
         return;
       }
 
-      // Verify user exists in Firestore
-      const userDocs = await getDocs(
-        query(collection(db, "users"), where("userId", "==", response.user.uid))
-      );
+      console.log("User Signed IN", response?.user); 
 
-      if (userDocs.empty) {
+      await setUserCookie(response?.user?.uid); 
+
+      const userDocRef = doc(db, "users", response.user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc) {
         setSnackbar({
           open: true,
           message: "User account not found",
@@ -190,7 +193,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
 
       setTimeout(() => {
         router.push("/");
-      }, 1000);
+      }, 1000)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       let errorMessage = "Failed to sign in";
