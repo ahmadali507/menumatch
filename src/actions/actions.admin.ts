@@ -5,6 +5,7 @@ import { TEditRestaurant } from "@/lib/schema";
 import { initAdmin } from "@/firebase/adminFirebase";
 import { RestaurantType, resAdminType } from "@/types";
 import { getFirestore } from "firebase-admin/firestore";
+import { revalidatePath } from "next/cache";
 
 export const createRestaurant = async (data: RestaurantType) => {
   await initAdmin();
@@ -59,12 +60,15 @@ export const fetchAllRestaurants = async () => {
 };
 
 export const editRestaurant = async (restaurantId: string, data: TEditRestaurant) => {
+    console.log('editing restaurant')
     await initAdmin(); 
     const firestore = getFirestore();
     try {
         await firestore.collection("restaurants").doc(restaurantId).update(data);
-        console.log(data)
         console.log("Restaurant edited successfully");
+        
+        revalidatePath(`/restaurants/${restaurantId}`);
+
         return { success: true, message: "Restaurant edited successfully" };
     } catch (error) {
         console.error("Error editing restaurant:", error);

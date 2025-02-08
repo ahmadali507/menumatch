@@ -8,8 +8,8 @@ import {
   FormControl,
   FormLabel,
   MenuItem,
-//   CircularProgress,
-//   Alert,
+  //   CircularProgress,
+  //   Alert,
   Grid,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
@@ -21,8 +21,8 @@ import EditIcon from '@mui/icons-material/Edit';
 // import Link from "next/link";
 
 interface EditRestaurantProps {
-  restaurantId?: string;
-  initialData?: TEditRestaurant;
+  restaurantId: string;
+  initialData: TEditRestaurant;
 }
 
 export default function EditRestaurant({
@@ -47,14 +47,18 @@ export default function EditRestaurant({
     // isError,
     // error,
   } = useMutation({
-    mutationFn:    (data: TEditRestaurant) =>  editRestaurant(restaurantId as string, data),
+    mutationFn: async (data: TEditRestaurant) => {
+      console.log("Editing restaurant with data", data);
+      return await editRestaurant(restaurantId as string, data);
+    },
     onSuccess: () => {
+      // add a toaster here later
       setOpen(false);
       reset();
     },
   });
 
-   
+
   const handleOpen = () => {
     console.log('Opening dialog...');
     setOpen(true);
@@ -63,19 +67,21 @@ export default function EditRestaurant({
 
   const onSubmit = (data: TEditRestaurant) => {
     // updateRestaurant(data);
+    console.log("Submitting data", data);
     mutate(data);
   };
 
   return (
     <>
       <Button
+        type="button"
         variant="outlined"
         startIcon={<EditIcon />}
         onClick={handleOpen}
       >
         Edit Details
       </Button>
-  
+
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
@@ -109,11 +115,13 @@ export default function EditRestaurant({
         <DialogTitle sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
           Edit Restaurant
         </DialogTitle>
-        <DialogContent sx={{ mt: 2 }}>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2">
+        <form onSubmit={handleSubmit(onSubmit, (error) => {
+          console.log(error)
+        })} className="space-y-4 mt-2">
+          <DialogContent sx={{ mt: 2 }}>
             <Grid container spacing={2}>
-              {/* Left Column */}
-              <Grid item xs={6}>
+              {/* Full width name field */}
+              <Grid item xs={12}>
                 <FormControl fullWidth size="small">
                   <FormLabel>Restaurant Name</FormLabel>
                   <TextField
@@ -123,8 +131,11 @@ export default function EditRestaurant({
                     size="small"
                   />
                 </FormControl>
-  
-                <FormControl fullWidth size="small" sx={{ mt: 2 }}>
+              </Grid>
+
+              {/* Left Column */}
+              <Grid item xs={6}>
+                <FormControl fullWidth size="small">
                   <FormLabel>Cuisine</FormLabel>
                   <TextField
                     {...register("cuisine")}
@@ -133,7 +144,7 @@ export default function EditRestaurant({
                     size="small"
                   />
                 </FormControl>
-  
+
                 <FormControl fullWidth size="small" sx={{ mt: 2 }}>
                   <FormLabel>Phone</FormLabel>
                   <TextField
@@ -143,7 +154,7 @@ export default function EditRestaurant({
                     size="small"
                   />
                 </FormControl>
-  
+
                 <FormControl fullWidth size="small" sx={{ mt: 2 }}>
                   <FormLabel>Email</FormLabel>
                   <TextField
@@ -153,40 +164,7 @@ export default function EditRestaurant({
                     size="small"
                   />
                 </FormControl>
-              </Grid>
-  
-              {/* Right Column */}
-              <Grid item xs={6}>
-                <FormControl fullWidth size="small">
-                  <FormLabel>City</FormLabel>
-                  <TextField
-                    {...register("location.city")}
-                    error={!!errors.location?.city}
-                    helperText={errors.location?.city?.message}
-                    size="small"
-                  />
-                </FormControl>
-  
-                <FormControl fullWidth size="small" sx={{ mt: 2 }}>
-                  <FormLabel>State</FormLabel>
-                  <TextField
-                    {...register("location.state")}
-                    error={!!errors.location?.state}
-                    helperText={errors.location?.state?.message}
-                    size="small"
-                  />
-                </FormControl>
-  
-                <FormControl fullWidth size="small" sx={{ mt: 2 }}>
-                  <FormLabel>Country</FormLabel>
-                  <TextField
-                    {...register("location.country")}
-                    error={!!errors.location?.country}
-                    helperText={errors.location?.country?.message}
-                    size="small"
-                  />
-                </FormControl>
-  
+
                 <FormControl fullWidth size="small" sx={{ mt: 2 }}>
                   <FormLabel>Status</FormLabel>
                   <TextField
@@ -200,28 +178,71 @@ export default function EditRestaurant({
                   </TextField>
                 </FormControl>
               </Grid>
+
+              {/* Right Column - Location Fields */}
+              <Grid item xs={6}>
+                <FormControl fullWidth size="small">
+                  <FormLabel>Street Address</FormLabel>
+                  <TextField
+                    {...register("location.address")}
+                    error={!!errors.location?.address}
+                    helperText={errors.location?.address?.message}
+                    size="small"
+                  />
+                </FormControl>
+
+                <FormControl fullWidth size="small" sx={{ mt: 2 }}>
+                  <FormLabel>City</FormLabel>
+                  <TextField
+                    {...register("location.city")}
+                    error={!!errors.location?.city}
+                    helperText={errors.location?.city?.message}
+                    size="small"
+                  />
+                </FormControl>
+
+                <FormControl fullWidth size="small" sx={{ mt: 2 }}>
+                  <FormLabel>State</FormLabel>
+                  <TextField
+                    {...register("location.state")}
+                    error={!!errors.location?.state}
+                    helperText={errors.location?.state?.message}
+                    size="small"
+                  />
+                </FormControl>
+
+                <FormControl fullWidth size="small" sx={{ mt: 2 }}>
+                  <FormLabel>Country</FormLabel>
+                  <TextField
+                    {...register("location.country")}
+                    error={!!errors.location?.country}
+                    helperText={errors.location?.country?.message}
+                    size="small"
+                  />
+                </FormControl>
+              </Grid>
             </Grid>
-  
+
             <div className="flex justify-end gap-2 mt-4">
-              <Button 
+              <Button
                 onClick={() => setOpen(false)}
                 variant="outlined"
                 size="small"
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 type="submit"
                 variant="contained"
                 size="small"
                 disabled={isPending || !isDirty}
-                sx={{":disabled": {color: "gray"}}}
+                sx={{ ":disabled": { color: "gray" } }}
               >
                 {isPending ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
-          </form>
-        </DialogContent>
+          </DialogContent>
+        </form>
       </Dialog>
     </>
   );
