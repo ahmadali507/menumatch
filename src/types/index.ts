@@ -14,7 +14,7 @@ export type RestaurantDetailsType = {
 
 export type RestaurantType = {
   name: string, 
-  restaurantId ?: string, 
+  id ?: string, 
   location : {
     city : string, 
     state : string, 
@@ -22,11 +22,11 @@ export type RestaurantType = {
     country : string, 
   }, 
   contact : {
-    phone : string | number, 
+    phone : string, 
     email : string, 
   }, 
-  status?: string, 
-  cuisine ?: string, 
+  status: "active" | "inactive", 
+  cuisine: string, 
   orders ?: number, 
   admins ?: { name: string; role: string }[],
   menus?:Menu[],

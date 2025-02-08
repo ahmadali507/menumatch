@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { createRestaurant } from "@/actions/actions.admin";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 // import { doc, getDoc } from "firebase/firestore";
 // import { db } from "@/firebase/firebaseconfig";
 // import { dataDisplayCustomizations } from "../theme/customizations/dataDisplay";

@@ -63,6 +63,8 @@ export const editRestaurant = async (restaurantId: string, data: TEditRestaurant
     const firestore = getFirestore();
     try {
         await firestore.collection("restaurants").doc(restaurantId).update(data);
+        console.log(data)
+        console.log("Restaurant edited successfully");
         return { success: true, message: "Restaurant edited successfully" };
     } catch (error) {
         console.error("Error editing restaurant:", error);

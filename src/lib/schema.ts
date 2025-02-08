@@ -1,12 +1,12 @@
 import z from "zod";
 
-const editRestaurantSchema = z.object({
-  restaurantName: z.string()
+export const editRestaurantSchema = z.object({
+  name: z.string()
     .min(3, "Restaurant name must be at least 3 characters"),
     // .max(50, "Restaurant name must not exceed 50 characters"),
   cuisine: z.string()
     .min(2, "Cuisine type is required")
-    .max(30, "Cuisine type must not exceed 30 characters"),
+    .max(30, "Cuisine type must not exceed 30 characters").default("lahori"),
   status: z.enum(["active", "inactive"]),
   location: z.object({
     address: z.string().min(5, "Address is required"),
@@ -27,4 +27,3 @@ const editRestaurantSchema = z.object({
 });
 
 export type TEditRestaurant = z.infer<typeof editRestaurantSchema>;
-export { editRestaurantSchema };

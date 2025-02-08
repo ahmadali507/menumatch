@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import AppTheme from "@/components/theme/AppTheme";
 import { UserContextProvider } from "@/context/userContext";
+import QueryProvider from "@/components/query-provider";
 const inter = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,8 +26,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <UserContextProvider>
+        <QueryProvider>
           <AppTheme>{children}</AppTheme>
+        </QueryProvider>
         </UserContextProvider>
+
       </body>
     </html>
   );

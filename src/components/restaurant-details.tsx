@@ -9,16 +9,16 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Link from "next/link";
-import { RestaurantDetailsType } from "@/types";
+import { RestaurantType } from "@/types";
 import PersonIcon from "@mui/icons-material/Person"
 // import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 // import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import { blue, green, purple, amber } from '@mui/material/colors';
+import EditRestaurant from "./forms/edit-restaurant";
 
-export default function RestaurantDetails({ restaurantId, details }: { restaurantId: string; details: RestaurantDetailsType }) {
+export default function RestaurantDetails({ restaurantId, details }: { restaurantId: string; details: RestaurantType }) {
   return (
-
     <div className="flex gap-6 w-full">
       {/* Main Info Card */}
       <Card style={{ flexGrow: 2 }}>
@@ -31,18 +31,20 @@ export default function RestaurantDetails({ restaurantId, details }: { restauran
               <Typography variant="h4">{details.name}</Typography>
               <div className="flex items-center gap-2 mt-1">
                 <LocationOnIcon className="text-gray-400" sx={{ fontSize: 18 }} />
-                <Typography color="text.secondary">{details.location}</Typography>
+                <Typography color="text.secondary">{details.location.city}</Typography>
               </div>
             </div>
           </div>
-          <Button
+          {/* <Button
             variant="outlined"
             startIcon={<EditIcon />}
             component={Link}
             href={`/restaurants/${restaurantId}/edit`}
           >
             Edit Details
-          </Button>
+          </Button> */}
+
+          <EditRestaurant restaurantId={restaurantId} initialData={{...details, cuisine:"Khota"}}/>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -88,7 +90,7 @@ export default function RestaurantDetails({ restaurantId, details }: { restauran
         <div className="mt-6 pt-4">
           <Typography variant="h6" sx={{ marginBottom: "1rem" }}>Current Menus</Typography>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {details.menus.map((menu) => (
+            {details.menus?.map((menu) => (
               <Card
                 key={menu.id}
                 className="p-4 hover:shadow-xl transition-all duration-200"
@@ -206,7 +208,7 @@ export default function RestaurantDetails({ restaurantId, details }: { restauran
         </div>
 
         <div className="h-[300px] overflow-y-auto space-y-4">
-          {details.admins.map((admin, index) => (
+          {details.admins?.map((admin, index) => (
             <div
               key={index}
               className="flex items-center gap-3 p-3 hover:bg-gray-900/50 rounded-lg transition-colors"
