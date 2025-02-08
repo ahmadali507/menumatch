@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { Alert, Snackbar } from "@mui/material";
+// import { Alert, Snackbar } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -26,7 +26,9 @@ import { auth, db, provider } from "@/firebase/firebaseconfig";
 import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { setUserCookie } from "@/actions/actions.cookies";
-// import { Alert, Snackbar } from '@mui/material';
+import LoadingButton from '@/components/ui/loading-button';  // Add this import
+// import { CustomSnackbar } from "@/components/ui/custom-toaster";
+import { useToast } from "@/context/toastContext";
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -78,23 +80,23 @@ export const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-const StyledAlert = styled(Alert)(() => ({
-  borderRadius: "8px",
-  "&.MuiAlert-standardSuccess": {
-    backgroundColor: "#E7F6E7",
-    color: "#1E4620",
-    "& .MuiAlert-icon": {
-      color: "#2E7D32",
-    },
-  },
-  "&.MuiAlert-standardError": {
-    backgroundColor: "#FDEDED",
-    color: "#5F2120",
-    "& .MuiAlert-icon": {
-      color: "#D32F2F",
-    },
-  },
-}));
+// const StyledAlert = styled(Alert)(() => ({
+//   borderRadius: "8px",
+//   "&.MuiAlert-standardSuccess": {
+//     backgroundColor: "#E7F6E7",
+//     color: "#1E4620",
+//     "& .MuiAlert-icon": {
+//       color: "#2E7D32",
+//     },
+//   },
+//   "&.MuiAlert-standardError": {
+//     backgroundColor: "#FDEDED",
+//     color: "#5F2120",
+//     "& .MuiAlert-icon": {
+//       color: "#D32F2F",
+//     },
+//   },
+// }));
 
 export default function SignIn(props: { disableCustomTheme?: boolean }) {
   const {
@@ -104,19 +106,21 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
   } = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
   });
-  const [snackbar, setSnackbar] = React.useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "error",
-  });
+  // const [snackbar, setSnackbar] = React.useState({
+  //   open: false,
+  //   message: "",
+  //   severity: "success" as "success" | "error",
+  // });
 
+  const {showToast} = useToast(); 
   const [, setOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const router = useRouter();
 
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
+  // const handleCloseSnackbar = () => {
+  //   setSnackbar({ ...snackbar, open: false });
+  // };
 
   const handleGoogleSignIn = async () => {
     try {
@@ -127,32 +131,36 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
 
       if (userDocs.empty) {
         await result.user.delete();
-        setSnackbar({
-          open: true,
-          message: "User not registered. Please sign up first",
-          severity: "error",
-        });
+        // setSnackbar({
+        //   open: true,
+        //   message: "User not registered. Please sign up first",
+        //   severity: "error",
+        // });
+        showToast("User not registered. Please sign up first", "error");
         router.push("/auth/signup");
         return;
       }
 
-      setSnackbar({
-        open: true,
-        message: "Successfully signed in!",
-        severity: "success",
-      });
+      // setSnackbar({
+      //   open: true,
+      //   message: "Successfully signed in!",
+      //   severity: "success",
+      // });
+      showToast("Successfully signed in!", "success");
       router.push("/");
     } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "Error signing in with Google",
-        severity: "error",
-      });
+      // setSnackbar({
+      //   open: true,
+      //   message: "Error signing in with Google",
+      //   severity: "error",
+      // });
+      showToast("Error signing in with Google", "error");
       console.error("Error signing in with google: ", error);
     }
   };
 
   const onSubmit = async (data: SignInFormData) => {
+    setIsLoading(true);
     try {
       const response = await signInWithEmailAndPassword(
         auth,
@@ -161,12 +169,14 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
       );
 
       if (!response?.user) {
-        setSnackbar({
-          open: true,
-          message: "Failed to sign in",
-          severity: "error",
-        });
+        // setSnackbar({
+        //   open: true,
+        //   message: "Failed to sign in",
+        //   severity: "error",
+        // });
+        showToast("Failed to sign in", "error");
         return;
+
       }
 
       console.log("User Signed IN", response?.user); 
@@ -177,19 +187,17 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
       const userDoc = await getDoc(userDocRef);
 
       if (!userDoc) {
-        setSnackbar({
-          open: true,
-          message: "User account not found",
-          severity: "error",
-        });
+        // setSnackbar({
+        //   open: true,
+        //   message: "User account not found",
+        //   severity: "error",
+        // });
+        showToast("User account not found", "error");
         return;
       }
 
-      setSnackbar({
-        open: true,
-        message: "Successfully signed in!",
-        severity: "success",
-      });
+      showToast("User Logged in successfully", "success");
+
 
       setTimeout(() => {
         router.push("/");
@@ -218,11 +226,14 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
           errorMessage = error.message;
       }
 
-      setSnackbar({
-        open: true,
-        message: errorMessage,
-        severity: "error",
-      });
+      // setSnackbar({
+      //   open: true,
+      //   message: errorMessage,
+      //   severity: "error",
+      // });
+      showToast(errorMessage, "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -291,9 +302,16 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
               }
               label="Remember me"
             /> */}
-            <Button type="submit" fullWidth variant="contained">
-              Sign in
-            </Button>
+            <LoadingButton
+              type="submit"
+              fullWidth
+              variant="contained"
+              isLoading={isLoading}
+              loadingText="Signing In"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Sign In
+            </LoadingButton>
             <Link
               href="/auth/forgot-password"
               // component="button"
@@ -332,13 +350,13 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
           </Box>
         </Card>
       </SignInContainer>
-      <Snackbar
+      {/* <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <StyledAlert
+      > */}
+        {/* <StyledAlert
           onClose={handleCloseSnackbar}
           severity={snackbar.severity}
           sx={{ width: "100%", minWidth: "300px" }}
@@ -346,8 +364,14 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
           variant="standard"
         >
           {snackbar.message}
-        </StyledAlert>
-      </Snackbar>
+        </StyledAlert> */}
+      {/* <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleCloseSnackbar}
+      /> */}
+      {/* </Snackbar> */}
     </AppTheme>
   );
 }

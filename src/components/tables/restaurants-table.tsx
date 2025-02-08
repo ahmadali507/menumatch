@@ -167,14 +167,14 @@ export default function RestaurantsTable({restaurants}:{restaurants:RestaurantTy
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((restaurant, index) => (
                     <TableRow
-                      key={restaurant.restaurantId}
+                      key={restaurant.id}
                       hover
 
                       sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                       <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                       <TableCell className="font-medium">
-                        <Link href={`/restaurants/${restaurant.restaurantId}`} className='hover:underline'>
+                        <Link href={`/restaurants/${restaurant.id}`} className='hover:underline'>
                           {restaurant.name}
                         </Link>
                       </TableCell>

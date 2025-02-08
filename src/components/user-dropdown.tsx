@@ -9,6 +9,8 @@ import { listClasses } from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon, { listItemIconClasses } from '@mui/material/ListItemIcon';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
+import { logoutUser } from '@/actions/actions.auth';
+import { useRouter } from 'next/navigation';
 
 
 const MenuItem = styled(MuiMenuItem)(({ theme }) => ({
@@ -34,6 +36,7 @@ type UserDropdownProps = {
 
 export default function UserDropdown({ name, email, role }: UserDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const router = useRouter(); 
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -41,6 +44,16 @@ export default function UserDropdown({ name, email, role }: UserDropdownProps) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+
+  const handleUserLogout = async() => { 
+    console.log("logout user");
+    // logoutUser();
+    await logoutUser();
+    router.push('/auth/login'); 
+  }
+
+
   return (
     <React.Fragment>
       <div className='bg-blue-600 rounded-full h-10 w-10 cursor-pointer flex justify-center items-center' onClick={handleClick} >
@@ -87,7 +100,7 @@ export default function UserDropdown({ name, email, role }: UserDropdownProps) {
         <MenuItem onClick={handleClose}>Settings</MenuItem>
         <Divider />
         <MenuItem
-          onClick={handleClose}
+          onClick={handleUserLogout}
           sx={{
             [`& .${listItemIconClasses.root}`]: {
               ml: 'auto',

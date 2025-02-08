@@ -2,7 +2,7 @@ import { fetchRestaurantAdmins } from "@/actions/actions.admin";
 import SectionLayout from "@/components/layouts/section-layout";
 import RestaurantDetails from "@/components/restaurant-details";
 import { initAdmin } from "@/firebase/adminFirebase";
-import { RestaurantDetailsType } from "@/types";
+import { RestaurantDetailsType, RestaurantType } from "@/types";
 import { getFirestore } from "firebase-admin/firestore";
 
 const dummyData: RestaurantDetailsType = {
@@ -160,14 +160,14 @@ export default async function RestaurantDetailsPage({ params }: { params: Promis
     throw new Error('Restaurant not found');
   }
 
-  const restaurantData = restaurantSnap.data();
+  const restaurantData = restaurantSnap.data() as RestaurantType;
   console.log("Restaurant data:", restaurantData);
 
 
   const adminResponse = await fetchRestaurantAdmins(restaurantId);
 
   if (adminResponse.success && adminResponse.admins) {
-    dummyData.admins = adminResponse.admins.map((admin) => ({
+    restaurantData.admins = adminResponse.admins.map((admin) => ({
       name: admin.name || 'Anonymous',
       role: admin.role || "admin "
     }));
@@ -176,19 +176,17 @@ export default async function RestaurantDetailsPage({ params }: { params: Promis
     dummyData.admins = [];
   }
 
-
-  dummyData.name = restaurantData?.name;
-  dummyData.id = restaurantData?.restaurantId;
-  dummyData.location = restaurantData?.location?.city;
-
-
+  restaurantData.menus = dummyData.menus;
+  restaurantData.status = "active"
+  restaurantData.orders = 450
+  restaurantData.cuisine = "Italian"
 
   return (
     <SectionLayout
       title="Restaurant Details"
       description="Displays detailed information about a specific restaurant"
     >
-      <RestaurantDetails restaurantId={restaurantId} details={dummyData} />
+      <RestaurantDetails restaurantId={restaurantId} details={restaurantData} />
     </SectionLayout>
   );
 }

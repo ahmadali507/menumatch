@@ -7,16 +7,16 @@ import { auth } from "@/firebase/firebaseconfig";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import {
-  Alert,
   Box,
   Button,
   CssBaseline,
   TextField,
   Typography,
-  Snackbar,
 } from "@mui/material";
 import AppTheme from "@/components/theme/AppTheme";
 import { SignInContainer } from "../login/page";
+import LoadingButton from "@/components/ui/loading-button";
+import { useToast } from "@/context/toastContext";
 
 const forgetPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -34,20 +34,26 @@ export default function ForgetPassword({ disableCustomTheme }: { disableCustomTh
   });
 
   const router = useRouter();
-  const [snackbar, setSnackbar] = React.useState({
-    open: false,
-    message: "",
-    severity: "success" as "success" | "error",
-  });
+  // const [snackbar, setSnackbar] = React.useState({
+  //   open: false,
+  //   message: "",
+  //   severity: "success" as "success" | "error",
+  // });
+  // const [email, setEmail] = React.useState("");
+
+  const {showToast} = useToast(); 
+  const [loading, setLoading] = React.useState(false);
 
   const onSubmit = async (data: ForgetPasswordFormData) => {
+    setLoading(true);
     try {
       await sendPasswordResetEmail(auth, data.email);
-      setSnackbar({
-        open: true,
-        message: "Password reset email sent! Please check your inbox",
-        severity: "success",
-      });
+      // setSnackbar({
+      //   open: true,
+      //   message: "Password reset email sent! Please check your inbox",
+      //   severity: "success",
+      // });
+      showToast("Password reset email sent!. Please check your inbox", "success");
       setTimeout(() => {
         router.push("/auth/login");
       }, 2000);
@@ -64,11 +70,14 @@ export default function ForgetPassword({ disableCustomTheme }: { disableCustomTh
         default:
           errorMessage = error.message;
       }
-      setSnackbar({
-        open: true,
-        message: errorMessage,
-        severity: "error",
-      });
+      // setSnackbar({
+      //   open: true,
+      //   message: errorMessage,
+      //   severity: "error",
+      // });
+      showToast(errorMessage, "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -103,14 +112,16 @@ export default function ForgetPassword({ disableCustomTheme }: { disableCustomTh
             fullWidth
           />
 
-          <Button
-            type="submit"
+          <LoadingButton
             variant="contained"
+            color="primary"
             fullWidth
+            type="submit"
+            loading={loading}
             sx={{ mt: 2 }}
           >
             Send Reset Link
-          </Button>
+          </LoadingButton>
 
           <Button
             onClick={() => router.push("/auth/login")}
@@ -122,7 +133,7 @@ export default function ForgetPassword({ disableCustomTheme }: { disableCustomTh
         </Box>
       </SignInContainer>
 
-      <Snackbar
+      {/* <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
@@ -135,7 +146,7 @@ export default function ForgetPassword({ disableCustomTheme }: { disableCustomTh
         >
           {snackbar.message}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </AppTheme>
   );
 }

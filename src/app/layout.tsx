@@ -5,6 +5,8 @@ import "./globals.css";
 import AppTheme from "@/components/theme/AppTheme";
 import { UserContextProvider } from "@/context/userContext";
 import QueryProvider from "@/components/query-provider";
+import NextTopLoader from 'nextjs-toploader';
+import { ToastProvider } from "@/context/toastContext";
 const inter = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -25,12 +27,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
+      <NextTopLoader showSpinner={false} />
+      <ToastProvider>
         <UserContextProvider>
         <QueryProvider>
           <AppTheme>{children}</AppTheme>
         </QueryProvider>
         </UserContextProvider>
-
+      </ToastProvider>
       </body>
     </html>
   );
