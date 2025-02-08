@@ -11,8 +11,8 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Link from "next/link";
 import { RestaurantDetailsType } from "@/types";
 import PersonIcon from "@mui/icons-material/Person"
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+// import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+// import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import { blue, green, purple, amber } from '@mui/material/colors';
 
@@ -131,12 +131,12 @@ export default function RestaurantDetails({ restaurantId, details }: { restauran
                   />
                 </div>
 
-                <div className="space-y-2 mb-4">
+                {/* <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-gray-300 bg-gray-800/50 p-2 rounded">
                     <CalendarTodayIcon sx={{ fontSize: 16, color: amber[300] }} />
                     <Typography variant="caption" sx={{ color: 'inherit' }}>
                       {new Date(menu.startDate).toLocaleDateString()} - {new Date(menu.endDate).toLocaleDateString()}
-                    </Typography>
+                   </Typography>
                   </div>
                   <div className="flex items-center gap-2 text-gray-300 bg-gray-800/50 p-2 rounded">
                     <AccessTimeIcon sx={{ fontSize: 16, color: amber[300] }} />
@@ -144,7 +144,7 @@ export default function RestaurantDetails({ restaurantId, details }: { restauran
                       {new Date(menu.startDate).toLocaleTimeString()} - {new Date(menu.endDate).toLocaleTimeString()}
                     </Typography>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="flex justify-end gap-2">
                   <Button

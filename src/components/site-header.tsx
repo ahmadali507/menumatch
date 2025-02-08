@@ -1,3 +1,5 @@
+'use client'
+import { useUser } from "@/context/userContext";
 import NavbarBreadcrumbs from "./breadcrumbs";
 import UserDropdown from "./user-dropdown";
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -5,10 +7,11 @@ import { IconButton } from "@mui/material";
 
 export function SiteHeader() {
 
+  const {user} = useUser(); 
+
+
   const userData = {
-    name: "John Doe",
-    email: "john@gmail.com",
-    role: "Super Admin",
+  
     avatar: "https://randomuser.me/api/portraits"
   }
 
@@ -20,7 +23,8 @@ export function SiteHeader() {
         <IconButton color="inherit" size="medium">
           <NotificationsIcon />
         </IconButton>
-        <UserDropdown {...userData} />
+        {user  ? <UserDropdown name = {user?.name as string} email = {user?.email as string} role = {user?.role as string} avatar = {userData.avatar}
+         /> : <div className='bg-gray-600 rounded-full h-10 w-10 cursor-pointer flex justify-center items-center'/> }
       </div>
     </header>
   )

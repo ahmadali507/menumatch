@@ -43,7 +43,11 @@ export default function UserDropdown({ name, email, role }: UserDropdownProps) {
   };
   return (
     <React.Fragment>
-      <div className='bg-blue-600 rounded-full h-10 w-10 cursor-pointer' onClick={handleClick} />
+      <div className='bg-blue-600 rounded-full h-10 w-10 cursor-pointer flex justify-center items-center' onClick={handleClick} >
+        <span>
+          {name[0].toUpperCase()}
+        </span>
+      </div>
       <Menu
         anchorEl={anchorEl}
         id="menu"

@@ -1,3 +1,4 @@
+// import { string } from "zod";
 
 export type RestaurantDetailsType = {
   id: number;
@@ -10,6 +11,34 @@ export type RestaurantDetailsType = {
   menus:Menu[]
 };
 
+
+export type RestaurantType = {
+  name: string, 
+  restaurantId ?: string, 
+  location : {
+    city : string, 
+    state : string, 
+    address : string, 
+    country : string, 
+  }, 
+  contact : {
+    phone : string | number, 
+    email : string, 
+  }, 
+  status?: string, 
+  cuisine ?: string, 
+  orders ?: number, 
+  admins ?: { name: string; role: string }[],
+  menus?:Menu[],
+}
+
+export type resAdminType = {
+  restaurantId : string, 
+  name : string, 
+  email : string, 
+  role : string, 
+  password ?: string, 
+}
 interface MenuItem {
   name: string;
   description: string;

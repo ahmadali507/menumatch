@@ -10,21 +10,26 @@ import {
   FormLabel,
   InputAdornment,
   IconButton,
+  CircularProgress,
+  Alert
 } from "@mui/material";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import SectionLayout from '@/components/layouts/section-layout';
+import { useMutation } from "@tanstack/react-query";
+import { addRestaurantAdmin } from "@/actions/actions.admin";
+import { useParams, useRouter } from 'next/navigation';
 
 const adminSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Please enter a valid email"),
   password: z.string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number")
-    .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
-  confirmPassword: z.string()
+    .min(5, "Password must be at least 8 characters")
+    // .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    // .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    // .regex(/[0-9]/, "Password must contain at least one number")
+    // .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
+  ,confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -33,6 +38,8 @@ const adminSchema = z.object({
 type AdminFormData = z.infer<typeof adminSchema>;
 
 export default function CreateAdminPage() {
+  const router = useRouter();
+  const params = useParams()
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -44,14 +51,39 @@ export default function CreateAdminPage() {
     resolver: zodResolver(adminSchema)
   });
 
+  const { mutate: createAdmin, isPending, isError, error } = useMutation({
+    mutationFn: (data: AdminFormData) => addRestaurantAdmin({
+      ...data,
+      role: 'admin',
+      restaurantId: params.restaurantId as string
+    }),
+    onSuccess: (response) => {
+      if (response.success) {
+        router.push(`/restaurants/${params.restaurantId}`);
+      }
+    },
+    onError: (error) => {
+      console.error('Failed to create admin:', error);
+    }
+  });
+
   const onSubmit = async (data: AdminFormData) => {
-    console.log(data);
-    // Handle form submission
-    alert("admin created, now go to restaurant id page");
+    createAdmin(data);
   };
 
   return (
     <SectionLayout title='Create Admin' description='Creates a Restaurant Admin account for a specific restaurant.'>
+      {isPending && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <CircularProgress />
+        </div>
+      )}
+
+      {isError && (
+        <Alert severity="error" className="mb-4">
+          {error instanceof Error ? error.message : 'Failed to create admin'}
+        </Alert>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <FormControl fullWidth error={!!errors.name}>
@@ -131,8 +163,9 @@ export default function CreateAdminPage() {
           color="primary"
           size="large"
           fullWidth
+          disabled={isPending}
         >
-          Create Admin Account
+          {isPending ? 'Creating Admin...' : 'Create Admin Account'}
         </Button>
       </form>
     </SectionLayout>

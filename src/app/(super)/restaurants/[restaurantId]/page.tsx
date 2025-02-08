@@ -1,6 +1,9 @@
+import { fetchRestaurantAdmins } from "@/actions/actions.admin";
 import SectionLayout from "@/components/layouts/section-layout";
 import RestaurantDetails from "@/components/restaurant-details";
+import { initAdmin } from "@/firebase/adminFirebase";
 import { RestaurantDetailsType } from "@/types";
+import { getFirestore } from "firebase-admin/firestore";
 
 const dummyData: RestaurantDetailsType = {
   id: 1,
@@ -146,6 +149,39 @@ const dummyData: RestaurantDetailsType = {
 export default async function RestaurantDetailsPage({ params }: { params: Promise<{ restaurantId: string }> }) {
 
   const { restaurantId } = await params;
+  
+  /// since this is a server side fucntion usign admin sdk to retrieve the data from the firestore on teh server side. ... 
+  await initAdmin();
+  const firestore = getFirestore(); 
+
+  const restaurantRef = firestore.collection('restaurants').doc(restaurantId);
+  const restaurantSnap = await restaurantRef.get();
+  if (!restaurantSnap.exists) {
+    throw new Error('Restaurant not found');
+  }
+
+  const restaurantData = restaurantSnap.data();
+  console.log("Restaurant data:", restaurantData);
+
+
+  const adminResponse = await fetchRestaurantAdmins(restaurantId);
+
+  if (adminResponse.success && adminResponse.admins) {
+    dummyData.admins = adminResponse.admins.map((admin) => ({
+      name: admin.name || 'Anonymous',
+      role: admin.role || "admin "
+    }));
+  } else {
+    console.error('Failed to fetch admins:', adminResponse.error);
+    dummyData.admins = [];
+  }
+
+
+  dummyData.name = restaurantData?.name;
+  dummyData.id = restaurantData?.restaurantId;
+  dummyData.location = restaurantData?.location?.city;
+
+
 
   return (
     <SectionLayout
