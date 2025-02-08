@@ -11,6 +11,7 @@ import ListItemIcon, { listItemIconClasses } from '@mui/material/ListItemIcon';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import { logoutUser } from '@/actions/actions.auth';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/context/toastContext';
 
 
 const MenuItem = styled(MuiMenuItem)(({ theme }) => ({
@@ -37,6 +38,7 @@ type UserDropdownProps = {
 export default function UserDropdown({ name, email, role }: UserDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const router = useRouter(); 
+  const {showToast} = useToast()
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -50,7 +52,10 @@ export default function UserDropdown({ name, email, role }: UserDropdownProps) {
     console.log("logout user");
     // logoutUser();
     await logoutUser();
-    router.push('/auth/login'); 
+    showToast("Logged out successfully", "success");
+    setTimeout(()=> {
+      router.push('/auth/login');
+    },1000) 
   }
 
 

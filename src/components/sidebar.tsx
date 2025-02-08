@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-
+import { usePathname, useRouter } from "next/navigation";
+import { useToast } from "@/context/toastContext";
+import { logoutUser } from "@/actions/actions.auth";
 
 import { cn } from "@/lib/utils";
 import { bottomNavItems, navItems, SidebarNavItemProps } from "@/lib/dashboard";
@@ -17,12 +18,39 @@ function NavList({
   pathname: string;
   showGradient?: boolean;
 }) {
+  const router = useRouter();
+  const { showToast } = useToast();
+
+  const handleLogout = async () => {
+    await logoutUser();
+    showToast("Logged out successfully", "success");
+    setTimeout(() => {
+      router.push('/auth/login');
+    }, 1000);
+  };
+
   return (
     <nav className="grid gap-y-2 items-start px-4 text-sm font-medium backdrop-blur-lg">
       {items.map((item) => {
         const active = item.href === "/"
           ? pathname === item.href
           : pathname.split("/").includes(item.href.slice(1));
+
+        if (item.title === "Logout") {
+          return (
+            <button
+              key={item.title}
+              onClick={handleLogout}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-white transition-all hover:bg-gray-700 hover:text-white w-full"
+              )}
+            >
+              <item.icon className="h-4 w-4" />
+              <span>{item.title}</span>
+            </button>
+          );
+        }
+
         return (
           <Link
             key={item.href}

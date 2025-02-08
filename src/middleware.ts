@@ -20,7 +20,10 @@ export default async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/auth/login", request.url))
     }
 
+    console.log("Role:", role);
+
     // super admin route
+    console.log("Request URL:", request.nextUrl.pathname);
     if (request.nextUrl.pathname.startsWith("/")) {
       if (role === "super_admin") {
         return NextResponse.next()
