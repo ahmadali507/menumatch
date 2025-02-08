@@ -7,6 +7,7 @@ interface User {
     email: string | null;
     name: string | null;
     role: string;
+    avatar ?: string; 
   }
   
   interface UserContextType {

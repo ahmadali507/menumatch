@@ -1,9 +1,10 @@
 'use server'
 import { cookies } from 'next/headers';
-// import { getDoc, DocumentReference, doc } from 'firebase/firestore';
-// import { db } from '@/firebase/firebaseconfig';
 import { initAdmin } from '@/firebase/adminFirebase';
 import { getFirestore } from 'firebase-admin/firestore';
+import { decryptData, encryptData } from '@/lib/encrypt';
+
+
 
 interface UserData {
   uid: string;
@@ -15,9 +16,6 @@ interface UserData {
 
 export async function setUserCookie(uid : string | null) {
   try {
-
-    // const userRef = doc(db, "users", uid) as DocumentReference<UserData>;
-    // const userSnap = await getDoc(userRef);
     await initAdmin(); 
     const firestore = getFirestore(); 
 
@@ -31,10 +29,16 @@ export async function setUserCookie(uid : string | null) {
 
     const userData = userSnap.data() as UserData;
     console.log("this is the actual user data after snapshot", userData);
-      (await cookies()).set("auth", JSON.stringify({
-        ...userData, 
-        uid : uid,
-      }), {
+    const dataToEncrypt = {
+      ...userData,
+      uid: uid,
+    };
+
+    // Encrypt user data
+    const encryptedData = encryptData(dataToEncrypt);
+
+    // Set encrypted cookie
+    (await cookies()).set("auth", encryptedData, {
       httpOnly: true,
       maxAge: 60 * 60 * 24 * 7, // 7 days
       expires: new Date(Date.now() + 60 * 60 * 24 * 7 * 1000), // 7 days
@@ -58,7 +62,8 @@ export async function getUserRole() {
         return null;
       }
   
-      const user = JSON.parse(authCookie.value) as UserData;
+      console.log("decrpted data", decryptData(authCookie.value));
+      const user = decryptData(authCookie.value) as UserData;
       console.log("This is the user data read from cookies", user);
       if (!user?.role) {
         return null;

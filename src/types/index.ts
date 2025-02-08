@@ -12,8 +12,8 @@ export type RestaurantDetailsType = {
 };
 
 
-export type createRestaurantType = {
-  restaurantName?: string, 
+export type RestaurantType = {
+  name: string, 
   restaurantId ?: string, 
   location : {
     city : string, 
@@ -24,10 +24,15 @@ export type createRestaurantType = {
   contact : {
     phone : string | number, 
     email : string, 
-  }
+  }, 
+  status?: string, 
+  cuisine ?: string, 
+  orders ?: number, 
+  admins ?: { name: string; role: string }[],
+  menus?:Menu[],
 }
 
-export type resAdmin = {
+export type resAdminType = {
   restaurantId : string, 
   name : string, 
   email : string, 

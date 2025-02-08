@@ -8,6 +8,7 @@ import Link from "next/link";
 import AddRestaurant from "@/components/add-restaurant";
 // import { useEffect } from "react";
 // import { getUserRole } from "@/actions/actions.cookies";
+// import {QueryClient, QueryClientProvider} from 'react-query'
 import { useUser } from "@/context/userContext";
 
 const StatCard = ({
@@ -44,6 +45,7 @@ const StatCard = ({
 );
 
 export default function MainPage() {
+  
   const { user } = useUser();
   console.log(
     "User set from context containing role and values from cookies",
