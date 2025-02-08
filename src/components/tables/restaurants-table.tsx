@@ -148,7 +148,7 @@ export default function RestaurantsTable({restaurants}:{restaurants:RestaurantTy
       </div>
 
       <div className="flex flex-col">
-        <div className="h-[600px] overflow-auto">
+        <div className="h-[70vh] overflow-auto">
           <TableContainer component={Paper} sx={{ backgroundColor: 'transparent' }}>
             <Table >
               <TableHead>
