@@ -3,21 +3,12 @@ import { cookies } from 'next/headers';
 import { initAdmin } from '@/firebase/adminFirebase';
 import { getFirestore } from 'firebase-admin/firestore';
 import { decryptData, encryptData } from '@/lib/encrypt';
+import { UserData } from '@/types';
 
-
-
-interface UserData {
-  uid: string;
-  role : string, 
-  email : string, 
-  restaurantId ?: string | null, 
-  name ?: string, 
-}
-
-export async function setUserCookie(uid : string | null) {
+export async function setUserCookie(uid: string | null) {
   try {
-    await initAdmin(); 
-    const firestore = getFirestore(); 
+    await initAdmin();
+    const firestore = getFirestore();
 
     console.log("user data for setting cookie", uid);
     const userSnap = await firestore.collection('users').doc(uid as string).get();
@@ -53,25 +44,25 @@ export async function setUserCookie(uid : string | null) {
 
 
 export async function getUserRole() {
-    
-    try {
-      const cookieStore = await cookies();
-      const authCookie = cookieStore.get('auth');
-      
-      if (!authCookie?.value) {
-        return null;
-      }
-  
-      console.log("decrpted data", decryptData(authCookie.value));
-      const user = decryptData(authCookie.value) as UserData;
-      console.log("This is the user data read from cookies", user);
-      if (!user?.role) {
-        return null;
-      }
-  
-      return user;
-    } catch (error) {
-      console.error('Error getting user role:', error);
+
+  try {
+    const cookieStore = await cookies();
+    const authCookie = cookieStore.get('auth');
+
+    if (!authCookie?.value) {
       return null;
     }
+
+    console.log("decrpted data", decryptData(authCookie.value));
+    const user = decryptData(authCookie.value) as UserData;
+    console.log("This is the user data read from cookies", user);
+    if (!user?.role) {
+      return null;
+    }
+
+    return user;
+  } catch (error) {
+    console.error('Error getting user role:', error);
+    return null;
   }
+}
