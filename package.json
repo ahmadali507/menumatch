@@ -23,6 +23,7 @@
     "firebase": "^11.2.0",
     "firebase-admin": "^13.1.0",
     "next": "15.1.6",
+    "nextjs-toploader": "^3.7.15",
     "process": "^0.11.10",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

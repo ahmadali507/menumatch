@@ -26,7 +26,7 @@ export default async function RestaurantsPage() {
   // Provide fallback empty array if restaurants is undefined
   const restaurants = response.success ? response.restaurants?.map((elm) => {
     return {
-      restaurantId: elm.id,
+      id: elm.id,
       name: elm.name,
       location: elm.location,
       status: "active",

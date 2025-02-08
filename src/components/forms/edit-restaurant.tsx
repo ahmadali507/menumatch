@@ -17,7 +17,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { editRestaurant } from "@/actions/actions.admin";
 import { editRestaurantSchema, TEditRestaurant } from "@/lib/schema";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
+import LoadingButton from "../ui/loading-button";
 // import Link from "next/link";
 
 interface EditRestaurantProps {
@@ -34,7 +35,7 @@ export default function EditRestaurant({
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { errors },
     reset,
   } = useForm<TEditRestaurant>({
     resolver: zodResolver(editRestaurantSchema),
@@ -58,12 +59,10 @@ export default function EditRestaurant({
     },
   });
 
-
   const handleOpen = () => {
-    console.log('Opening dialog...');
+    console.log("Opening dialog...");
     setOpen(true);
   };
-
 
   const onSubmit = (data: TEditRestaurant) => {
     // updateRestaurant(data);
@@ -89,35 +88,40 @@ export default function EditRestaurant({
         fullWidth
         PaperProps={{
           sx: {
-            backgroundColor: 'rgba(17, 25, 40, 0.9)',
-            backdropFilter: 'blur(16px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            color: 'white',
-            '& .MuiFormLabel-root': {
-              color: 'rgba(255, 255, 255, 0.7)'
+            backgroundColor: "rgba(17, 25, 40, 0.9)",
+            backdropFilter: "blur(16px)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            color: "white",
+            "& .MuiFormLabel-root": {
+              color: "rgba(255, 255, 255, 0.7)",
             },
-            '& .MuiInputBase-root': {
-              color: 'white',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)'
-              }
+            "& .MuiInputBase-root": {
+              color: "white",
+              backgroundColor: "rgba(255, 255, 255, 0.05)",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+              },
             },
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'rgba(255, 255, 255, 0.2)'
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "rgba(255, 255, 255, 0.2)",
             },
-            '& .MuiMenuItem-root': {
-              color: 'white'
-            }
-          }
+            "& .MuiMenuItem-root": {
+              color: "white",
+            },
+          },
         }}
       >
-        <DialogTitle sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <DialogTitle
+          sx={{ borderBottom: "1px solid rgba(255, 255, 255, 0.1)" }}
+        >
           Edit Restaurant
         </DialogTitle>
-        <form onSubmit={handleSubmit(onSubmit, (error) => {
-          console.log(error)
-        })} className="space-y-4 mt-2">
+        <form
+          onSubmit={handleSubmit(onSubmit, (error) => {
+            console.log(error);
+          })}
+          className="space-y-4 mt-2"
+        >
           <DialogContent sx={{ mt: 2 }}>
             <Grid container spacing={2}>
               {/* Full width name field */}
@@ -231,15 +235,17 @@ export default function EditRestaurant({
               >
                 Cancel
               </Button>
-              <Button
+              <LoadingButton
                 type="submit"
-                variant="contained"
+                // fullWidth
                 size="small"
-                disabled={isPending || !isDirty}
-                sx={{ ":disabled": { color: "gray" } }}
+                variant="contained"
+                isLoading={isPending}
+                loadingText="Signing In"
+                // sx={{}}
               >
-                {isPending ? 'Saving...' : 'Save Changes'}
-              </Button>
+                Save Changes
+              </LoadingButton>
             </div>
           </DialogContent>
         </form>

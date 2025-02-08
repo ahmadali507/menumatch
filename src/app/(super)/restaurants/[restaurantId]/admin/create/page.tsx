@@ -5,12 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
   TextField,
-  Button,
   FormControl,
   FormLabel,
   InputAdornment,
   IconButton,
-  CircularProgress,
   Alert
 } from "@mui/material";
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -19,6 +17,8 @@ import SectionLayout from '@/components/layouts/section-layout';
 import { useMutation } from "@tanstack/react-query";
 import { addRestaurantAdmin } from "@/actions/actions.admin";
 import { useParams, useRouter } from 'next/navigation';
+import LoadingButton from '@/components/ui/loading-button';
+import { useToast } from '@/context/toastContext';
 
 const adminSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -38,6 +38,7 @@ const adminSchema = z.object({
 type AdminFormData = z.infer<typeof adminSchema>;
 
 export default function CreateAdminPage() {
+  const {showToast} = useToast(); 
   const router = useRouter();
   const params = useParams()
   const [showPassword, setShowPassword] = useState(false);
@@ -59,10 +60,14 @@ export default function CreateAdminPage() {
     }),
     onSuccess: (response) => {
       if (response.success) {
-        router.push(`/restaurants/${params.restaurantId}`);
+        showToast("Admin created successfully", 'success')
+        setTimeout(()=>{
+          router.push(`/restaurants/${params.restaurantId}`);
+        }, 1000); 
       }
     },
     onError: (error) => {
+      showToast("Error creating admin", 'error')
       console.error('Failed to create admin:', error);
     }
   });
@@ -73,11 +78,7 @@ export default function CreateAdminPage() {
 
   return (
     <SectionLayout title='Create Admin' description='Creates a Restaurant Admin account for a specific restaurant.'>
-      {isPending && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-          <CircularProgress />
-        </div>
-      )}
+    
 
       {isError && (
         <Alert severity="error" className="mb-4">
@@ -157,16 +158,16 @@ export default function CreateAdminPage() {
           />
         </FormControl>
 
-        <Button
+        <LoadingButton
           type="submit"
           variant="contained"
           color="primary"
           size="large"
           fullWidth
-          disabled={isPending}
+          isLoading={isPending}
         >
           {isPending ? 'Creating Admin...' : 'Create Admin Account'}
-        </Button>
+        </LoadingButton>
       </form>
     </SectionLayout>
   );

@@ -8,15 +8,17 @@ import { useRouter } from "next/navigation";
 import {
   Typography,
   TextField,
-  Button,
   FormControl,
   FormLabel,
   FormHelperText,
   Paper,
+  // CircularProgress,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { createRestaurant } from "@/actions/actions.admin";
 import { useMutation } from "@tanstack/react-query";
+import LoadingButton from "@/components/ui/loading-button";
+import { useToast } from "@/context/toastContext";
 // import { doc, getDoc } from "firebase/firestore";
 // import { db } from "@/firebase/firebaseconfig";
 // import { dataDisplayCustomizations } from "../theme/customizations/dataDisplay";
@@ -41,6 +43,7 @@ export default function AddRestaurantForm() {
   const [logo, setLogo] = useState<File | null>(null);
   const [background, setBackground] = useState<File | null>(null);
 
+  const {showToast} = useToast(); 
   /// creating a mutation using reactQuery.....
 
   const mutation = useMutation({
@@ -50,14 +53,17 @@ export default function AddRestaurantForm() {
     onSuccess: (response) => {
       console.log("Response from createRestaurant", response);
       if (response.success) {
-        router.push(`/restaurants/${response.restaurantId}`);
+        showToast("Restaurant created successfully", "success")
+        setTimeout(()=>{
+          router.push(`/restaurants/${response.restaurantId}`);
+        }, 1000)
       }
     },
     onError: (error) => {
-      //TODO: inroduce toasts to handle errors in an efficient way.... 
-
+      //TODO: inroduce toasts to handle errors in an efficient way....
+      showToast("Error creating restaurant", "error")
       console.log("Error creating restaurant:", error);
-    }
+    },
   });
 
   const {
@@ -71,9 +77,9 @@ export default function AddRestaurantForm() {
   const onSubmit = async (data: RestaurantFormData) => {
     // Handle form submission
     mutation.mutate(data);
-    
+
     console.log(data, logo, background);
-    router.push("/restaurants/123"); // Replace 123 with actual ID
+    //  Replace 123 with actual ID
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -214,15 +220,18 @@ export default function AddRestaurantForm() {
         </div>
       </div>
 
-      <Button
+      <LoadingButton
         type="submit"
         variant="contained"
-        size="large"
-        className="mt-8"
         fullWidth
+        isLoading={mutation.isPending}
+        loadingText="Creating Restaurant"
+        sx={{ mt: 3 }}
       >
         Create Restaurant
-      </Button>
+      </LoadingButton>
+
+
     </form>
   );
 }
