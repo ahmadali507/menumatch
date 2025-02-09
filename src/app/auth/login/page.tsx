@@ -29,6 +29,7 @@ import { setUserCookie } from "@/actions/actions.cookies";
 import LoadingButton from '@/components/ui/loading-button';  // Add this import
 // import { CustomSnackbar } from "@/components/ui/custom-toaster";
 import { useToast } from "@/context/toastContext";
+import ColorModeSelect from "@/components/theme/ColorModeSelect";
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -241,7 +242,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
-        {/* <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} /> */}
+        <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
         <Card variant="outlined">
           <Typography
             component="h1"

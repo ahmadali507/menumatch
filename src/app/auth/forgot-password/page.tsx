@@ -6,17 +6,12 @@ import * as z from "zod";
 import { auth } from "@/firebase/firebaseconfig";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import {
-  Box,
-  Button,
-  CssBaseline,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, CssBaseline, TextField, Typography } from "@mui/material";
 import AppTheme from "@/components/theme/AppTheme";
 import { SignInContainer } from "../login/page";
 import LoadingButton from "@/components/ui/loading-button";
 import { useToast } from "@/context/toastContext";
+import ColorModeSelect from "@/components/theme/ColorModeSelect";
 
 const forgetPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -24,7 +19,11 @@ const forgetPasswordSchema = z.object({
 
 type ForgetPasswordFormData = z.infer<typeof forgetPasswordSchema>;
 
-export default function ForgetPassword({ disableCustomTheme }: { disableCustomTheme?: boolean }) {
+export default function ForgetPassword({
+  disableCustomTheme,
+}: {
+  disableCustomTheme?: boolean;
+}) {
   const {
     register,
     handleSubmit,
@@ -41,7 +40,7 @@ export default function ForgetPassword({ disableCustomTheme }: { disableCustomTh
   // });
   // const [email, setEmail] = React.useState("");
 
-  const {showToast} = useToast(); 
+  const { showToast } = useToast();
   const [loading, setLoading] = React.useState(false);
 
   const onSubmit = async (data: ForgetPasswordFormData) => {
@@ -53,7 +52,10 @@ export default function ForgetPassword({ disableCustomTheme }: { disableCustomTh
       //   message: "Password reset email sent! Please check your inbox",
       //   severity: "success",
       // });
-      showToast("Password reset email sent!. Please check your inbox", "success");
+      showToast(
+        "Password reset email sent!. Please check your inbox",
+        "success"
+      );
       setTimeout(() => {
         router.push("/auth/login");
       }, 2000);
@@ -85,6 +87,10 @@ export default function ForgetPassword({ disableCustomTheme }: { disableCustomTh
     <AppTheme disableCustomTheme={disableCustomTheme}>
       <CssBaseline enableColorScheme />
       <SignInContainer>
+        <ColorModeSelect
+          sx={{ position: "fixed", top: "1rem", right: "1rem" }}
+        />
+
         <Box
           component="form"
           onSubmit={handleSubmit(onSubmit)}
@@ -101,7 +107,8 @@ export default function ForgetPassword({ disableCustomTheme }: { disableCustomTh
             Reset Password
           </Typography>
           <Typography variant="body1" color="text.secondary" gutterBottom>
-            Enter your email address and we&apos;ll send you a link to reset your password.
+            Enter your email address and we&apos;ll send you a link to reset
+            your password.
           </Typography>
 
           <TextField

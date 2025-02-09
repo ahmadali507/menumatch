@@ -4,6 +4,8 @@ import NavbarBreadcrumbs from "./breadcrumbs";
 import UserDropdown from "./user-dropdown";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { IconButton } from "@mui/material";
+// import ThemeToggle from "@/components/theme/ThemeToggle";
+import ColorModeSelect from "./theme/ColorModeSelect";
 
 export function SiteHeader() {
 
@@ -20,6 +22,8 @@ export function SiteHeader() {
       <NavbarBreadcrumbs />
       <div className="flex items-center gap-2">
         {/* <UserDropdown /> */}
+        <ColorModeSelect/>
+        {/* <ThemeToggle/> */}
         <IconButton color="inherit" size="medium">
           <NotificationsIcon />
         </IconButton>
