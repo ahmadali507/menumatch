@@ -24,12 +24,12 @@ const adminSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Please enter a valid email"),
   password: z.string()
-    .min(5, "Password must be at least 8 characters")
-    // .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    // .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    // .regex(/[0-9]/, "Password must contain at least one number")
-    // .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
-  ,confirmPassword: z.string()
+    .min(6, "Password must be at least 6 characters")
+  // .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  // .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+  // .regex(/[0-9]/, "Password must contain at least one number")
+  // .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
+  , confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -38,7 +38,7 @@ const adminSchema = z.object({
 type AdminFormData = z.infer<typeof adminSchema>;
 
 export default function CreateAdminPage() {
-  const {showToast} = useToast(); 
+  const { showToast } = useToast();
   const router = useRouter();
   const params = useParams()
   const [showPassword, setShowPassword] = useState(false);
@@ -61,9 +61,11 @@ export default function CreateAdminPage() {
     onSuccess: (response) => {
       if (response.success) {
         showToast("Admin created successfully", 'success')
-        setTimeout(()=>{
+        setTimeout(() => {
           router.push(`/restaurants/${params.restaurantId}`);
-        }, 1000); 
+        }, 1000);
+      } else {
+        showToast(response.error || 'Failed to create admin', 'error')
       }
     },
     onError: (error) => {
@@ -78,7 +80,7 @@ export default function CreateAdminPage() {
 
   return (
     <SectionLayout title='Create Admin' description='Creates a Restaurant Admin account for a specific restaurant.'>
-    
+
 
       {isError && (
         <Alert severity="error" className="mb-4">

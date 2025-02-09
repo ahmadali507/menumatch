@@ -60,34 +60,36 @@ export const fetchAllRestaurants = async () => {
 };
 
 export const editRestaurant = async (restaurantId: string, data: TEditRestaurant) => {
-    console.log('editing restaurant')
-    await initAdmin(); 
-    const firestore = getFirestore();
-    try {
-        await firestore.collection("restaurants").doc(restaurantId).update(data);
-        console.log("Restaurant edited successfully");
-        
-        revalidatePath(`/restaurants/${restaurantId}`);
+  console.log('editing restaurant')
+  await initAdmin();
+  const firestore = getFirestore();
+  try {
+    await firestore.collection("restaurants").doc(restaurantId).update(data);
+    console.log("Restaurant edited successfully");
 
-        return { success: true, message: "Restaurant edited successfully" };
-    } catch (error) {
-        console.error("Error editing restaurant:", error);
-        return { error: "Failed to edit restaurant" };
-    }
+    revalidatePath(`/restaurants/${restaurantId}`);
+
+    return { success: true, message: "Restaurant edited successfully" };
+  } catch (error) {
+    console.error("Error editing restaurant:", error);
+    return { error: "Failed to edit restaurant" };
+  }
 
 }
 
 
 export const deleteRestaurant = async (restaurantId: string) => {
-    await initAdmin(); 
-    const firestore = getFirestore(); 
-    try {
-        await firestore.collection("restaurants").doc(restaurantId).delete();
-        return { success: true, message: "Restaurant deleted successfully" };
-    } catch (error) {
-        console.error("Error deleting restaurant:", error);
-        return { error: "Failed to delete restaurant" };
-}
+  await initAdmin();
+  const firestore = getFirestore();
+  try {
+    await firestore.collection("restaurants").doc(restaurantId).delete();
+
+    revalidatePath("/restaurants");
+    return { success: true, message: "Restaurant deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting restaurant:", error);
+    return { error: "Failed to delete restaurant" };
+  }
 }
 
 

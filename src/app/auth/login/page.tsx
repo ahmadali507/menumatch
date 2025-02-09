@@ -112,7 +112,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
   //   severity: "success" as "success" | "error",
   // });
 
-  const {showToast} = useToast(); 
+  const { showToast } = useToast();
   const [, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -179,9 +179,9 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
 
       }
 
-      console.log("User Signed IN", response?.user); 
+      console.log("User Signed IN", response?.user);
 
-      await setUserCookie(response?.user?.uid); 
+      await setUserCookie(response?.user?.uid);
 
       const userDocRef = doc(db, "users", response.user.uid);
       const userDoc = await getDoc(userDocRef);
@@ -341,12 +341,6 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
             >
               Sign in with Facebook
             </Button> */}
-            <Typography sx={{ textAlign: "center" }}>
-              Don&apos;t have an account?{" "}
-              <Link href="/auth/signup" style={{ alignSelf: "center" }}>
-                Sign Up
-              </Link>
-            </Typography>
           </Box>
         </Card>
       </SignInContainer>
@@ -356,7 +350,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       > */}
-        {/* <StyledAlert
+      {/* <StyledAlert
           onClose={handleCloseSnackbar}
           severity={snackbar.severity}
           sx={{ width: "100%", minWidth: "300px" }}

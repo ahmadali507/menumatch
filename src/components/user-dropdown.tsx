@@ -37,8 +37,8 @@ type UserDropdownProps = {
 
 export default function UserDropdown({ name, email, role }: UserDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const router = useRouter(); 
-  const {showToast} = useToast()
+  const router = useRouter();
+  const { showToast } = useToast()
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -48,16 +48,26 @@ export default function UserDropdown({ name, email, role }: UserDropdownProps) {
   };
 
 
-  const handleUserLogout = async() => { 
+  const handleUserLogout = async () => {
     console.log("logout user");
     // logoutUser();
     await logoutUser();
     showToast("Logged out successfully", "success");
-    setTimeout(()=> {
+    setTimeout(() => {
       router.push('/auth/login');
-    },1000) 
+    }, 1000)
   }
 
+  const displayRole = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return 'Admin';
+      case 'super_admin':
+        return 'Super Admin';
+      default:
+        return 'User';
+    }
+  }
 
   return (
     <React.Fragment>
@@ -95,7 +105,7 @@ export default function UserDropdown({ name, email, role }: UserDropdownProps) {
           <span className='text-gray-400 text-sm'>{email}</span>
           <div className='mt-1'>
             <span className='text-xs px-2 py-0.5 rounded-full border border-gray-700 bg-blue-900 text-blue-400'>
-              {role}
+              {displayRole(role)}
             </span>
           </div>
         </div>

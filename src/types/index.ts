@@ -14,7 +14,7 @@ export type RestaurantDetailsType = {
 
 export type RestaurantType = {
   name: string,
-  id?: string,
+  id: string,
   location: {
     city: string,
     state: string,
