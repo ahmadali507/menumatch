@@ -11,6 +11,7 @@ import {
   //   CircularProgress,
   //   Alert,
   Grid,
+  IconButton,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,16 +20,17 @@ import { editRestaurant } from "@/actions/actions.admin";
 import { editRestaurantSchema, TEditRestaurant } from "@/lib/schema";
 import EditIcon from "@mui/icons-material/Edit";
 import LoadingButton from "../ui/loading-button";
-// import Link from "next/link";
 
 interface EditRestaurantProps {
   restaurantId: string;
   initialData: TEditRestaurant;
+  iconTrigger?: boolean
 }
 
 export default function EditRestaurant({
   restaurantId,
   initialData,
+  iconTrigger
 }: EditRestaurantProps) {
   const [open, setOpen] = useState(false);
 
@@ -72,14 +74,16 @@ export default function EditRestaurant({
 
   return (
     <>
-      <Button
+      {iconTrigger ? <IconButton size="small" color="primary" onClick={handleOpen}>
+        <EditIcon fontSize="small" />
+      </IconButton> : <Button
         type="button"
         variant="outlined"
         startIcon={<EditIcon />}
         onClick={handleOpen}
       >
         Edit Details
-      </Button>
+      </Button>}
 
       <Dialog
         open={open}
@@ -242,7 +246,7 @@ export default function EditRestaurant({
                 variant="contained"
                 isLoading={isPending}
                 loadingText="Signing In"
-                // sx={{}}
+              // sx={{}}
               >
                 Save Changes
               </LoadingButton>

@@ -2,39 +2,22 @@
 import { useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, TextField, IconButton,
+  TableHead, TableRow, Paper, TextField,
   Chip, TablePagination, Select, MenuItem, FormControl, InputLabel,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import Link from 'next/link';
 import SectionLayout from '@/components/layouts/section-layout';
 import AddRestaurant from '@/components/add-restaurant';
 import { RestaurantType } from '@/types';
-// import { fetchAllRestaurants } from '@/actions/actions.admin';
-
-
-// // Generate 20 restaurants
-// const dummyRestaurants = Array.from({ length: 20 }, (_, i) => ({
-//   id: i + 1,
-//   name: `Restaurant ${i + 1}`,
-//   location: ['New York', 'Los Angeles', 'Chicago', 'Miami', 'Houston'][Math.floor(Math.random() * 5)],
-//   status: Math.random() > 0.2 ? 'active' : 'inactive',
-//   cuisine: ['Italian', 'Japanese', 'Mexican', 'American', 'Indian'][Math.floor(Math.random() * 5)],
-//   orders: Math.floor(Math.random() * 500) + 50
-// }));
+import EditRestaurant from '../forms/edit-restaurant';
+import DeleteRestaurant from '../delete-restaurant';
 
 // Types
 type SortField = 'name' | 'orders' | 'city' | 'cuisine';
 type SortOrder = 'asc' | 'desc';
 
-
-
-export default function RestaurantsTable({restaurants}:{restaurants:RestaurantType[]}) {
-
-
-
+export default function RestaurantsTable({ restaurants }: { restaurants: RestaurantType[] }) {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
@@ -43,49 +26,47 @@ export default function RestaurantsTable({restaurants}:{restaurants:RestaurantTy
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  
-
-
   // console.log(allRestaurants);
 
   // Filter restaurants
   const filteredRestaurants = restaurants
     .filter(restaurant => {
-    //   const matchesSearch =
-    //     restaurant?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //     restaurant?.cuisine?.toLowerCase().includes(searchQuery.toLowerCase());
+      //   const matchesSearch =
+      //     restaurant?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      //     restaurant?.cuisine?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    //   const matchesLocation = !locationFilter ||
-    //     restaurant?.location?.city?.toLowerCase().includes(locationFilter.toLowerCase());
+      //   const matchesLocation = !locationFilter ||
+      //     restaurant?.location?.city?.toLowerCase().includes(locationFilter.toLowerCase());
 
-    //   return matchesSearch && matchesLocation;
-    // })
-    // .sort((a, b) => {
-    //   const multiplier = sortOrder === 'asc' ? 1 : -1;
-    //   if (sortField === 'orders') {
-    //     return (a?.orders as number - b?.orders as number) * multiplier;
-    //   }
-    //   return a[sortField]?.localeCompare(b[sortField]) * multiplier;
+      //   return matchesSearch && matchesLocation;
+      // })
+      // .sort((a, b) => {
+      //   const multiplier = sortOrder === 'asc' ? 1 : -1;
+      //   if (sortField === 'orders') {
+      //     return (a?.orders as number - b?.orders as number) * multiplier;
+      //   }
+      //   return a[sortField]?.localeCompare(b[sortField]) * multiplier;
 
-    const matchesSearch =
-    (restaurant?.name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
-    (restaurant?.cuisine?.toLowerCase() || '').includes(searchQuery.toLowerCase());
+      const matchesSearch =
+        (restaurant?.name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+        (restaurant?.cuisine?.toLowerCase() || '').includes(searchQuery.toLowerCase());
 
-    const matchesLocation = !locationFilter ||
-    (restaurant?.location?.city?.toLowerCase() || '').includes(locationFilter.toLowerCase());
+      const matchesLocation = !locationFilter ||
+        (restaurant?.location?.city?.toLowerCase() || '').includes(locationFilter.toLowerCase());
 
-// ...existing code...
-        return matchesSearch && matchesLocation;})
+      // ...existing code...
+      return matchesSearch && matchesLocation;
+    })
     .sort((a, b) => {
-    const multiplier = sortOrder === 'asc' ? 1 : -1;
-  
-    if (sortField === 'orders') {
+      const multiplier = sortOrder === 'asc' ? 1 : -1;
+
+      if (sortField === 'orders') {
         return ((a?.orders || 0) - (b?.orders || 0)) * multiplier;
-    }
-  
-    return ((a[sortField as keyof typeof a]?.toString() || '')
-    .localeCompare(b[sortField as keyof typeof b]?.toString() || '')) * multiplier;
-});
+      }
+
+      return ((a[sortField as keyof typeof a]?.toString() || '')
+        .localeCompare(b[sortField as keyof typeof b]?.toString() || '')) * multiplier;
+    });
 
 
   const handleChangePage = (_: unknown, newPage: number) => {
@@ -189,12 +170,8 @@ export default function RestaurantsTable({restaurants}:{restaurants:RestaurantTy
                       </TableCell>
                       <TableCell align="center">{restaurant.orders}</TableCell>
                       <TableCell align="right" sx={{ display: "flex", gap: "10px" }}>
-                        <IconButton size="small" color="primary">
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton size="small" color="error">
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
+                        <EditRestaurant initialData={restaurant} restaurantId={restaurant.id as string} iconTrigger />
+                        <DeleteRestaurant restaurantId={restaurant.id} restaurantName={restaurant.name} />
                       </TableCell>
                     </TableRow>
                   ))}
