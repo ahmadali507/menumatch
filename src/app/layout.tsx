@@ -7,6 +7,7 @@ import { UserContextProvider } from "@/context/userContext";
 import QueryProvider from "@/components/query-provider";
 import NextTopLoader from 'nextjs-toploader';
 import { ToastProvider } from "@/context/toastContext";
+import { CssBaseline } from "@mui/material";
 const inter = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -33,9 +34,8 @@ export default function RootLayout({
         <ToastProvider>
           <UserContextProvider>
             <QueryProvider>
-              <AppTheme>
-                {children}
-              </AppTheme>
+              <CssBaseline />
+              <AppTheme>{children}</AppTheme>
             </QueryProvider>
           </UserContextProvider>
         </ToastProvider>

@@ -6,6 +6,8 @@ import UserDropdown from "./user-dropdown";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MenuIcon from '@mui/icons-material/Menu';
 import { IconButton, Drawer } from "@mui/material";
+// import ThemeToggle from "@/components/theme/ThemeToggle";
+import ColorModeSelect from "./theme/ColorModeSelect";
 import { SidebarNav } from "./sidebar";
 
 export function SiteHeader() {
@@ -40,6 +42,8 @@ export function SiteHeader() {
 
         </div>
         <div className="flex items-center gap-2">
+          <ColorModeSelect />
+          {/* <ThemeToggle/> */}
           <IconButton color="inherit" size="medium">
             <NotificationsIcon />
           </IconButton>
