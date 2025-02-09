@@ -1,4 +1,3 @@
-import SignInForm from "@/components/forms/sign-in-form";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -6,6 +5,5 @@ export const metadata: Metadata = {
   description: "Log in to your account",
 }
 
-export default function LoginPage() {
-  return <SignInForm />
-}
+export { default } from "@/components/forms/sign-in-form"
+
