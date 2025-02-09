@@ -1,17 +1,3 @@
-// import { string } from "zod";
-
-export type RestaurantDetailsType = {
-  id: number;
-  name: string;
-  location: string;
-  status: 'active' | 'inactive';
-  cuisine: string;
-  orders: number;
-  admins: { name: string; role: string }[];
-  menus: Menu[]
-};
-
-
 export type RestaurantType = {
   name: string,
   id: string,
@@ -27,9 +13,9 @@ export type RestaurantType = {
   },
   status: "active" | "inactive",
   cuisine: string,
-  orders?: number,
-  admins?: { name: string; role: string }[],
-  menus?: Menu[],
+  orders: number,
+  admins: { name: string; role: string }[],
+  menus: Menu[],
 }
 
 export type resAdminType = {
@@ -39,7 +25,8 @@ export type resAdminType = {
   role: string,
   password?: string,
 }
-interface MenuItem {
+
+export interface MenuItem {
   name: string;
   description: string;
   ingredients: string[];
@@ -50,12 +37,12 @@ interface MenuItem {
   labels: string[];
 }
 
-interface MenuSection {
+export interface MenuSection {
   name: string;
   items: MenuItem[];
 }
 
-interface Menu {
+export interface Menu {
   id: string;
   name: string;
   startDate: string;

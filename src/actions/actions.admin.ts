@@ -49,8 +49,8 @@ export const fetchAllRestaurants = async () => {
       return { success: true, restaurants: [] };
     }
     const restaurants = restaurantsSnapshot.docs.map((doc) => ({
-      id: doc.id,
       ...doc.data() as Omit<RestaurantType, "RestaurantId">,
+      id: doc.id,
     }));
     return { success: true, restaurants };
   } catch (error) {
@@ -78,7 +78,7 @@ export const editRestaurant = async (restaurantId: string, data: TEditRestaurant
 }
 
 
-export const deleteRestaurant = async (restaurantId: string) => {
+export const deleteRestaurant = async (restaurantId: string): Promise<{ success: boolean, message?: string, error?: string }> => {
   await initAdmin();
   const firestore = getFirestore();
   try {
@@ -88,7 +88,7 @@ export const deleteRestaurant = async (restaurantId: string) => {
     return { success: true, message: "Restaurant deleted successfully" };
   } catch (error) {
     console.error("Error deleting restaurant:", error);
-    return { error: "Failed to delete restaurant" };
+    return { success: false, error: "Failed to delete restaurant" };
   }
 }
 
