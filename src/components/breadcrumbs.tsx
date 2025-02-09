@@ -1,10 +1,10 @@
 "use client";
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import Breadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import { usePathname } from 'next/navigation';
+import { styled, useTheme } from '@mui/material/styles';
 import Link from 'next/link';
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
@@ -30,6 +30,7 @@ const formatSegment = (segment: string) => {
 export default function NavbarBreadcrumbs() {
   const pathname = usePathname();
   const segments = pathname.split('/').filter(Boolean);
+  const theme = useTheme();
 
   return (
     <StyledBreadcrumbs
@@ -43,7 +44,13 @@ export default function NavbarBreadcrumbs() {
       </Link>
 
       {pathname === "/" ? (
-        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+        <Typography
+          variant="body1"
+          sx={{
+            fontWeight: 600,
+            color: theme.palette.primary.main
+          }}
+        >
           Home
         </Typography>
       ) : (
@@ -52,7 +59,14 @@ export default function NavbarBreadcrumbs() {
           const isLast = index === segments.length - 1;
 
           return isLast ? (
-            <Typography key={path} variant="body1" sx={{ fontWeight: 600 }}>
+            <Typography
+              key={path}
+              variant="body1"
+              sx={{
+                fontWeight: 600,
+                color: theme.palette.primary.main
+              }}
+            >
               {formatSegment(segment)}
             </Typography>
           ) : (
