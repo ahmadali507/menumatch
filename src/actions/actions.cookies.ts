@@ -7,6 +7,7 @@ import { UserData } from '@/types';
 
 export async function setUserCookie(uid: string | null) {
   try {
+    console.log("INSIDE SETTING THE COOKIES HAHA", uid)
     await initAdmin();
     const firestore = getFirestore();
 
@@ -22,12 +23,15 @@ export async function setUserCookie(uid: string | null) {
     console.log("this is the actual user data after snapshot", userData);
     const dataToEncrypt = {
       ...userData,
-      uid: uid,
+      uid: uid as string,
     };
 
     // Encrypt user data
-    const encryptedData = encryptData(dataToEncrypt);
+    const encryptedData = await encryptData(dataToEncrypt);
 
+    console.log("encrypted data", encryptedData);
+
+    console.log("cookies", await cookies());
     // Set encrypted cookie
     (await cookies()).set("auth", encryptedData, {
       httpOnly: true,
@@ -54,8 +58,7 @@ export async function getUserRole() {
     }
 
     console.log("decrpted data", decryptData(authCookie.value));
-    const user = decryptData(authCookie.value) as UserData;
-    console.log("This is the user data read from cookies", user);
+    const user = await decryptData(authCookie.value) as UserData;
     if (!user?.role) {
       return null;
     }

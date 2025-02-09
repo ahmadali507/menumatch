@@ -11,37 +11,28 @@ import { colorSchemes, typography, shadows, shape } from './themePrimitives';
 
 interface AppThemeProps {
   children: React.ReactNode;
-  disableCustomTheme?: boolean;
   themeComponents?: ThemeOptions['components'];
 }
 
 export default function AppTheme(props: AppThemeProps) {
-  const { children, disableCustomTheme, themeComponents } = props;
-  const theme = React.useMemo(() => {
-    return disableCustomTheme
-      ? {}
-      : createTheme({
-        palette: {
-          mode: 'dark', // Set dark mode as default
-        },
-        colorSchemes,
-        typography,
-        shadows,
-        shape,
-        components: {
-          ...inputsCustomizations,
-          ...dataDisplayCustomizations,
-          ...feedbackCustomizations,
-          ...navigationCustomizations,
-          ...surfacesCustomizations,
-          ...themeComponents,
-        },
-      });
-  }, [disableCustomTheme, themeComponents]);
-
-  if (disableCustomTheme) {
-    return <React.Fragment>{children}</React.Fragment>;
-  }
+  const { children, themeComponents } = props;
+  const theme = createTheme({
+    palette: {
+      mode: 'dark', // Set dark mode as default
+    },
+    colorSchemes,
+    typography,
+    shadows,
+    shape,
+    components: {
+      ...inputsCustomizations,
+      ...dataDisplayCustomizations,
+      ...feedbackCustomizations,
+      ...navigationCustomizations,
+      ...surfacesCustomizations,
+      ...themeComponents,
+    },
+  });
 
   return (
     <ThemeProvider theme={theme}>

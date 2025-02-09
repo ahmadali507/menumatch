@@ -33,7 +33,9 @@ export default function RootLayout({
         <ToastProvider>
           <UserContextProvider>
             <QueryProvider>
-              <AppTheme>{children}</AppTheme>
+              <AppTheme>
+                {children}
+              </AppTheme>
             </QueryProvider>
           </UserContextProvider>
         </ToastProvider>

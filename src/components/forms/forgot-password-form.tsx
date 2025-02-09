@@ -13,7 +13,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import AppTheme from "@/components/theme/AppTheme";
 import { SignInContainer } from "@/components/forms/sign-in-form";
 import LoadingButton from "@/components/ui/loading-button";
 import { useToast } from "@/context/toastContext";
@@ -24,7 +23,7 @@ const forgetPasswordSchema = z.object({
 
 type ForgetPasswordFormData = z.infer<typeof forgetPasswordSchema>;
 
-export default function ForgotPasswordForm({ disableCustomTheme }: { disableCustomTheme?: boolean }) {
+export default function ForgotPasswordForm() {
   const {
     register,
     handleSubmit,
@@ -82,7 +81,7 @@ export default function ForgotPasswordForm({ disableCustomTheme }: { disableCust
   };
 
   return (
-    <AppTheme disableCustomTheme={disableCustomTheme}>
+    <>
       <CssBaseline enableColorScheme />
       <SignInContainer>
         <Box
@@ -147,6 +146,6 @@ export default function ForgotPasswordForm({ disableCustomTheme }: { disableCust
           {snackbar.message}
         </Alert>
       </Snackbar> */}
-    </AppTheme>
+    </>
   );
 }

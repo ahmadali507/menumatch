@@ -3,7 +3,7 @@ import z from "zod";
 export const editRestaurantSchema = z.object({
   name: z.string()
     .min(3, "Restaurant name must be at least 3 characters"),
-    // .max(50, "Restaurant name must not exceed 50 characters"),
+  // .max(50, "Restaurant name must not exceed 50 characters"),
   cuisine: z.string()
     .min(2, "Cuisine type is required")
     .max(30, "Cuisine type must not exceed 30 characters").default("lahori"),
@@ -27,3 +27,19 @@ export const editRestaurantSchema = z.object({
 });
 
 export type TEditRestaurant = z.infer<typeof editRestaurantSchema>;
+
+export const addRestaurantSchema = z.object({
+  name: z.string().min(1, "Restaurant name is required"),
+  location: z.object({
+    address: z.string().min(1, "Address is required"),
+    city: z.string().min(1, "City is required"),
+    state: z.string().min(1, "State is required"),
+    country: z.string().min(1, "Country is required"),
+  }),
+  contact: z.object({
+    phone: z.string().min(10, "Valid phone number required"),
+    email: z.string().email("Valid email required"),
+  }),
+});
+
+export type TAddRestaurantSchema = z.infer<typeof addRestaurantSchema>;

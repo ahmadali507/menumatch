@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { useRouter } from "next/navigation";
 import {
   Typography,
@@ -19,42 +18,29 @@ import { createRestaurant } from "@/actions/actions.admin";
 import { useMutation } from "@tanstack/react-query";
 import LoadingButton from "@/components/ui/loading-button";
 import { useToast } from "@/context/toastContext";
+import { addRestaurantSchema, TAddRestaurantSchema } from "@/lib/schema";
 // import { doc, getDoc } from "firebase/firestore";
 // import { db } from "@/firebase/firebaseconfig";
 // import { dataDisplayCustomizations } from "../theme/customizations/dataDisplay";
 
-const restaurantSchema = z.object({
-  name: z.string().min(1, "Restaurant name is required"),
-  location: z.object({
-    address: z.string().min(1, "Address is required"),
-    city: z.string().min(1, "City is required"),
-    state: z.string().min(1, "State is required"),
-    country: z.string().min(1, "Country is required"),
-  }),
-  contact: z.object({
-    phone: z.string().min(10, "Valid phone number required"),
-    email: z.string().email("Valid email required"),
-  }),
-});
 
-type RestaurantFormData = z.infer<typeof restaurantSchema>;
 export default function AddRestaurantForm() {
   const router = useRouter();
   const [logo, setLogo] = useState<File | null>(null);
   const [background, setBackground] = useState<File | null>(null);
 
-  const {showToast} = useToast(); 
+  const { showToast } = useToast();
   /// creating a mutation using reactQuery.....
 
   const mutation = useMutation({
-    mutationFn: (data: RestaurantFormData) => {
+    mutationFn: (data: TAddRestaurantSchema) => {
       return createRestaurant(data);
     },
     onSuccess: (response) => {
       console.log("Response from createRestaurant", response);
       if (response.success) {
         showToast("Restaurant created successfully", "success")
-        setTimeout(()=>{
+        setTimeout(() => {
           router.push(`/restaurants/${response.restaurantId}`);
         }, 1000)
       }
@@ -70,11 +56,11 @@ export default function AddRestaurantForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RestaurantFormData>({
-    resolver: zodResolver(restaurantSchema),
+  } = useForm<TAddRestaurantSchema>({
+    resolver: zodResolver(addRestaurantSchema),
   });
 
-  const onSubmit = async (data: RestaurantFormData) => {
+  const onSubmit = async (data: TAddRestaurantSchema) => {
     // Handle form submission
     mutation.mutate(data);
 

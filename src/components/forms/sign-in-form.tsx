@@ -17,7 +17,6 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
-import AppTheme from "@/components/theme/AppTheme";
 import { GoogleIcon } from "@/components/icons";
 import {
   signInWithEmailAndPassword,
@@ -80,25 +79,7 @@ export const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-// const StyledAlert = styled(Alert)(() => ({
-//   borderRadius: "8px",
-//   "&.MuiAlert-standardSuccess": {
-//     backgroundColor: "#E7F6E7",
-//     color: "#1E4620",
-//     "& .MuiAlert-icon": {
-//       color: "#2E7D32",
-//     },
-//   },
-//   "&.MuiAlert-standardError": {
-//     backgroundColor: "#FDEDED",
-//     color: "#5F2120",
-//     "& .MuiAlert-icon": {
-//       color: "#D32F2F",
-//     },
-//   },
-// }));
-
-export default function SignInForm(props: { disableCustomTheme?: boolean }) {
+export default function SignInForm() {
   const {
     register,
     handleSubmit,
@@ -199,7 +180,7 @@ export default function SignInForm(props: { disableCustomTheme?: boolean }) {
   };
 
   return (
-    <AppTheme {...props}>
+    <>
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
         {/* <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} /> */}
@@ -320,6 +301,6 @@ export default function SignInForm(props: { disableCustomTheme?: boolean }) {
         onClose={handleCloseSnackbar}
       /> */}
       {/* </Snackbar> */}
-    </AppTheme>
+    </>
   );
 }

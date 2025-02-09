@@ -11,7 +11,7 @@ export default async function middleware(request: NextRequest) {
   }
 
   try {
-    const { role } = decryptData(cookie?.value as string) as UserData;
+    const { role } = await decryptData(cookie?.value as string) as UserData;
 
     // Handle invalid role values
     if (!['super_admin', 'admin', 'user'].includes(role)) {
