@@ -6,9 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
 import FormLabel from "@mui/material/FormLabel";
 import FormControl from "@mui/material/FormControl";
 import Link from "next/link";
@@ -17,13 +15,11 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
-import { GoogleIcon } from "@/components/icons";
 import {
   signInWithEmailAndPassword,
-  signInWithPopup,
 } from "firebase/auth";
-import { auth, db, provider } from "@/firebase/firebaseconfig";
-import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { auth, db } from "@/firebase/firebaseconfig";
+import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { setUserCookie } from "@/actions/actions.cookies";
 import LoadingButton from '@/components/ui/loading-button';  // Add this import
@@ -94,27 +90,27 @@ export default function SignInForm() {
 
   const router = useRouter();
 
-  const handleGoogleSignIn = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const userDocs = await getDocs(
-        query(collection(db, "users"), where("userId", "==", result.user.uid))
-      );
+  // const handleGoogleSignIn = async () => {
+  //   try {
+  //     const result = await signInWithPopup(auth, provider);
+  //     const userDocs = await getDocs(
+  //       query(collection(db, "users"), where("userId", "==", result.user.uid))
+  //     );
 
-      if (userDocs.empty) {
-        await result.user.delete();
-        showToast("User not registered. Please sign up first", "error");
-        router.push("/auth/signup");
-        return;
-      }
+  //     if (userDocs.empty) {
+  //       await result.user.delete();
+  //       showToast("User not registered. Please sign up first", "error");
+  //       router.push("/auth/signup");
+  //       return;
+  //     }
 
-      showToast("Successfully signed in!", "success");
-      router.push("/");
-    } catch (error) {
-      showToast("Error signing in with Google", "error");
-      console.error("Error signing in with google: ", error);
-    }
-  };
+  //     showToast("Successfully signed in!", "success");
+  //     router.push("/");
+  //   } catch (error) {
+  //     showToast("Error signing in with Google", "error");
+  //     console.error("Error signing in with google: ", error);
+  //   }
+  // };
 
   const onSubmit = async (data: SignInFormData) => {
     setIsLoading(true);
@@ -128,10 +124,9 @@ export default function SignInForm() {
       if (!response?.user) {
         showToast("Failed to sign in", "error");
         return;
-
       }
 
-      console.log("User Signed IN", response?.user);
+      console.log("User Signed in", response?.user);
 
       await setUserCookie(response?.user?.uid);
 
@@ -265,7 +260,7 @@ export default function SignInForm() {
               Forgot your password?
             </Link>
           </Box>
-          <Divider>or</Divider>
+          {/* <Divider>or</Divider>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Button
               fullWidth
@@ -276,7 +271,7 @@ export default function SignInForm() {
               Sign in with Google
             </Button>
 
-          </Box>
+          </Box> */}
         </Card>
       </SignInContainer>
       {/* <Snackbar
