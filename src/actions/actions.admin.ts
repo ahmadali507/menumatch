@@ -6,6 +6,8 @@ import { initAdmin } from "@/firebase/adminFirebase";
 import { RestaurantType, resAdminType } from "@/types";
 import { getFirestore } from "firebase-admin/firestore";
 import { revalidatePath } from "next/cache";
+import { notFound } from "next/navigation";
+import { cache } from "react";
 
 export const createRestaurant = async (data: RestaurantType) => {
   await initAdmin();
@@ -161,3 +163,32 @@ export const fetchRestaurantAdmins = async (restaurantId: string) => {
     };
   }
 };
+
+export const getRestaurantData = cache(async (restaurantId: string) => {
+  await initAdmin();
+  const firestore = getFirestore();
+
+  const [restaurantSnap, adminResponse] = await Promise.all([
+    firestore.collection('restaurants').doc(restaurantId).get(),
+    fetchRestaurantAdmins(restaurantId)
+  ]);
+
+  if (!restaurantSnap.exists) {
+    return notFound()
+  }
+
+  const restaurantData = restaurantSnap.data() as RestaurantType;
+
+  // Enhance restaurant data with admin information
+  if (adminResponse.success && adminResponse.admins) {
+    restaurantData.admins = adminResponse.admins.map((admin) => ({
+      name: admin.name || 'Anonymous',
+      role: admin.role || "admin"
+    }));
+  } else {
+    console.error('Failed to fetch admins:', adminResponse.error);
+    restaurantData.admins = [];
+  }
+
+  return restaurantData;
+});

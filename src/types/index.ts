@@ -14,7 +14,7 @@ export type RestaurantType = {
   status: "active" | "inactive",
   cuisine: string,
   orders: number,
-  admins: { name: string; role: string }[],
+  admins: resAdminType[],
   menus: Menu[],
 }
 

@@ -1,5 +1,11 @@
 import AddRestaurantForm from "@/components/forms/add-restaurant";
 import { Typography } from "@mui/material";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Add Restaurant",
+  description: "Add a new restaurant to the system",
+}
 
 export default function AddRestaurantPage() {
 

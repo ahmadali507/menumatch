@@ -1,28 +1,16 @@
 import { fetchAllRestaurants } from "@/actions/actions.admin";
 import RestaurantsTable from "@/components/tables/restaurants-table";
 import { RestaurantType } from "@/types";
+import { Metadata } from "next";
 
-
-// const dummyRestaurants: RestaurantType[] = Array.from({ length: 20 }, (_, i) => ({
-//   restaurantId: `${i + 1}` as string,
-//   // name: `Restaurant ${i + 1}`,
-//   restaurantName: `Restaurant ${i + 1}`,
-//   location: { 
-//     city: ['New York', 'Los Angeles', 'Chicago', 'Miami', 'Houston'][Math.floor(Math.random() * 5)],
-//     state: 'Some State',
-//     address: '123 Main St',
-//     country: 'USA'
-//   },
-//   status: Math.random() > 0.2 ? 'active' : 'inactive',
-//   cuisine: ['Italian', 'Japanese', 'Mexican', 'American', 'Indian'][Math.floor(Math.random() * 5)],
-//   orders: Math.floor(Math.random() * 500) + 50,
-//   contact: {email : `contact${i + 1}@restaurant.com` as string, phone : `123-456-${i + 1}` as string}, 
-// }));
-
+export const metadata: Metadata = {
+  title: "Restaurants",
+  description: "View and manage all restaurants from here",
+}
 
 export default async function RestaurantsPage() {
   const response = await fetchAllRestaurants();
-  
+
   // Provide fallback empty array if restaurants is undefined
   const restaurants = response.success ? response.restaurants?.map((elm) => {
     return {
@@ -33,9 +21,11 @@ export default async function RestaurantsPage() {
       cuisine: "Italian",
       orders: 69,
       contact: elm.contact,
+      admins: [],
+      menus: []
     } satisfies RestaurantType
   }) || [] : [];
-  
+
   console.log("First restaurant:", restaurants[0]);
 
   return <RestaurantsTable restaurants={restaurants} />;
