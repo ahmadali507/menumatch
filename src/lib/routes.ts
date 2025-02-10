@@ -2,6 +2,8 @@
 export const routes = {
   addRestaurant: "/restaurants/add",
   login: "/auth/login",
+  menu: "/restaurant/menu",
+  addMenu: "/restaurant/menu/add",
 } as const
 
 export const defaultRoutes = {

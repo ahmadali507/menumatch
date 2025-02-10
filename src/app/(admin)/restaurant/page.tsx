@@ -1,4 +1,4 @@
-import { Typography, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
@@ -15,6 +15,9 @@ import EditRestaurantIcon from '@mui/icons-material/EditLocation';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 
 import { Metadata } from "next";
+import Link from "next/link";
+import { routes } from "@/lib/routes";
+import PageTitle from "@/components/restaurant/dashboard/page-title";
 
 export const metadata: Metadata = {
   title: "Restaurant Dashboard",
@@ -51,12 +54,10 @@ const quickActions: { title: string; icon: React.ReactNode, color: "primary" | "
 
 export default function RestaurantAdminPage() {
   return (
-    <section className="p-6 space-y-6">
-      <div className="flex justify-between items-center mb-6">
-        <Typography component="h1" variant="h4">
-          Restaurant Overview
-        </Typography>
+    <section className="pb-6 space-y-6">
+      <PageTitle title="Restaurant Overview" description="This is an overview of performance of your restaurant">
         <div className="flex gap-2">
+
           <Button
             variant="contained"
             color="primary"
@@ -64,16 +65,19 @@ export default function RestaurantAdminPage() {
           >
             Edit Restaurant
           </Button>
-          <Button
-            variant="outlined"
-            color="success"
-            startIcon={<RestaurantMenuIcon />}
+          <Link href={routes.menu}>
+            <Button
+              variant="outlined"
+              color="success"
+              startIcon={<RestaurantMenuIcon />}
 
-          >
-            Manage Menu
-          </Button>
+            >
+              Manage Menu
+            </Button>
+          </Link>
         </div>
-      </div>
+
+      </PageTitle>
 
       {/* Overview Cards */}
       <Stats />
