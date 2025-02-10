@@ -1,4 +1,4 @@
-import { Home, Logout, Restaurant, Settings } from "@mui/icons-material";
+import { FoodBankSharp, Home, Logout, Restaurant, Settings } from "@mui/icons-material";
 
 
 export type SidebarNavItemProps = {
@@ -8,15 +8,22 @@ export type SidebarNavItemProps = {
   badge?: string;
 };
 
-export const navItems: SidebarNavItemProps[] = [
-  { title: "Home", href: "/", icon: Home },
-  { title: "Restaurants", href: "/restaurants", icon: Restaurant },
-  // {title:"Admins", href:"/admins", icon:Person},
-  // { title: "Images", href: "/images", icon: ImagesIcon },
-  // { title: "Schedule", href: "/schedule", icon: Palette },
-  // { title: "Jaba Bot", href: "/chatbot", icon: MessageCircleIcon },
-
-];
+export const navItems: Record<string, SidebarNavItemProps[]> = {
+  superAdmin: [
+    { title: "Home", href: "/", icon: Home },
+    { title: "Restaurants", href: "/restaurants", icon: Restaurant },
+    // {title:"Admins", href:"/admins", icon:Person},
+  ],
+  admin: [
+    { title: "Home", href: "/restaurant", icon: Home },
+    { title: "Information", href: "/restaurant/info", icon: Restaurant },
+    { title: "Menus", href: "/restaurant/menu", icon: FoodBankSharp },
+  ],
+  user: [
+    { title: "Home", href: "/", icon: Home },
+    { title: "Restaurants", href: "/restaurants", icon: Restaurant },
+  ]
+};
 
 export const projectMediaItems: SidebarNavItemProps[] = []
 
