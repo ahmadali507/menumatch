@@ -11,7 +11,7 @@ export async function setUserCookie(uid: string | null) {
     await initAdmin();
     const firestore = getFirestore();
 
-    console.log("user data for setting cookie", uid);
+    console.log("uid for setting cookie", uid);
     const userSnap = await firestore.collection('users').doc(uid as string).get();
     console.log("user data for setting cookie", userSnap.data());
 

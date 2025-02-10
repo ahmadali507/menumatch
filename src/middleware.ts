@@ -25,7 +25,7 @@ export default async function middleware(request: NextRequest) {
     // super admin route
     console.log("Request URL:", request.nextUrl.pathname);
     if (request.nextUrl.pathname.startsWith("/")) {
-      if (role === "super_admin") {
+      if (role === "super_admin" || role == "admin") {
         return NextResponse.next()
       }
       return NextResponse.redirect(new URL("/auth/login", request.url))

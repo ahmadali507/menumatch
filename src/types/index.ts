@@ -24,6 +24,7 @@ export type resAdminType = {
   email: string,
   role: string,
   password?: string,
+  // idToken ?: string, 
 }
 
 export interface MenuItem {
