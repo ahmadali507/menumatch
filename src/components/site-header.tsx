@@ -77,7 +77,7 @@ export function SiteHeader() {
           },
         }}
       >
-        <SidebarNav />
+        <SidebarNav role={user?.role || "superAdmin"} />
       </Drawer>
     </>
   );

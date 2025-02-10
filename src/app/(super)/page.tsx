@@ -1,9 +1,7 @@
-// "use client"
 import { Typography, Card } from "@mui/material";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import GroupIcon from "@mui/icons-material/Group";
-// import Link from "next/link";
 import AddRestaurant from "@/components/add-restaurant";
 import { Metadata } from "next";
 import RecentActivity from "@/components/recent-activity";

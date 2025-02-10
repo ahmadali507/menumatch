@@ -7,7 +7,7 @@ export default function SuperDashboardLayout({ children }: PropsWithChildren) {
     <div className="h-screen flex">
       {/* Permanent Sidebar - Desktop only */}
       <div className="hidden lg:block w-[280px] h-screen border-r border-1 border-gray-500 bg-zinc-950/90">
-        <SidebarNav role="superAdmin" />
+        <SidebarNav role="admin" />
       </div>
 
       {/* Main Content */}
