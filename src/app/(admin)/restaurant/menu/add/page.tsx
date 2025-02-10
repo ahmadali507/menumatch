@@ -1,3 +1,5 @@
+import AddMenuForm from "@/components/forms/add-menu"
+import PageTitle from "@/components/restaurant/dashboard/page-title"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -5,6 +7,9 @@ export const metadata: Metadata = {
   description: "Create a new menu from scratch!"
 }
 
-export default function page() {
-  return <h1>Add a menu here my friend</h1>
+export default function AddMenuPage() {
+  return <section>
+    <PageTitle title="Add Menu" description="Fill the form details to create a menu of your choice!" />
+    <AddMenuForm />
+  </section>
 }
