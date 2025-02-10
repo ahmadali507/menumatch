@@ -3,6 +3,10 @@ import { UserData } from "./types";
 import { decryptData } from "./lib/encrypt";
 
 export default async function middleware(request: NextRequest) {
+
+  //! FOR TESTING ONLY RIGHT NOW, REMOVE IT LATER
+  if (request.nextUrl.pathname.startsWith("/restaurant")) return NextResponse.next();
+
   const cookie = request.cookies.get('auth');
 
   if (!cookie) {
