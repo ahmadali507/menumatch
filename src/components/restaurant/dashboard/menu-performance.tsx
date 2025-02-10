@@ -1,6 +1,6 @@
 'use client'
 
-import { getCardStyles } from "@/utils/styles/cardStyles"
+import { getCardStyles } from "@/lib/utils/styles/cardStyles"
 import { useTheme } from "@mui/material/styles";
 import { Box, Card, Typography } from "@mui/material"
 

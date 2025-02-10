@@ -1,7 +1,7 @@
 'use client';
 import { Card, Typography, Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { getCardStyles } from "@/utils/styles/cardStyles";
+import { getCardStyles } from "@/lib/utils/styles/cardStyles";
 
 interface QuickAction {
   title: string;

@@ -44,3 +44,19 @@ export const addRestaurantSchema = z.object({
 });
 
 export type TAddRestaurantSchema = z.infer<typeof addRestaurantSchema>;
+
+// Validation schema
+export const addMenuFormSchema = z.object({
+  name: z.string()
+    .min(3, "Menu name must be at least 3 characters")
+    .max(50, "Menu name must be less than 50 characters"),
+  startDate: z.date()
+    .min(new Date(), "Start date must be in the future"),
+  endDate: z.date()
+    .min(new Date(), "End date must be in the future"),
+}).refine((data) => data.endDate > data.startDate, {
+  message: "End date must be after start date",
+  path: ["endDate"],
+});
+
+export type TAddMenuFormSchema = z.infer<typeof addMenuFormSchema>;

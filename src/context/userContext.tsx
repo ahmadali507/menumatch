@@ -8,6 +8,7 @@ interface User {
   name: string | null;
   role: string;
   avatar?: string;
+  restaurantId?: string; // only in case of restaurant owner
 }
 
 interface UserContextType {
@@ -28,14 +29,14 @@ export function UserContextProvider({ children }: { children: React.ReactNode })
       while (retries > 0) {
         try {
           const userData = await getUser();
-          console.log("User data from cookies:", userData);
 
           if (userData) {
             setUser({
               uid: userData.uid,
               email: userData.email,
               name: userData.name as string,
-              role: userData.role || 'user'
+              role: userData.role || 'user',
+              restaurantId: userData.restaurantId || undefined,
             });
             break;
           }

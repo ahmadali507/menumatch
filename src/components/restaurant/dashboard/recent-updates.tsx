@@ -2,7 +2,7 @@
 import { Card, Typography, Box, IconButton } from "@mui/material";
 import { format } from "date-fns";
 import { useTheme } from "@mui/material/styles";
-import { getCardStyles } from "@/utils/styles/cardStyles";
+import { getCardStyles } from "@/lib/utils/styles/cardStyles";
 
 interface Update {
   id: number;
