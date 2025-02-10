@@ -8,6 +8,11 @@ import QueryProvider from "@/components/query-provider";
 import NextTopLoader from 'nextjs-toploader';
 import { ToastProvider } from "@/context/toastContext";
 import { CssBaseline } from "@mui/material";
+import LocalizationProviderClient from "@/components/localization-provider";
+
+
+
+
 const inter = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -32,12 +37,16 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <NextTopLoader showSpinner={false} />
         <ToastProvider>
-          <UserContextProvider>
-            <QueryProvider>
-              <CssBaseline />
-              <AppTheme>{children}</AppTheme>
-            </QueryProvider>
-          </UserContextProvider>
+          <LocalizationProviderClient>
+
+            <UserContextProvider>
+              <QueryProvider>
+                <CssBaseline />
+                <AppTheme>{children}</AppTheme>
+              </QueryProvider>
+            </UserContextProvider>
+          </LocalizationProviderClient>
+
         </ToastProvider>
       </body>
     </html>
