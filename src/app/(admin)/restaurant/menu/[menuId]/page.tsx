@@ -1,6 +1,11 @@
 import { getMenu, getRestaurantIdForAdmin } from "@/actions/actions.menu"
 import PageTitle from "@/components/restaurant/dashboard/page-title";
 
+export const metadata = {
+  title: "Menu Details",
+  description: "View details of a menu"
+}
+
 export default async function SingleMenuPage({ params }: { params: Promise<{ menuId: string }> }) {
   const { menuId } = await params;
 
