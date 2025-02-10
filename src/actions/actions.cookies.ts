@@ -47,7 +47,7 @@ export async function setUserCookie(uid: string | null) {
 }
 
 
-export async function getUserRole() {
+export async function getUser() {
 
   try {
     const cookieStore = await cookies();
