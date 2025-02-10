@@ -22,7 +22,6 @@ export default async function RestaurantDetailsPage({ params }: {
   restaurantData.menus = dummyMenus;
   restaurantData.status = "active";
   restaurantData.orders = 450;
-  restaurantData.cuisine = "Italian";
 
   return (
     <SectionLayout

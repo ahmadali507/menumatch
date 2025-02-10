@@ -57,7 +57,6 @@ export async function getUser() {
       return null;
     }
 
-    console.log("decrpted data", decryptData(authCookie.value));
     const user = await decryptData(authCookie.value) as UserData;
     if (!user?.role) {
       return null;

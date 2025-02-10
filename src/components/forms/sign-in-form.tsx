@@ -24,6 +24,8 @@ import { useRouter } from "next/navigation";
 import { setUserCookie } from "@/actions/actions.cookies";
 import LoadingButton from '@/components/ui/loading-button';  // Add this import
 import { useToast } from "@/context/toastContext";
+import { UserData } from "@/types";
+import { defaultRoutes } from "@/lib/routes";
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -140,9 +142,11 @@ export default function SignInForm() {
 
       showToast("User Logged in successfully", "success");
 
+      const userRole = (userDoc.data() as UserData).role
+      console.log("Redirecting to default route based on the role");
 
       setTimeout(() => {
-        router.push("/");
+        router.push(defaultRoutes[userRole] || "/")
       }, 1000)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

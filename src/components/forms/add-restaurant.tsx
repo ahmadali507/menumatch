@@ -72,15 +72,27 @@ export default function AddRestaurantForm() {
       {/* Basic Details */}
       <div className="space-y-3">
         <Typography variant="h6">Basic Details</Typography>
-        <FormControl fullWidth error={!!errors.name}>
-          <FormLabel>Restaurant Name</FormLabel>
-          <TextField
-            {...register("name")}
-            placeholder="e.g. The Italian Place"
-            error={!!errors.name}
-            helperText={errors.name?.message}
-          />
-        </FormControl>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormControl fullWidth error={!!errors.name}>
+            <FormLabel>Restaurant Name</FormLabel>
+            <TextField
+              {...register("name")}
+              placeholder="e.g. The Italian Place"
+              error={!!errors.name}
+              helperText={errors.name?.message}
+            />
+          </FormControl>
+          <FormControl fullWidth error={!!errors.cuisine}>
+            <FormLabel>Cuisine</FormLabel>
+            <TextField
+              {...register("cuisine")}
+              placeholder="e.g. The Italian Place"
+              error={!!errors.cuisine}
+              helperText={errors.cuisine?.message}
+            />
+          </FormControl>
+        </div>
+
       </div>
 
       {/* Location Details */}

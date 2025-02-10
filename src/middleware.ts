@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { UserData } from "./types";
 import { decryptData } from "./lib/encrypt";
+import { defaultRoutes } from "./lib/routes";
 
 export default async function middleware(request: NextRequest) {
-
-  //! FOR TESTING ONLY RIGHT NOW, REMOVE IT LATER
-  if (request.nextUrl.pathname.startsWith("/restaurant")) return NextResponse.next();
 
   const cookie = request.cookies.get('auth');
 
@@ -15,6 +13,7 @@ export default async function middleware(request: NextRequest) {
   }
 
   try {
+    console.log("pathname", request.nextUrl.pathname)
     const { role } = await decryptData(cookie?.value as string) as UserData;
 
     // Handle invalid role values
@@ -26,22 +25,33 @@ export default async function middleware(request: NextRequest) {
 
     console.log("Role:", role);
 
+    if (request.nextUrl.pathname.startsWith("/restaurants")) {
+      if (role !== "super_admin") {
+        return NextResponse.redirect(new URL(defaultRoutes[role], request.url))
+      }
+      return NextResponse.next()
+    }
+
+    // restaurant admin route
+    if (request.nextUrl.pathname.startsWith("/restaurant")) {
+      if (role === "admin") {
+        return NextResponse.next()
+      }
+      return NextResponse.redirect(new URL(defaultRoutes[role], request.url))
+    }
+
     // super admin route
-    console.log("Request URL:", request.nextUrl.pathname);
     if (request.nextUrl.pathname.startsWith("/")) {
       if (role === "super_admin") {
         return NextResponse.next()
       }
+      if (role === "admin") {
+        return NextResponse.redirect(new URL(defaultRoutes.admin, request.url));
+      }
+
       return NextResponse.redirect(new URL("/auth/login", request.url))
     }
 
-    // restaurant admin route
-    if (request.nextUrl.pathname.startsWith("/admin")) {
-      if (role === "admin") {
-        return NextResponse.next()
-      }
-      return NextResponse.redirect(new URL("/auth/login", request.url))
-    }
 
     // user route
     if (request.nextUrl.pathname.startsWith("/user")) {

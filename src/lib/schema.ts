@@ -30,6 +30,7 @@ export type TEditRestaurant = z.infer<typeof editRestaurantSchema>;
 
 export const addRestaurantSchema = z.object({
   name: z.string().min(1, "Restaurant name is required"),
+  cuisine: z.string().min(1, "Cuisine is required"),
   location: z.object({
     address: z.string().min(1, "Address is required"),
     city: z.string().min(1, "City is required"),

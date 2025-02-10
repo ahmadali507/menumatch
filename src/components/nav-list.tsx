@@ -29,7 +29,7 @@ export default function NavList({
 
   return (
     <nav className="grid gap-y-2 items-start px-4 text-sm font-medium backdrop-blur-lg">
-      {items.map((item) => {
+      {items?.map((item) => {
         const active = pathname === item.href;
 
         if (item.title === "Logout") {

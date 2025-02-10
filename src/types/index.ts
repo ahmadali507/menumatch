@@ -52,7 +52,7 @@ export interface Menu {
 
 export interface UserData {
   uid: string;
-  role: string,
+  role: "super_admin" | "admin" | "user",
   email: string,
   restaurantId?: string | null,
   name?: string,
