@@ -1,15 +1,19 @@
+"use client";
 import { MenuSection as MenuSectionType } from "@/types";
 import {
   Card,
   Typography,
   Grid,
   Box,
-  Stack,
-  Chip
 } from "@mui/material";
 import FastfoodIcon from '@mui/icons-material/Fastfood';
+import EventIcon from '@mui/icons-material/Event';
 
-import Image from "next/image";
+import { format } from "date-fns";
+import AddItemToMenu from "./actions/add-item-menu";
+import DeleteMenu from "./delete-menu";
+import EditableSectionName from "./actions/editable";
+import MenuItemCard from "./menu-item";
 
 const dummyMenuSection: MenuSectionType = {
   "createdAt": new Date(),
@@ -22,8 +26,8 @@ const dummyMenuSection: MenuSectionType = {
       ingredients: ["Cabbage", "Carrots", "Mushrooms"],
       photo: "https://images.unsplash.com/photo-1544025162-d76694265947",
       available: true,
-      labels: ["Vegetarian", "Crispy"],
-      allergens: ["Gluten"]
+      labels: ["Vegetarian", "Crispy", "Asian"],
+      allergens: ["Gluten", "Soy"]
     },
     {
       name: "Crispy Calamari",
@@ -49,87 +53,42 @@ const dummyMenuSection: MenuSectionType = {
 };
 
 export default function MenuSection({ section }: { section: MenuSectionType }) {
-  return (
-    <Card sx={{ p: 2 }}>
-      <Box display="flex" flexDirection="column" gap={2}>
-        <div className="flex gap-4">
+  const handleSectionNameUpdate = (newName: string) => {
+    console.log('Section name updated:', newName);
+    // Add your update logic here
+  };
 
-          <Typography variant="h4">
-            {dummyMenuSection.name}
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <FastfoodIcon fontSize="small" color="action" />
-            <Typography variant="body2" color="text.secondary">
-              {section.items.length} items
-            </Typography>
+  return (
+    <Card sx={{ p: 3 }}>
+      <Box display="flex" flexDirection="column" gap={2}>
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <div className="flex gap-4 items-center">
+            <EditableSectionName
+              name={dummyMenuSection.name}
+              onSave={handleSectionNameUpdate}
+            />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <FastfoodIcon fontSize="small" color="action" />
+              <Typography variant="body2" color="text.secondary">
+                {section.items.length} items
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <EventIcon fontSize="small" color="action" />
+              <Typography variant="body2" color="text.secondary">
+                {format(new Date(section.createdAt), "EEEE, MMMM d, yyyy")}
+              </Typography>
+            </Box>
+          </div>
+
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <DeleteMenu menuId="dummy-for-now" />
+            <AddItemToMenu />
           </Box>
-        </div>
+        </Box>
         <Grid container spacing={3}>
           {dummyMenuSection.items.map((item, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card variant="outlined">
-                <Box sx={{ position: 'relative', height: 200 }}>
-                  <Image
-                    src={item.photo}
-                    alt={item.name}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                  />
-                  {!item.available && (
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        bgcolor: 'rgba(0,0,0,0.5)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Typography color="white" variant="subtitle1">
-                        Currently Unavailable
-                      </Typography>
-                    </Box>
-                  )}
-                </Box>
-                <Box sx={{ p: 2 }}>
-                  <Stack spacing={1}>
-                    <Typography variant="subtitle1">{item.name}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {item.description}
-                    </Typography>
-                    <Typography variant="subtitle2" color="primary">
-                      ${item.price.toFixed(2)}
-                    </Typography>
-                    {(item.labels.length > 0 || item.allergens.length > 0) && (
-                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                        {item.labels.map((label) => (
-                          <Chip
-                            key={label}
-                            label={label}
-                            size="small"
-                            color="primary"
-                            variant="outlined"
-                          />
-                        ))}
-                        {item.allergens.map((allergen) => (
-                          <Chip
-                            key={allergen}
-                            label={allergen}
-                            size="small"
-                            color="error"
-                            variant="outlined"
-                          />
-                        ))}
-                      </Stack>
-                    )}
-                  </Stack>
-                </Box>
-              </Card>
-            </Grid>
+            <MenuItemCard item={item} key={item.name + index} />
           ))}
         </Grid>
       </Box>
