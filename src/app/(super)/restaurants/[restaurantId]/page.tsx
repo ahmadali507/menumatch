@@ -1,6 +1,7 @@
 import { getRestaurantData } from "@/actions/actions.admin";
 import SectionLayout from "@/components/layouts/section-layout";
-import RestaurantDetails from "@/components/restaurant-details";
+// import RestaurantDetails from "@/components/restaurant-details";
+import RestaurantInformation from "@/components/restaurant/infopage/restaurant-information";
 import { dummyMenus } from "@/lib/dummy";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -28,7 +29,7 @@ export default async function RestaurantDetailsPage({ params }: {
       title="Restaurant Details"
       description="Displays detailed information about a specific restaurant"
     >
-      <RestaurantDetails restaurantId={restaurantId} details={restaurantData} />
+      <RestaurantInformation restaurantId={restaurantId} details={restaurantData} />
     </SectionLayout>
   );
 }

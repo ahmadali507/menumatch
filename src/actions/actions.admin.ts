@@ -130,6 +130,7 @@ export const editRestaurant = async (restaurantId: string, data: TEditRestaurant
   const firestore = getFirestore();
   const auth = getAuth(); 
   try {
+
     const claims = await auth.verifyIdToken(idToken);
     if(claims.role !== "super_admin"){
       throw new Error("You are not authorized to edit Restaurants");

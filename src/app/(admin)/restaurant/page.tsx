@@ -13,6 +13,8 @@ import QuickActions from "@/components/restaurant/dashboard/quick-actions";
 import Stats from "@/components/restaurant/dashboard/stats";
 import EditRestaurantIcon from '@mui/icons-material/EditLocation';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
+import { Suspense } from 'react';
+import DashboardLoader from '@/components/restaurant/dashboard/dashboard-loader';
 
 import { Metadata } from "next";
 import Link from "next/link";
@@ -54,10 +56,17 @@ const quickActions: { title: string; icon: React.ReactNode, color: "primary" | "
 
 export default function RestaurantAdminPage() {
   return (
+    <Suspense fallback={<DashboardLoader />}>
+      <RestaurantContent />
+    </Suspense>
+  );
+}
+
+async function RestaurantContent() {
+  return (
     <section className="pb-6 space-y-6">
       <PageTitle title="Restaurant Overview" description="This is an overview of performance of your restaurant">
         <div className="flex gap-2">
-
           <Button
             variant="contained"
             color="primary"
@@ -70,13 +79,11 @@ export default function RestaurantAdminPage() {
               variant="outlined"
               color="success"
               startIcon={<RestaurantMenuIcon />}
-
             >
               Manage Menu
             </Button>
           </Link>
         </div>
-
       </PageTitle>
 
       {/* Overview Cards */}
