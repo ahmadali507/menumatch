@@ -33,13 +33,16 @@ type UserDropdownProps = {
   name: string;
   email: string;
   role: string;
+  clearUser: () => void;
 }
 
-export default function UserDropdown({ name, email, role }: UserDropdownProps) {
+export default function UserDropdown({ name, email, role, clearUser }: UserDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const router = useRouter();
   const { showToast } = useToast()
   const open = Boolean(anchorEl);
+
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -51,9 +54,15 @@ export default function UserDropdown({ name, email, role }: UserDropdownProps) {
   const handleUserLogout = async () => {
     console.log("logout user");
     // logoutUser();
-    await logoutUser();
+    const response = await logoutUser();
+    if (!response.success) {
+      showToast(response.message || "Failed to logout", "error");
+      return;
+    }
+
     showToast("Logged out successfully", "success");
     setTimeout(() => {
+      clearUser();
       router.push('/auth/login');
     }, 1000)
   }

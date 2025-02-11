@@ -1,58 +1,39 @@
 'use client'
 import { getUser } from "@/actions/actions.cookies";
+import { UserData } from "@/types";
 import { createContext, useContext, useEffect, useState } from "react";
 
-interface User {
-  uid: string;
-  email: string | null;
-  name: string | null;
-  role: string;
-  avatar?: string;
-  restaurantId?: string; // only in case of restaurant owner
-}
 
 interface UserContextType {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  user: UserData | null;
+  setUser: (user: UserData | null) => void;
   isLoading: boolean;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserContextProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkUserData = async () => {
-      let retries = 3;
-      while (retries > 0) {
-        try {
-          const userData = await getUser();
+      const userData = await getUser();
 
-          if (userData) {
-            setUser({
-              uid: userData.uid,
-              email: userData.email,
-              name: userData.name as string,
-              role: userData.role || 'user',
-              restaurantId: userData.restaurantId || undefined,
-            });
-            break;
-          }
-          // Wait for 500ms before retrying
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          retries--;
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-          retries--;
-        }
+      if (userData) {
+        setUser({
+          uid: userData.uid,
+          email: userData.email,
+          name: userData.name as string,
+          role: userData.role || 'user',
+          restaurantId: userData.restaurantId || undefined,
+        });
       }
       setIsLoading(false);
     };
 
     checkUserData();
-  }, []);
+  }, [user?.uid]);
 
   return (
     <UserContext.Provider value={{ user, setUser, isLoading }}>
