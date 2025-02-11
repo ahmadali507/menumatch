@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { deleteRestaurant } from '@/actions/actions.admin';
 import { useToast } from "@/context/toastContext";
+// import { auth } from "firebase-admin";
+import { auth } from "@/firebase/firebaseconfig";
 
 interface DeleteRestaurantProps {
   restaurantId: string;
@@ -15,10 +17,21 @@ export default function DeleteRestaurant({ restaurantId, restaurantName }: Delet
   const { showToast } = useToast();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: deleteRestaurant,
-    onSuccess: () => {
-      showToast('Restaurant deleted successfully', "success")
-      setOpen(false);
+    mutationFn: async (restaurantId: string) => {
+      const user = auth.currentUser; 
+      if(!user){
+        throw new Error("User not found");
+      }
+      const idToken = await user.getIdToken(true);
+      return await deleteRestaurant(restaurantId, idToken);
+    },
+    onSuccess: (response) => {
+      console.log(Response)
+      if (response.success) {
+        showToast('Restaurant deleted successfully', "success")
+      } else {
+        showToast(response.error || 'Failed to delete restaurant', "error")
+      }
     },
     onError: (error) => {
       showToast('Failed to delete restaurant', "error")

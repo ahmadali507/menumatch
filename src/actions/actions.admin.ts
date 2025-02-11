@@ -9,16 +9,79 @@ import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 
-export const createRestaurant = async (data: TAddRestaurantSchema) => {
+
+type SuperAdminData = {
+  name: string, 
+  email: string,
+  password: string, 
+  role: string, 
+}
+
+/////////////// FUNCTION TO CREATE A SUPER_ADMIN WITH A CUSTOM CLAIM //////////////////
+
+export const createSuperAdmin = async (data: SuperAdminData ) =>{
+  await initAdmin(); 
+  const firestore = getFirestore(); 
+  const auth = getAuth(); 
+  // now we need to create a superAdmin and then assign it a custom claim of role: "super Admin"
+  const userRecord = await auth.createUser({
+    email: data.email, 
+    password: data.password, 
+    displayName: data.name, 
+  }); 
+
+  if(!userRecord){
+    return {error: "Failed to create user"}
+  }
+  await auth.setCustomUserClaims(userRecord?.uid, {
+    role : "super_admin",
+  }).then(()=>{
+    console.log("Custom claim assigned successfully"); 
+  }).catch((err)=>{
+    console.log("error while assigning custom claim setup ", err); 
+  })
+  // now storing hte data of the superAdmin to the firestore  ... 
+  const userAdded = await firestore.collection("users").doc(userRecord.uid).set({
+    name: data.name,
+    email: data.email,
+    role: "super_admin",
+    createdAt: new Date().toISOString(),
+  })
+
+  if(!userAdded){
+    return {error: "Failed to add user to the firestore"}; 
+  }
+  console.log("User added to the firestore", userAdded);
+
+  return {
+    success : true, 
+    message: "Super admin created successfully",
+    data : {
+      id : userRecord.uid, 
+      email : userRecord.email, 
+      name : userRecord.displayName, 
+      role : "super_admin"
+    } 
+  }
+}
+
+///////////////////  Restaurant creation and admin creation tasks //////////////////////
+
+
+export const createRestaurant = async (data: TAddRestaurantSchema, idToken : string) => {
   await initAdmin();
   const firestore = getFirestore();
-
+  const auth = getAuth(); 
   try {
+    const claims = await auth.verifyIdToken(idToken);
+    if(claims.role !== "super_admin"){
+      throw new Error("You are not authorized to create Restaurants");
+    }
     const restaurantRef = await firestore.collection("restaurants").add(data);
     return { success: true, restaurantId: restaurantRef.id };
   } catch (error) {
     console.error("Error creating restaurant:", error);
-    return { error: "Failed to create restaurant" };
+    return { error: (error as Error).message ||  "Failed to create restaurant" };
   }
 };
 
@@ -61,11 +124,16 @@ export const fetchAllRestaurants = async () => {
   }
 };
 
-export const editRestaurant = async (restaurantId: string, data: TEditRestaurant) => {
-  console.log('editing restaurant')
+export const editRestaurant = async (restaurantId: string, data: TEditRestaurant, idToken: string) => {
+  // console.log('editing restaurant')
   await initAdmin();
   const firestore = getFirestore();
+  const auth = getAuth(); 
   try {
+    const claims = await auth.verifyIdToken(idToken);
+    if(claims.role !== "super_admin"){
+      throw new Error("You are not authorized to edit Restaurants");
+    }
     await firestore.collection("restaurants").doc(restaurantId).update(data);
     console.log("Restaurant edited successfully");
 
@@ -74,40 +142,61 @@ export const editRestaurant = async (restaurantId: string, data: TEditRestaurant
     return { success: true, message: "Restaurant edited successfully" };
   } catch (error) {
     console.error("Error editing restaurant:", error);
-    return { error: "Failed to edit restaurant" };
+    // return { error: "Failed to edit restaurant" };
+    return { success: false, error : (error as Error).message || "Failed to edit restaurant" };
   }
 
 }
 
 
-export const deleteRestaurant = async (restaurantId: string): Promise<{ success: boolean, message?: string, error?: string }> => {
+export const deleteRestaurant = async (restaurantId: string, idToken : string) => {
   await initAdmin();
   const firestore = getFirestore();
+  const auth = getAuth(); 
   try {
+    const claims = await auth.verifyIdToken(idToken);
+    if(claims.role !== "super_admin"){
+      throw new Error("You are not authorized to delete Restaurants");
+    }
+    console.log("Deleteing the restaurant with id", restaurantId);
     await firestore.collection("restaurants").doc(restaurantId).delete();
 
     revalidatePath("/restaurants");
     return { success: true, message: "Restaurant deleted successfully" };
   } catch (error) {
     console.error("Error deleting restaurant:", error);
-    return { success: false, error: "Failed to delete restaurant" };
+    return { success: false, error : (error as Error).message || "Failed to delete restaurant" };
   }
 }
 
+///////////////////////////// RESTAURANT ADMIN CREATION AND FETCHING /////////////////////////
 
-export const addRestaurantAdmin = async (data: resAdminType) => {
+export const addRestaurantAdmin = async (data: resAdminType, idToken : string) => {
   await initAdmin();
   const auth = getAuth();
   const firestore = getFirestore();
-
   try {
-    // Create user with email/password
+    ///// checking idToken to check whether user is a superAdmin or not to allow for creation of admins.
+    const claims = await auth.verifyIdToken(idToken);
+    if (claims.role !== "super_admin") {
+      throw new Error("You are not authorized to create Admins");
+    }
     const userRecord = await auth.createUser({
       email: data.email,
       password: data.password,
       displayName: data.name,
     });
+    if (!userRecord) {
+      return { success: false, error: "Failed to create user" };
+    }
 
+    await auth.setCustomUserClaims(userRecord.uid, {
+      role: "admin",
+    }).then(() => {
+      console.log("Custom claim assigned successfully");
+    }).catch((err) => {
+      console.log("error while assigning custom claim setup ", err);
+    }); 
     // Store additional user data in Firestore
     await firestore.collection("users").doc(userRecord.uid).set({
       name: data.name,
@@ -116,7 +205,6 @@ export const addRestaurantAdmin = async (data: resAdminType) => {
       restaurantId: data.restaurantId,
       createdAt: new Date().toISOString(),
     });
-
     return {
       success: true,
       adminId: userRecord.uid,

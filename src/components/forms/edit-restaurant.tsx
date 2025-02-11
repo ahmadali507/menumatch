@@ -21,6 +21,8 @@ import { editRestaurant } from "@/actions/actions.admin";
 import { editRestaurantSchema, TEditRestaurant } from "@/lib/schema";
 import EditIcon from "@mui/icons-material/Edit";
 import LoadingButton from "../ui/loading-button";
+import { auth } from "@/firebase/firebaseconfig";
+import { useToast } from "@/context/toastContext";
 
 interface EditRestaurantProps {
   restaurantId: string;
@@ -39,12 +41,13 @@ export default function EditRestaurant({
     register,
     handleSubmit,
     formState: { errors },
-    reset,
+    // reset,
   } = useForm<TEditRestaurant>({
     resolver: zodResolver(editRestaurantSchema),
     defaultValues: initialData,
   });
 
+  const {showToast} = useToast(); 
   const {
     mutate,
     isPending,
@@ -53,12 +56,21 @@ export default function EditRestaurant({
   } = useMutation({
     mutationFn: async (data: TEditRestaurant) => {
       console.log("Editing restaurant with data", data);
-      return await editRestaurant(restaurantId as string, data);
+      const user = auth.currentUser; 
+      if(!user){
+        throw new Error("User not found"); 
+      }
+      const idToken = await user.getIdToken(true);
+      return await editRestaurant(restaurantId as string, data, idToken);
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
       // add a toaster here later
-      setOpen(false);
-      reset();
+      if(response.success){
+        showToast("Restaurant updated successfully", "success");
+      }
+      else {
+        showToast(response.error || "Failed to update restaurant", "error");
+      }
     },
   });
 

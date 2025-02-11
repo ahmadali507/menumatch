@@ -42,7 +42,7 @@ export default async function middleware(request: NextRequest) {
 
     // super admin route
     if (request.nextUrl.pathname.startsWith("/")) {
-      if (role === "super_admin") {
+      if (role === "super_admin" || role == "admin") {
         return NextResponse.next()
       }
       if (role === "admin") {

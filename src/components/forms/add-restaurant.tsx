@@ -19,6 +19,7 @@ import { useMutation } from "@tanstack/react-query";
 import LoadingButton from "@/components/ui/loading-button";
 import { useToast } from "@/context/toastContext";
 import { addRestaurantSchema, TAddRestaurantSchema } from "@/lib/schema";
+import { auth } from "@/firebase/firebaseconfig";
 // import { doc, getDoc } from "firebase/firestore";
 // import { db } from "@/firebase/firebaseconfig";
 // import { dataDisplayCustomizations } from "../theme/customizations/dataDisplay";
@@ -33,8 +34,13 @@ export default function AddRestaurantForm() {
   /// creating a mutation using reactQuery.....
 
   const mutation = useMutation({
-    mutationFn: (data: TAddRestaurantSchema) => {
-      return createRestaurant(data);
+    mutationFn: async(data: TAddRestaurantSchema) => {
+       const user = auth.currentUser; 
+       if(!user){
+         throw new Error("User not found"); 
+       }
+       const idToken = await user.getIdToken(true);
+       return createRestaurant(data, idToken);
     },
     onSuccess: (response) => {
       console.log("Response from createRestaurant", response);
@@ -43,6 +49,9 @@ export default function AddRestaurantForm() {
         setTimeout(() => {
           router.push(`/restaurants/${response.restaurantId}`);
         }, 1000)
+      }
+      else {
+        showToast(response.error || "Failed to create restaurant", "error")
       }
     },
     onError: (error) => {

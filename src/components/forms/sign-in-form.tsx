@@ -26,6 +26,7 @@ import LoadingButton from '@/components/ui/loading-button';  // Add this import
 import { useToast } from "@/context/toastContext";
 import { UserData } from "@/types";
 import { defaultRoutes } from "@/lib/routes";
+// import { createSuperAdmin } from "@/actions/actions.admin";
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -92,6 +93,20 @@ export default function SignInForm() {
 
   const router = useRouter();
 
+
+  // React.useEffect(()=>{
+  //     const createS_Admin =async () =>{
+  //     const response =   await createSuperAdmin({
+  //         email : "ahmad@gmail.com", 
+  //         password : "AhmadAli", 
+  //         name : "Ahmad Ali",
+  //         role : "super-admin"
+  //       }); 
+  //       console.log(response?.data);
+  //     }
+  //      createS_Admin(); 
+  // }, []); 
+
   // const handleGoogleSignIn = async () => {
   //   try {
   //     const result = await signInWithPopup(auth, provider);
@@ -130,7 +145,7 @@ export default function SignInForm() {
 
       console.log("User Signed in", response?.user);
 
-      await setUserCookie(response?.user?.uid);
+      await setUserCookie(response?.user?.uid as string);
 
       const userDocRef = doc(db, "users", response.user.uid);
       const userDoc = await getDoc(userDocRef);
