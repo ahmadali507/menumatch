@@ -5,9 +5,15 @@ import {
   Typography,
   Grid,
   Box,
+  IconButton,
+  Collapse,
 } from "@mui/material";
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import EventIcon from '@mui/icons-material/Event';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
+import { useState } from 'react';
 
 import { format } from "date-fns";
 import AddItemToMenu from "./actions/add-item-menu";
@@ -53,13 +59,19 @@ const dummyMenuSection: MenuSectionType = {
 };
 
 export default function MenuSection({ section }: { section: MenuSectionType }) {
+  const [isExpanded, setIsExpanded] = useState(true);
+
   const handleSectionNameUpdate = (newName: string) => {
     console.log('Section name updated:', newName);
     // Add your update logic here
   };
 
+  const handleToggle = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
-    <Card sx={{ p: 3 }}>
+    <Card sx={{ pt: 3, px: 3 }}>
       <Box display="flex" flexDirection="column" gap={2}>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <div className="flex gap-4 items-center">
@@ -84,14 +96,55 @@ export default function MenuSection({ section }: { section: MenuSectionType }) {
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
             <DeleteMenu menuId="dummy-for-now" />
             <AddItemToMenu />
+            <IconButton
+              onClick={handleToggle}
+              size="small"
+              sx={{ ml: 1 }}
+            >
+              {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
           </Box>
         </Box>
-        <Grid container spacing={3}>
-          {dummyMenuSection.items.map((item, index) => (
-            <MenuItemCard item={item} key={item.name + index} />
-          ))}
-        </Grid>
+
+        <Collapse in={isExpanded} timeout="auto">
+          {section.items.length > 0 ? (
+            <Grid container spacing={3}>
+              {section.items.map((item, index) => (
+                <MenuItemCard item={item} key={item.name + index} />
+              ))}
+            </Grid>
+          ) : (
+            <EmptyState />
+          )}
+        </Collapse>
       </Box>
-    </Card >
+    </Card>
   );
+}
+
+function EmptyState() {
+  return <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      py: 2,
+      gap: 2,
+      borderRadius: 1,
+    }}
+  >
+    <RestaurantMenuIcon
+      sx={{
+        fontSize: 64,
+        color: 'grey.300'
+      }}
+    />
+    <Typography variant="h6" color="text.secondary">
+      No items in this section yet
+    </Typography>
+    <Typography variant="body2" color="text.secondary" align="center">
+      Click the &quot;Add Item&quot; button above to add your first menu item
+    </Typography>
+  </Box>
 }
