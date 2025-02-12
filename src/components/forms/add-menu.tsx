@@ -97,6 +97,7 @@ export default function AddMenuForm() {
             <DateTimePicker
               value={startDateField.value}
               onChange={startDateField.onChange}
+              minDateTime={new Date()} // This will disable past dates and times
               slotProps={{
                 textField: {
                   fullWidth: true,

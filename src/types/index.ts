@@ -41,13 +41,14 @@ export interface MenuItem {
 export interface MenuSection {
   name: string;
   items: MenuItem[];
+  createdAt: Date;
 }
 
 export interface Menu {
   id: string;
   name: string;
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
   sections: MenuSection[];
 }
 
@@ -57,4 +58,14 @@ export interface UserData {
   email: string,
   restaurantId?: string | null,
   name?: string,
+}
+
+
+
+export type LocationDataType = {
+  [key: string]: {
+    [states: string] : {
+      [key: string]: string[]
+    }
+  }
 }

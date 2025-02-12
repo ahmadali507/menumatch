@@ -12,11 +12,15 @@ import { SidebarNav } from "./sidebar";
 
 export function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user } = useUser();
+  const { user, setUser } = useUser();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  const clearUser = () => {
+    setUser(null);
+  }
 
   const userData = {
     avatar: "https://randomuser.me/api/portraits"
@@ -53,6 +57,7 @@ export function SiteHeader() {
               email={user?.email as string}
               role={user?.role as string}
               avatar={userData.avatar}
+              clearUser={clearUser}
             />
           ) : (
             <div className='bg-gray-600 rounded-full h-10 w-10 cursor-pointer flex justify-center items-center' />

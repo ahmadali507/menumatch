@@ -11,7 +11,8 @@ import {
   FormLabel,
   FormHelperText,
   Paper,
-  // CircularProgress,
+  // MenuItem,
+  // Select,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { createRestaurant } from "@/actions/actions.admin";
@@ -20,43 +21,44 @@ import LoadingButton from "@/components/ui/loading-button";
 import { useToast } from "@/context/toastContext";
 import { addRestaurantSchema, TAddRestaurantSchema } from "@/lib/schema";
 import { auth } from "@/firebase/firebaseconfig";
-// import { doc, getDoc } from "firebase/firestore";
-// import { db } from "@/firebase/firebaseconfig";
-// import { dataDisplayCustomizations } from "../theme/customizations/dataDisplay";
-
+import { locationData } from "@/lib/dummy";
+import Autocomplete from "@mui/material/Autocomplete";
+// import { locationData } from "@/lib/data/locations";
 
 export default function AddRestaurantForm() {
   const router = useRouter();
   const [logo, setLogo] = useState<File | null>(null);
   const [background, setBackground] = useState<File | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
 
   const { showToast } = useToast();
   /// creating a mutation using reactQuery.....
 
   const mutation = useMutation({
-    mutationFn: async(data: TAddRestaurantSchema) => {
-       const user = auth.currentUser; 
-       if(!user){
-         throw new Error("User not found"); 
-       }
-       const idToken = await user.getIdToken(true);
-       return createRestaurant(data, idToken);
+    mutationFn: async (data: TAddRestaurantSchema) => {
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error("User not found");
+      }
+      const idToken = await user.getIdToken(true);
+      return createRestaurant(data, idToken);
     },
     onSuccess: (response) => {
       console.log("Response from createRestaurant", response);
       if (response.success) {
-        showToast("Restaurant created successfully", "success")
+        showToast("Restaurant created successfully", "success");
         setTimeout(() => {
           router.push(`/restaurants/${response.restaurantId}`);
-        }, 1000)
-      }
-      else {
-        showToast(response.error || "Failed to create restaurant", "error")
+        }, 1000);
+      } else {
+        showToast(response.error || "Failed to create restaurant", "error");
       }
     },
     onError: (error) => {
       //TODO: inroduce toasts to handle errors in an efficient way....
-      showToast("Error creating restaurant", "error")
+      showToast("Error creating restaurant", "error");
       console.log("Error creating restaurant:", error);
     },
   });
@@ -101,7 +103,6 @@ export default function AddRestaurantForm() {
             />
           </FormControl>
         </div>
-
       </div>
 
       {/* Location Details */}
@@ -117,28 +118,149 @@ export default function AddRestaurantForm() {
               helperText={errors.location?.address?.message}
             />
           </FormControl>
-          <FormControl fullWidth error={!!errors.location?.city}>
-            <FormLabel>City</FormLabel>
-            <TextField
-              {...register("location.city")}
-              error={!!errors.location?.city}
-              helperText={errors.location?.city?.message}
-            />
-          </FormControl>
-          <FormControl fullWidth error={!!errors.location?.state}>
-            <FormLabel>State</FormLabel>
-            <TextField
-              {...register("location.state")}
-              error={!!errors.location?.state}
-              helperText={errors.location?.state?.message}
-            />
-          </FormControl>
-          <FormControl fullWidth error={!!errors.location?.country}>
+
+          <FormControl fullWidth>
             <FormLabel>Country</FormLabel>
-            <TextField
-              {...register("location.country")}
-              error={!!errors.location?.country}
-              helperText={errors.location?.country?.message}
+            <Autocomplete
+              value={selectedCountry}
+              onChange={(_, newValue) => {
+                setSelectedCountry(newValue || "");
+                setSelectedState("");
+                setSelectedCity("");
+                register("location.country").onChange({
+                  target: { value: newValue },
+                });
+              }}
+              options={Object.keys(locationData)}
+              renderInput={(params) => (
+                <TextField {...params} placeholder="Select country" />
+              )}
+              componentsProps={{
+                popper: {
+                  sx: {
+                    "& .MuiAutocomplete-listbox": {
+                      maxHeight: "100px",
+                    },
+                  },
+                },
+              }}
+              sx={{
+                "& .MuiAutocomplete-clearIndicator": {
+                  padding: "2px",
+                  border: "none",
+                  backgroundColor: "transparent",
+                  "& .MuiSvgIcon-root": {
+                    fontSize: "16px",
+                  },
+                },
+                "& .MuiAutocomplete-popupIndicator": {
+                  padding: "2px",
+                  border: "none",
+                  backgroundColor: "transparent",
+                  "& .MuiSvgIcon-root": {
+                    fontSize: "20px",
+                  },
+                },
+              }}
+            />
+          </FormControl>
+
+          <FormControl fullWidth>
+            <FormLabel>State</FormLabel>
+            <Autocomplete
+              value={selectedState}
+              onChange={(_, newValue) => {
+                setSelectedState(newValue || "");
+                setSelectedCity("");
+                register("location.state").onChange({
+                  target: { value: newValue },
+                });
+              }}
+              options={
+                selectedCountry
+                  ? Object.keys(locationData[selectedCountry].states)
+                  : []
+              }
+              disabled={!selectedCountry}
+              renderInput={(params) => (
+                <TextField {...params} placeholder="Select state" />
+              )}
+              componentsProps={{
+                popper: {
+                  sx: {
+                    "& .MuiAutocomplete-listbox": {
+                      maxHeight: "100px",
+                    },
+                  },
+                },
+              }}
+              sx={{
+                "& .MuiAutocomplete-clearIndicator": {
+                  padding: "2px",
+                  border: "none",
+                  backgroundColor: "transparent",
+                  "& .MuiSvgIcon-root": {
+                    fontSize: "16px",
+                  },
+                },
+                "& .MuiAutocomplete-popupIndicator": {
+                  padding: "2px",
+                  border: "none",
+                  backgroundColor: "transparent",
+                  "& .MuiSvgIcon-root": {
+                    fontSize: "20px",
+                  },
+                },
+              }}
+            />
+          </FormControl>
+
+          <FormControl fullWidth>
+            <FormLabel>City</FormLabel>
+            <Autocomplete
+              value={selectedCity}
+              onChange={(_, newValue) => {
+                setSelectedCity(newValue || "");
+                register("location.city").onChange({
+                  target: { value: newValue },
+                });
+              }}
+              options={
+                selectedCountry && selectedState
+                  ? locationData[selectedCountry].states[selectedState]
+                  : []
+              }
+              disabled={!selectedState}
+              renderInput={(params) => (
+                <TextField {...params} placeholder="Select city" />
+              )}
+              componentsProps={{
+                popper: {
+                  sx: {
+                    "& .MuiAutocomplete-listbox": {
+                      maxHeight: "100px",
+                    },
+                  },
+                },
+              }}
+              sx={{
+                "& .MuiAutocomplete-clearIndicator": {
+                  padding: "2px",
+                  border: "none",
+                  backgroundColor: "transparent",
+                  "& .MuiSvgIcon-root": {
+                    fontSize: "16px",
+                  },
+                },
+                "& .MuiAutocomplete-popupIndicator": {
+                  padding: "2px",
+                  border: "none",
+                  backgroundColor: "transparent",
+                  "& .MuiSvgIcon-root": {
+                    fontSize: "20px",
+                  },
+                },
+              }}
             />
           </FormControl>
         </div>
@@ -237,8 +359,6 @@ export default function AddRestaurantForm() {
       >
         Create Restaurant
       </LoadingButton>
-
-
     </form>
   );
 }

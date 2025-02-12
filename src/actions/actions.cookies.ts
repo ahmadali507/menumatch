@@ -11,16 +11,16 @@ export async function setUserCookie(uid: string | null) {
     await initAdmin();
     const firestore = getFirestore();
 
-    console.log("uid for setting cookie", uid);
+    // console.log("uid for setting cookie", uid);
     const userSnap = await firestore.collection('users').doc(uid as string).get();
-    console.log("user data for setting cookie", userSnap.data());
+    // console.log("user data for setting cookie", userSnap.data());
 
     if (!userSnap) {
       return { error: "User not found" };
     }
 
     const userData = userSnap.data() as UserData;
-    console.log("this is the actual user data after snapshot", userData);
+    // console.log("this is the actual user data after snapshot", userData.name);
     const dataToEncrypt = {
       ...userData,
       uid: uid as string,
@@ -29,9 +29,9 @@ export async function setUserCookie(uid: string | null) {
     // Encrypt user data
     const encryptedData = await encryptData(dataToEncrypt);
 
-    console.log("encrypted data", encryptedData);
+    // console.log("encrypted data", encryptedData);
 
-    console.log("cookies", await cookies());
+    // console.log("cookies", await cookies());
     // Set encrypted cookie
     (await cookies()).set("auth", encryptedData, {
       httpOnly: true,

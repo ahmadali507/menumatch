@@ -12,7 +12,7 @@ export default function PageTitle({ title, description, children }: PageTitlePro
       <Typography component="h1" variant="h4">
         {title}
       </Typography>
-      {description && <Typography variant="caption" color="text.secondary">
+      {description && <Typography component="p" color="text.secondary">
         {description}
       </Typography>}
     </div>

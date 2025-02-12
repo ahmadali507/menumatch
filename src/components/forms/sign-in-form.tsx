@@ -26,6 +26,7 @@ import LoadingButton from '@/components/ui/loading-button';  // Add this import
 import { useToast } from "@/context/toastContext";
 import { UserData } from "@/types";
 import { defaultRoutes } from "@/lib/routes";
+import { useUser } from "@/context/userContext";
 // import { createSuperAdmin } from "@/actions/actions.admin";
 
 const signInSchema = z.object({
@@ -88,6 +89,7 @@ export default function SignInForm() {
   });
 
   const { showToast } = useToast();
+  const { setUser } = useUser();
   const [, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -143,8 +145,6 @@ export default function SignInForm() {
         return;
       }
 
-      console.log("User Signed in", response?.user);
-
       await setUserCookie(response?.user?.uid as string);
 
       const userDocRef = doc(db, "users", response.user.uid);
@@ -158,6 +158,7 @@ export default function SignInForm() {
       showToast("User Logged in successfully", "success");
 
       const userRole = (userDoc.data() as UserData).role
+      setUser(userDoc.data() as UserData);
       console.log("Redirecting to default route based on the role");
 
       setTimeout(() => {

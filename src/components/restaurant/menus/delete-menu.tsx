@@ -31,11 +31,10 @@ export default function DeleteMenu({ menuId }: { menuId: string }) {
     <>
       <IconButton
         size="small"
-        color="error"
         aria-label="delete menu"
         onClick={() => setOpen(true)}
       >
-        <DeleteIcon />
+        <DeleteIcon color="error" />
       </IconButton>
 
       <Dialog open={open} onClose={() => setOpen(false)}>

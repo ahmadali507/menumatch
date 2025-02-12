@@ -6,6 +6,7 @@ import { getFirestore } from "firebase-admin/firestore";
 import { revalidatePath } from "next/cache";
 import { Menu } from "@/types";
 import { getUser } from "./actions.cookies";
+import { formatFirebaseTimestamp } from "@/lib/utils";
 
 // Add restaurantId parameter to the function
 export const addMenu = async ({ restaurantId, data }: { restaurantId: string; data: TAddMenuFormSchema }) => {
@@ -71,11 +72,16 @@ export const getRestaurantMenus = async (restaurantId: string) => {
       ...doc.data(),
       // Convert Firestore Timestamps to JavaScript Dates
       name: doc.data().name,
-      startDate: doc.data().startDate.toDate(),
-      endDate: doc.data().endDate.toDate(),
-      sections: doc.data().sections,
-      createdAt: doc.data().createdAt.toDate(),
-      updatedAt: doc.data().updatedAt.toDate(),
+      startDate: formatFirebaseTimestamp(doc.data().startDate),
+      endDate: formatFirebaseTimestamp(doc.data().endDate),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      sections: doc.data().sections.map((section: any) => ({
+        ...section,
+        createdAt: formatFirebaseTimestamp(section.createdAt)
+      })
+      ),
+      createdAt: formatFirebaseTimestamp(doc.data().createdAt),
+      updatedAt: formatFirebaseTimestamp(doc.data().updatedAt),
     }));
 
     return {
@@ -116,6 +122,7 @@ export const getMenu = async (restaurantId: string, menuId: string) => {
       };
     }
 
+
     const menu = {
       id: menuSnapshot.id,
       ...menuSnapshot.data(),
@@ -123,9 +130,13 @@ export const getMenu = async (restaurantId: string, menuId: string) => {
       // Convert Firestore Timestamps to JavaScript Dates
       startDate: menuSnapshot.data()?.startDate.toDate(),
       endDate: menuSnapshot.data()?.endDate.toDate(),
-      sections: menuSnapshot.data()?.sections,
-      createdAt: menuSnapshot.data()?.createdAt.toDate(),
-      updatedAt: menuSnapshot.data()?.updatedAt.toDate(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      sections: menuSnapshot.data()?.sections.map((section: any) => ({
+        ...section,
+        createdAt: formatFirebaseTimestamp(section.createdAt),
+      })),
+      createdAt: formatFirebaseTimestamp(menuSnapshot.data()?.createdAt),
+      updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),
     } as Menu;
 
     return {
@@ -170,5 +181,44 @@ export async function deleteMenu(menuId: string) {
       success: false,
       error: "Failed to delete menu"
     };
+  }
+}
+
+export async function addMenuSection(menuId: string, sectionName: string) {
+  await initAdmin();
+  const firestore = getFirestore();
+  const restaurantId = await getRestaurantIdForAdmin();
+
+  try {
+    const menuRef = firestore
+      .collection("restaurants")
+      .doc(restaurantId)
+      .collection("menus")
+      .doc(menuId);
+
+    const menuDoc = await menuRef.get();
+    if (!menuDoc.exists) {
+      return { success: false, error: "Menu not found" };
+    }
+
+    const currentSections = menuDoc.data()?.sections || [];
+    const newSection = {
+      id: crypto.randomUUID(),
+      name: sectionName,
+      items: [],
+      createdAt: new Date(),
+    };
+
+    await menuRef.update({
+      sections: [...currentSections, newSection],
+      updatedAt: new Date(),
+    });
+
+    revalidatePath(`/restaurant/menu/${menuId}`);
+    return { success: true, section: newSection };
+
+  } catch (error) {
+    console.error("Error adding menu section:", error);
+    return { success: false, error: "Failed to add section" };
   }
 }
