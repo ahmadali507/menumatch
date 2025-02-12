@@ -124,3 +124,40 @@ export const dummyMenus = [
     ]
   }
 ]
+
+export const dummyMenuSection = {
+  "createdAt": new Date(),
+  name: "Appetizers",
+  items: [
+    {
+      name: "Vegetable Spring Rolls",
+      description: "Crispy rolls filled with fresh vegetables and served with sweet chili sauce",
+      price: 8.99,
+      ingredients: ["Cabbage", "Carrots", "Mushrooms"],
+      photo: "https://images.unsplash.com/photo-1544025162-d76694265947",
+      available: true,
+      labels: ["Vegetarian", "Crispy", "Asian"],
+      allergens: ["Gluten", "Soy"]
+    },
+    {
+      name: "Crispy Calamari",
+      description: "Lightly breaded calamari rings served with marinara sauce",
+      price: 12.99,
+      ingredients: ["Cabbage", "Carrots", "Mushrooms"],
+      photo: "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0",
+      available: true,
+      labels: ["Seafood", "Crispy"],
+      allergens: ["Shellfish", "Gluten"]
+    },
+    {
+      name: "Classic Bruschetta",
+      description: "Toasted bread topped with diced tomatoes, garlic, and fresh basil",
+      price: 7.99,
+      ingredients: ["Cabbage", "Carrots", "Mushrooms"],
+      photo: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f",
+      available: false,
+      labels: ["Vegetarian", "Italian"],
+      allergens: ["Gluten"]
+    }
+  ]
+};

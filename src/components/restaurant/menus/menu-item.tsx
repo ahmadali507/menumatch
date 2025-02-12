@@ -16,13 +16,40 @@ import WarningIcon from '@mui/icons-material/Warning';
 import LocalDiningIcon from '@mui/icons-material/LocalDining';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
-export default function MenuItemCard({ item }: { item: MenuItem }) {
+interface MenuItemCardProps {
+  item: MenuItem;
+  dragHandleProps?: {
+    icon: React.ReactNode;
+    [key: string]: unknown;
+  };
+}
+
+export default function MenuItemCard({ item }: MenuItemCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.name });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
   return (
-    <Grid item xs={12} sm={6} md={4}>
+    <Grid item xs={12} sm={6} md={4} ref={setNodeRef} style={style}>
       <Card
         variant="outlined"
         sx={{
+          position: 'relative',
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
@@ -34,6 +61,33 @@ export default function MenuItemCard({ item }: { item: MenuItem }) {
         }}
       >
         <Box sx={{ position: 'relative', height: 200 }}>
+          <DragIndicatorIcon
+            {...attributes}
+            {...listeners}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              left: 8,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              borderRadius: '4px',
+              color: 'white',
+              cursor: 'grab',
+              fontSize: 24,
+              opacity: 0,
+              zIndex: 1,
+              transition: 'all 0.2s ease-in-out',
+              backdropFilter: 'blur(4px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              '&:hover': {
+                opacity: 1,
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                transform: 'scale(1.1)',
+              },
+              '.MuiCard-root:hover &': {
+                opacity: 0.8
+              }
+            }}
+          />
           <Image
             src={item.photo}
             alt={item.name}
@@ -44,7 +98,7 @@ export default function MenuItemCard({ item }: { item: MenuItem }) {
             sx={{
               position: 'absolute',
               top: 12,
-              right: 40,
+              right: 41,
             }}
             badgeContent={
               item.available ? (

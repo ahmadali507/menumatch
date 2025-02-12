@@ -1,6 +1,5 @@
 import { getMenu, getRestaurantIdForAdmin } from "@/actions/actions.menu";
 import { Card, Typography } from "@mui/material";
-import { unstable_cache } from "next/cache";
 import MenuOverview from "@/components/restaurant/menus/menu-overview";
 import MenuStats from "@/components/restaurant/menus/menu-stats";
 import MenuSectionsList from "@/components/restaurant/menus/menu-sections-list";
@@ -10,12 +9,11 @@ export const metadata = {
   description: "View details of a menu"
 }
 
-const getCachedMenu = unstable_cache(getMenu);
 
 export default async function SingleMenuPage({ params }: { params: Promise<{ menuId: string }> }) {
   const { menuId } = await params;
   const restaurantId = await getRestaurantIdForAdmin();
-  const { success, menu } = await getCachedMenu(restaurantId, menuId);
+  const { success, menu } = await getMenu(restaurantId, menuId);
 
   if (!success || !menu) {
     return (

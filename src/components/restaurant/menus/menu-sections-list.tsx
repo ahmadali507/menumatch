@@ -5,8 +5,25 @@ import { MenuSection as MenuSectionType } from "@/types";
 import EmptyState from "@/components/ui/empty-state";
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import AddSection from './add-section';
+import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
+import { SortableContext, arrayMove } from '@dnd-kit/sortable';
+import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-keys';
 
-export default function MenuSectionsList({ sections, menuId }: { sections: MenuSectionType[], menuId: string }) {
+export default function MenuSectionsList({ sections: initialSections, menuId }: { sections: MenuSectionType[], menuId: string }) {
+  const { data: sections = initialSections } = useQuery({
+    queryKey: queryKeys.menuSections(menuId),
+    initialData: initialSections,
+  });
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      // TODO: Implement optimistic update for reordering
+      // Will be handled in a separate implementation
+    }
+  };
 
   return (
     <Box className="space-y-4">
@@ -22,13 +39,20 @@ export default function MenuSectionsList({ sections, menuId }: { sections: MenuS
           description="This menu doesn't have any sections. Add sections to organize your menu items."
         />
       ) : (
-        <Grid container spacing={3}>
-          {sections.map((section, index) => (
-            <Grid item xs={12} key={index}>
-              <MenuSection section={section} />
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={sections.map(section => section.name)}>
+            <Grid container spacing={3}>
+              {sections.map((section, index) => (
+                <Grid item xs={12} key={section.name + index}>
+                  <MenuSection section={section} />
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
+          </SortableContext>
+        </DndContext>
       )}
     </Box>
   );
