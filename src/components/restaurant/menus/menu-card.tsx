@@ -47,7 +47,6 @@ export default function MenuCard({ menu }: MenuCardProps) {
   };
 
   const dateStatus = getDateStatus(new Date(menu.startDate), new Date(menu.endDate));
-
   // decide status based on dates
   const active = isAfter(new Date(), new Date(menu.startDate)) && isBefore(new Date(), new Date(menu.endDate));
 

@@ -61,6 +61,7 @@ export default function EditRestaurant({
         throw new Error("User not found"); 
       }
       const idToken = await user.getIdToken(true);
+      console.log("User role and claims ",await user.getIdTokenResult());
       return await editRestaurant(restaurantId as string, data, idToken);
     },
     onSuccess: (response) => {
