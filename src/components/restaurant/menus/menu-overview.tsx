@@ -4,6 +4,7 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import { Menu } from "@/types";
 import MenuQRCode from "./menu-qrcode";
+import MenuExport from "./menu-export";
 
 export default function MenuOverview({ menu }: { menu: Menu }) {
   const isActive = new Date(menu.startDate) <= new Date() && new Date(menu.endDate) >= new Date();
@@ -44,10 +45,13 @@ export default function MenuOverview({ menu }: { menu: Menu }) {
         </div>
       </Stack>
 
-      <MenuQRCode
-        menuId={menu.id}
-        qrCode={menu.qrCode}
-      />
+      <div className="flex gap-2 items-center">
+        <MenuQRCode
+          menuId={menu.id}
+          qrCode={menu.qrCode}
+        />
+        <MenuExport menu={menu} />
+      </div>
 
     </Box>
   );
