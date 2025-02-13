@@ -50,6 +50,10 @@ export interface Menu {
   startDate: Date;
   endDate: Date;
   sections: MenuSection[];
+  qrCode?: {
+    url: string;
+    createdAt: Date;
+  };
 }
 
 export interface UserData {
