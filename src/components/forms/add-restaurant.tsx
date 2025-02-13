@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -9,54 +8,54 @@ import {
   TextField,
   FormControl,
   FormLabel,
-  FormHelperText,
-  Paper,
-  // CircularProgress,
 } from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { createRestaurant } from "@/actions/actions.admin";
 import { useMutation } from "@tanstack/react-query";
 import LoadingButton from "@/components/ui/loading-button";
 import { useToast } from "@/context/toastContext";
 import { addRestaurantSchema, TAddRestaurantSchema } from "@/lib/schema";
 import { auth } from "@/firebase/firebaseconfig";
-// import { doc, getDoc } from "firebase/firestore";
-// import { db } from "@/firebase/firebaseconfig";
-// import { dataDisplayCustomizations } from "../theme/customizations/dataDisplay";
+import { useImageUpload } from "@/hooks/useImageUpload";
+import ImageCropDialog from "./image-crop";
+import ImageUpload from "./image-upload";
 
 
 export default function AddRestaurantForm() {
   const router = useRouter();
-  const [logo, setLogo] = useState<File | null>(null);
-  const [background, setBackground] = useState<File | null>(null);
-
   const { showToast } = useToast();
-  /// creating a mutation using reactQuery.....
+  const {
+    images,
+    currentImage,
+    cropDialogOpen,
+    handleImageUpload,
+    handleCropComplete,
+    handleDeleteImage,
+    setCropDialogOpen,
+  } = useImageUpload();
 
   const mutation = useMutation({
-    mutationFn: async(data: TAddRestaurantSchema) => {
-       const user = auth.currentUser; 
-       if(!user){
-         throw new Error("User not found"); 
-       }
-       const idToken = await user.getIdToken(true);
-       return createRestaurant(data, idToken);
+    mutationFn: async (data: TAddRestaurantSchema) => {
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error("User not found");
+      }
+      const idToken = await user.getIdToken(true);
+      return createRestaurant(data, idToken);
     },
     onSuccess: (response) => {
       console.log("Response from createRestaurant", response);
       if (response.success) {
-        showToast("Restaurant created successfully", "success")
+        showToast("Restaurant created successfully", "success");
         setTimeout(() => {
           router.push(`/restaurants/${response.restaurantId}`);
-        }, 1000)
-      }
-      else {
-        showToast(response.error || "Failed to create restaurant", "error")
+        }, 1000);
+      } else {
+        showToast(response.error || "Failed to create restaurant", "error");
       }
     },
     onError: (error) => {
       //TODO: inroduce toasts to handle errors in an efficient way....
-      showToast("Error creating restaurant", "error")
+      showToast("Error creating restaurant", "error");
       console.log("Error creating restaurant:", error);
     },
   });
@@ -73,9 +72,10 @@ export default function AddRestaurantForm() {
     // Handle form submission
     mutation.mutate(data);
 
-    console.log(data, logo, background);
+    console.log(data, images.logo.file, images.background.file);
     //  Replace 123 with actual ID
   };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Basic Details */}
@@ -101,7 +101,6 @@ export default function AddRestaurantForm() {
             />
           </FormControl>
         </div>
-
       </div>
 
       {/* Location Details */}
@@ -173,57 +172,18 @@ export default function AddRestaurantForm() {
       <div className="space-y-3">
         <Typography variant="h6">Images</Typography>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Logo Upload */}
-          <div>
-            <FormLabel>Logo</FormLabel>
-            <Paper
-              variant="outlined"
-              className="mt-2 border-dashed border-2 rounded-lg p-6 text-center cursor-pointer hover:border-primary-500 transition-colors"
-              onClick={() => document.getElementById("logo-upload")?.click()}
-            >
-              <input
-                id="logo-upload"
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={(e) => setLogo(e.target.files?.[0] || null)}
-              />
-              <CloudUploadIcon className="text-4xl mb-2" />
-              <Typography>
-                {logo ? logo.name : "Click to upload logo"}
-              </Typography>
-              <FormHelperText sx={{ textAlign: "center" }}>
-                Recommended: 512x512px, max 2MB
-              </FormHelperText>
-            </Paper>
-          </div>
-
-          {/* Background Upload */}
-          <div>
-            <FormLabel>Background Image</FormLabel>
-            <Paper
-              variant="outlined"
-              className="mt-2 border-dashed border-2 rounded-lg p-6 text-center cursor-pointer hover:border-primary-500 transition-colors"
-              onClick={() =>
-                document.getElementById("background-upload")?.click()
-              }
-            >
-              <input
-                id="background-upload"
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={(e) => setBackground(e.target.files?.[0] || null)}
-              />
-              <CloudUploadIcon className="text-4xl mb-2" />
-              <Typography>
-                {background ? background.name : "Click to upload background"}
-              </Typography>
-              <FormHelperText sx={{ textAlign: "center" }}>
-                Recommended: 1920x1080px, max 5MB
-              </FormHelperText>
-            </Paper>
-          </div>
+          <ImageUpload
+            type="logo"
+            preview={images.logo.preview}
+            onUpload={(e) => handleImageUpload(e, 'logo')}
+            onDelete={() => handleDeleteImage('logo')}
+          />
+          <ImageUpload
+            type="background"
+            preview={images.background.preview}
+            onUpload={(e) => handleImageUpload(e, 'background')}
+            onDelete={() => handleDeleteImage('background')}
+          />
         </div>
       </div>
 
@@ -237,8 +197,14 @@ export default function AddRestaurantForm() {
       >
         Create Restaurant
       </LoadingButton>
-
-
-    </form>
+      <ImageCropDialog
+        key={currentImage?.url}
+        open={cropDialogOpen}
+        onClose={() => setCropDialogOpen(false)}
+        imageUrl={currentImage?.url || ''}
+        onCropComplete={handleCropComplete}
+        aspectRatio={currentImage?.type === 'logo' ? 1 : 16 / 9}
+      />
+    </form >
   );
 }

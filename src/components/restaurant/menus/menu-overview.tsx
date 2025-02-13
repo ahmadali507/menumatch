@@ -3,6 +3,7 @@ import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import { Menu } from "@/types";
+import MenuQRCode from "./menu-qrcode";
 
 export default function MenuOverview({ menu }: { menu: Menu }) {
   const isActive = new Date(menu.startDate) <= new Date() && new Date(menu.endDate) >= new Date();
@@ -42,6 +43,12 @@ export default function MenuOverview({ menu }: { menu: Menu }) {
           </Stack>
         </div>
       </Stack>
+
+      <MenuQRCode
+        menuId={menu.id}
+        qrCode={menu.qrCode}
+      />
+
     </Box>
   );
 }

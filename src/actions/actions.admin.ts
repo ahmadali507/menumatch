@@ -7,7 +7,7 @@ import { RestaurantType, resAdminType } from "@/types";
 import { getFirestore } from "firebase-admin/firestore";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
-import { cache } from "react";
+// import { cache } from "react";
 
 
 type SuperAdminData = {
@@ -253,7 +253,7 @@ export const fetchRestaurantAdmins = async (restaurantId: string) => {
   }
 };
 
-export const getRestaurantData = cache(async (restaurantId: string) => {
+export const getRestaurantData = async (restaurantId: string) => {
   await initAdmin();
   const firestore = getFirestore();
 
@@ -267,7 +267,7 @@ export const getRestaurantData = cache(async (restaurantId: string) => {
   }
 
   const restaurantData = restaurantSnap.data() as RestaurantType;
-
+  console.log("haha", restaurantData)
   // Enhance restaurant data with admin information
   if (adminResponse.success && adminResponse.admins) {
     restaurantData.admins = adminResponse.admins;
@@ -277,4 +277,4 @@ export const getRestaurantData = cache(async (restaurantId: string) => {
   }
 
   return restaurantData;
-});
+};

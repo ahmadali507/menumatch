@@ -15,13 +15,14 @@ export default async function RestaurantInformationPage() {
   const restaurantId = await getRestaurantIdForAdmin();
   const restaurant = await getRestaurantData(restaurantId);
 
+
   return <section className="pb-6">
     {/* <PageTitle title="Restaurant Information" description="View Sall information about your restaurant" /> */}
-    <SectionLayout 
-     title="Restaurant Details"
-     description="Displays detailed information about a specific restaurant"
+    <SectionLayout
+      title="Restaurant Details"
+      description="Displays detailed information about a specific restaurant"
     />
-    <RestaurantInformation restaurantId={restaurantId} details = {restaurant} />
+    <RestaurantInformation restaurantId={restaurantId} details={restaurant} />
     {/* <pre>{JSON.stringify(restaurant, null, 2)}</pre> */}
   </section>
 }

@@ -6,7 +6,8 @@ import { getFirestore } from "firebase-admin/firestore";
 import { revalidatePath } from "next/cache";
 import { Menu } from "@/types";
 import { getUser } from "./actions.cookies";
-import { formatFirebaseTimestamp } from "@/lib/utils";
+import { formatFirebaseTimestamp } from "@/lib/format";
+import QRCode from 'qrcode';
 
 // Add restaurantId parameter to the function
 export const addMenu = async ({ restaurantId, data }: { restaurantId: string; data: TAddMenuFormSchema }) => {
@@ -137,6 +138,10 @@ export const getMenu = async (restaurantId: string, menuId: string) => {
       })),
       createdAt: formatFirebaseTimestamp(menuSnapshot.data()?.createdAt),
       updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),
+      // "qrCode": {
+      //   ...menuSnapshot.data()?.qrCode,
+      //   "createdAt": formatFirebaseTimestamp(menuSnapshot.data()?.qrCode.createdAt)
+      // }
     } as Menu;
 
     return {
@@ -220,5 +225,53 @@ export async function addMenuSection(menuId: string, sectionName: string) {
   } catch (error) {
     console.error("Error adding menu section:", error);
     return { success: false, error: "Failed to add section" };
+  }
+}
+
+export async function generateMenuQRCode(menuId: string) {
+  await initAdmin();
+  const firestore = getFirestore();
+  const restaurantId = await getRestaurantIdForAdmin();
+
+  try {
+    const menuRef = firestore
+      .collection("restaurants")
+      .doc(restaurantId)
+      .collection("menus")
+      .doc(menuId);
+
+    // Generate QR code URL for the menu
+    const menuUrl = `${process.env.NEXT_PUBLIC_APP_URL}/restaurant/${restaurantId}/${menuId}`;
+    console.log("here is the menu url for the new qr code", menuUrl);
+    const qrCodeDataUrl = await QRCode.toDataURL(menuUrl, {
+      width: 400,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#ffffff'
+      }
+    });
+
+    // Save QR code to Firestore
+    await menuRef.update({
+      qrCode: {
+        url: qrCodeDataUrl
+        // createdAt: new Date()
+      }
+      // updatedAt: new Date()
+    });
+
+    revalidatePath(`/restaurant/menu/${menuId}`);
+
+    return {
+      success: true,
+      qrCode: qrCodeDataUrl
+    };
+  } catch (error) {
+    console.error("Error generating QR code:", error);
+    return {
+      success: false,
+      error: "Failed to generate QR code"
+    };
   }
 }

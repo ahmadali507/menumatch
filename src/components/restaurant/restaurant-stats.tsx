@@ -8,8 +8,8 @@ export default function RestaurantStats({ details }: { details: RestaurantType }
         <Typography color="text.secondary">Status</Typography>
         <div className="mt-2">
           <Chip
-            label={details.status}
-            color={details.status === 'active' ? 'success' : 'default'}
+            label={details.status || 'Inactive'}
+            color={details.status === 'active' ? 'success' : "error"}
           />
         </div>
       </Card>
@@ -19,7 +19,7 @@ export default function RestaurantStats({ details }: { details: RestaurantType }
       </Card>
       <Card className="p-4 bg-gray-900/50">
         <Typography color="text.secondary">Total Orders</Typography>
-        <Typography variant="h6" className="mt-2">{details.orders}</Typography>
+        <Typography variant="h6" className="mt-2">{details.orders || 120}</Typography>
       </Card>
     </div>
   );
