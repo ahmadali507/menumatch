@@ -3,6 +3,7 @@ import { Card, Typography } from "@mui/material";
 import MenuOverview from "@/components/restaurant/menus/menu-overview";
 import MenuStats from "@/components/restaurant/menus/menu-stats";
 import MenuSectionsList from "@/components/restaurant/menus/menu-sections-list";
+import { MenuProvider } from "@/context/menuContext";
 
 export const metadata = {
   title: "Menu Details",
@@ -15,6 +16,7 @@ export default async function SingleMenuPage({ params }: { params: Promise<{ men
   const restaurantId = await getRestaurantIdForAdmin();
   const { success, menu } = await getMenu(restaurantId, menuId);
 
+
   if (!success || !menu) {
     return (
       <Card sx={{ p: 4, textAlign: 'center' }}>
@@ -25,10 +27,12 @@ export default async function SingleMenuPage({ params }: { params: Promise<{ men
   }
 
   return (
+  <MenuProvider initialMenu={menu}>
     <section className="space-y-6">
       <MenuOverview menu={menu} />
       <MenuStats menu={menu} />
       <MenuSectionsList sections={menu.sections} menuId={menuId} />
     </section>
+  </MenuProvider>
   );
 }

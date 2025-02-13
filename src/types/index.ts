@@ -27,28 +27,20 @@ export type resAdminType = {
   // idToken ?: string, 
 }
 
-export interface MenuItem {
-  name: string;
-  description: string;
-  ingredients: string[];
-  photo: string;
-  price: number;
-  allergens: string[];
-  available: boolean;
-  labels: string[];
-}
+
 
 export interface MenuSection {
+  id: string, 
   name: string;
   items: MenuItem[];
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export interface Menu {
   id: string;
   name: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | string;
+  endDate: Date | string;
   sections: MenuSection[];
 }
 
@@ -68,4 +60,16 @@ export type LocationDataType = {
       [key: string]: string[]
     }
   }
+}
+
+export interface MenuItem {
+  id?:string; 
+  name: string;
+  description: string;
+  ingredients: string[];
+  photo?: string;
+  price: number;
+  allergens: string[];
+  available: boolean;
+  labels: string[];
 }

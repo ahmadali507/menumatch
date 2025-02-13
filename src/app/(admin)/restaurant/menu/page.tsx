@@ -14,6 +14,8 @@ import PageTitle from "@/components/restaurant/dashboard/page-title";
 import { getUser } from "@/actions/actions.cookies";
 import { redirect } from "next/navigation";
 import { getRestaurantMenus } from "@/actions/actions.menu";
+// import { useMenu } from "@/context/menuContext";
+// import { useEffect } from "react";
 
 export default async function RestaurantMenuPage() {
 

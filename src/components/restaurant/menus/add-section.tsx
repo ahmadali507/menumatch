@@ -6,10 +6,12 @@ import { useMutation } from '@tanstack/react-query';
 import { addMenuSection } from '@/actions/actions.menu';
 import { useToast } from '@/context/toastContext';
 import LoadingButton from '@/components/ui/loading-button';
+import { useRouter } from 'next/navigation';
 
 export default function AddSection({ menuId }: { menuId: string }) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [sectionName, setSectionName] = useState('');
+  const router = useRouter();
   const { showToast } = useToast();
 
   const { mutate, isPending } = useMutation({
@@ -21,6 +23,7 @@ export default function AddSection({ menuId }: { menuId: string }) {
         showToast(response.error || 'Failed to add section', 'error');
         return;
       }
+      router.refresh();
       showToast('Section added successfully', 'success');
       setSectionName('');
       setAnchorEl(null);

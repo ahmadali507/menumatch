@@ -1,21 +1,27 @@
-"use client";
-import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Button,  } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
-import { useState } from "react";
+// import { useState } from "react";
+import { redirect } from "next/navigation";
+// import { getRestaurantIdForAdmin } from "@/actions/actions.menu";
 
-export default function AddItemToMenu() {
-  const [open, setOpen] = useState(false);
+export default function AddItemToMenu({menuId, sectionId}:{menuId: string, sectionId: string}) {
+  // const [open, setOpen] = useState(false);
+  // const restaurantId = await getRestaurantIdForAdmin(); 
+  const handleClick = () => {
+    console.log("Button clicked")
+    redirect(`/restaurant/menu/${menuId}/additem/${sectionId}`)
+  }
   return <>
     <Button
       variant="contained"
       startIcon={<AddIcon />}
       size="small"
-      onClick={() => setOpen(true)}
+      onClick={handleClick}
       sx={{ ml: 2 }}
     >
       Add Item
     </Button>
-    <Dialog
+    {/* <Dialog
       open={open}
       onClose={() => setOpen(false)}
       maxWidth="sm"
@@ -51,8 +57,7 @@ export default function AddItemToMenu() {
       <DialogContent>
         this is to add an item
       </DialogContent>
-    </Dialog>
-  </>
+    </Dialog> */}  </>
 
 
 }

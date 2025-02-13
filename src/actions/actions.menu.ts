@@ -4,7 +4,7 @@ import { TAddMenuFormSchema } from "@/lib/schema";
 import { initAdmin } from "@/firebase/adminFirebase";
 import { getFirestore } from "firebase-admin/firestore";
 import { revalidatePath } from "next/cache";
-import { Menu } from "@/types";
+import { Menu, MenuItem, MenuSection } from "@/types";
 import { getUser } from "./actions.cookies";
 import { formatFirebaseTimestamp } from "@/lib/utils";
 
@@ -135,7 +135,7 @@ export const getMenu = async (restaurantId: string, menuId: string) => {
         ...section,
         createdAt: formatFirebaseTimestamp(section.createdAt),
       })),
-      createdAt: formatFirebaseTimestamp(menuSnapshot.data()?.createdAt),
+      createdAt:formatFirebaseTimestamp( menuSnapshot.data()?.createdAt),
       updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),
     } as Menu;
 
@@ -168,9 +168,7 @@ export async function deleteMenu(menuId: string) {
       .doc(menuId);
 
     await menuRef.delete();
-
     revalidatePath("/restaurant/menu");
-
     return {
       success: true
     };
@@ -220,5 +218,115 @@ export async function addMenuSection(menuId: string, sectionName: string) {
   } catch (error) {
     console.error("Error adding menu section:", error);
     return { success: false, error: "Failed to add section" };
+  }
+}
+
+
+export const addMenuSectionItem = async(menuId: string, sectionId: string, item: MenuItem) => {
+  await initAdmin(); 
+  const firestore = getFirestore();
+  const restaurantId = await getRestaurantIdForAdmin();
+  try {
+    const menuRef = firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId);
+    const menuDoc = await menuRef.get();
+    if(!menuDoc.exists){
+      throw new Error("Menu not found");
+    }
+    const currentSections = menuDoc.data()?.sections || [];
+    const sectionIndex = currentSections.findIndex((section: MenuSection) => section.id === sectionId);
+    if(sectionIndex === -1){
+      throw new Error("Section not found");
+    }
+
+    // Use Firestore Timestamp instead of Date
+    // const timestamp = firestore.Timestamp.now();
+
+    currentSections[sectionIndex].items.push({
+      ...item,
+      id: crypto.randomUUID(),
+      createdAt: new Date().toString()// Changed from new Date()
+    })
+
+    // Update the menu document with the modified sections array
+    await menuRef.update({
+      sections: currentSections,
+      updatedAt: new Date().toString() // Changed from new Date()
+    });
+
+  
+    revalidatePath(`/restaurant/menu/${menuId}`);
+    return { success: true, item: item };
+  } catch (error) {
+    return {success: false, error: (error as Error).message}
+  }
+}
+
+
+
+export const deleteMenuSection = async(menuId: string, sectionId: string) => {
+  await initAdmin();
+  const firestore = getFirestore();
+  const restaurantId = await getRestaurantIdForAdmin();
+
+  try {
+    const menuRef = firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId);
+    const menuDoc = await menuRef.get();
+    if(!menuDoc.exists){
+      throw new Error("Menu not found");
+    }
+
+    const currentSections = menuDoc.data()?.sections || [];
+    const sectionIndex = currentSections.findIndex((section: MenuSection) => section.id === sectionId);
+    if(sectionIndex === -1){
+      throw new Error("Section not found");
+    }
+
+    currentSections.splice(sectionIndex, 1);
+
+    await menuRef.update({
+      sections: currentSections,
+      updatedAt: new Date().toString() // Changed from new Date()
+    });
+
+    revalidatePath(`/restaurant/menu/${menuId}`);
+    return { success: true };
+  } catch (error) {
+    return {success: false, error: (error as Error).message}
+  }
+}
+export const deleteMenuItem = async(menuId: string, sectionId: string, itemId: string) => {
+  await initAdmin();
+  const firestore = getFirestore();
+  const restaurantId = await getRestaurantIdForAdmin();
+
+  try {
+    const menuRef = firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId);
+    const menuDoc = await menuRef.get();
+    if(!menuDoc.exists){
+      throw new Error("Menu not found");
+    }
+
+    const currentSections = menuDoc.data()?.sections || [];
+    const sectionIndex = currentSections.findIndex((section: MenuSection) => section.id === sectionId);
+    if(sectionIndex === -1){
+      throw new Error("Section not found");
+    }
+
+    const itemIndex = currentSections[sectionIndex].items.findIndex((item: MenuItem) => item.id === itemId);
+    if(itemIndex === -1){
+      throw new Error("Item not found");
+    }
+
+    currentSections[sectionIndex].items.splice(itemIndex, 1);
+
+    await menuRef.update({
+      sections: currentSections,
+      updatedAt: new Date().toString() // Changed from new Date()
+    });
+
+    revalidatePath(`/restaurant/menu/${menuId}`);
+    return { success: true };
+  } catch (error) {
+    return {success: false, error: (error as Error).message}
   }
 }
