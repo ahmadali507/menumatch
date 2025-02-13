@@ -170,7 +170,8 @@ export async function deleteMenu(menuId: string) {
     await menuRef.delete();
     revalidatePath("/restaurant/menu");
     return {
-      success: true
+      success: true, 
+      menu : menuId, 
     };
 
   } catch (error) {
@@ -288,8 +289,31 @@ export const deleteMenuSection = async(menuId: string, sectionId: string) => {
       updatedAt: new Date().toString() // Changed from new Date()
     });
 
+
+    const menuSnapshot = await menuRef.get();
+
+    const menu = {
+      id: menuSnapshot.id,
+      ...menuSnapshot.data(),
+      name: menuSnapshot.data()?.name,
+      // Convert Firestore Timestamps to JavaScript Dates
+      startDate: menuSnapshot.data()?.startDate.toDate(),
+      endDate: menuSnapshot.data()?.endDate.toDate(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      sections: menuSnapshot.data()?.sections.map((section: any) => ({
+        ...section,
+        createdAt: formatFirebaseTimestamp(section.createdAt),
+      })),
+      createdAt:formatFirebaseTimestamp( menuSnapshot.data()?.createdAt),
+      updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),
+    } as Menu;
+
+    // again fetch the latest data from the database... 
+
+    // const updatedMenuDoc = (await menuRef.get()).data(); ;
+
     revalidatePath(`/restaurant/menu/${menuId}`);
-    return { success: true };
+    return { success: true, menu: menu };
   } catch (error) {
     return {success: false, error: (error as Error).message}
   }

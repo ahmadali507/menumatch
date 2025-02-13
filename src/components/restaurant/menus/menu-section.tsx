@@ -105,7 +105,7 @@ export default function MenuSection({menuId, section }: {menuId: string,  sectio
           </div>
 
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <DeleteMenu menuId="dummy-for-now" />
+            <DeleteMenu menuId={menuId} sectionId={section?.id} />
             <AddItemToMenu menuId = {menuId} sectionId={section?.id} />
             <IconButton
               onClick={handleToggle}
