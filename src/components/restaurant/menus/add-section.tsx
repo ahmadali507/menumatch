@@ -6,11 +6,18 @@ import { useMutation } from '@tanstack/react-query';
 import { addMenuSection } from '@/actions/actions.menu';
 import { useToast } from '@/context/toastContext';
 import LoadingButton from '@/components/ui/loading-button';
+import { useRouter } from 'next/navigation';
+import { useMenu } from '@/context/menuContext';
+import { Menu } from '@/types';
 
 export default function AddSection({ menuId }: { menuId: string }) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [sectionName, setSectionName] = useState('');
+  const router = useRouter();
   const { showToast } = useToast();
+
+  const {menu, setMenu} = useMenu(); 
+
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
@@ -20,6 +27,17 @@ export default function AddSection({ menuId }: { menuId: string }) {
       if (!response.success) {
         showToast(response.error || 'Failed to add section', 'error');
         return;
+      }
+      router.refresh();
+      if(response.success && response.section){
+        const updatedMenu: Menu = {
+          ...menu!,
+          id: menu!.id,
+          name: menu!.name,
+          sections: [...(menu?.sections || []), response.section]
+        };
+        setMenu(updatedMenu);
+           
       }
       showToast('Section added successfully', 'success');
       setSectionName('');

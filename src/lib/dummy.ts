@@ -1,9 +1,11 @@
-export const dummyMenus = [
+import { LocationDataType, Menu } from "@/types";
+
+export const dummyMenus: Menu[] = [
   {
     id: "1",
     name: "Lunch Special",
-    startDate: "2024-03-01T11:00:00Z",
-    endDate: "2024-12-31T15:00:00Z",
+    startDate: "2024-03-01T11:00:00Z" as string,
+    endDate: "2024-12-31T15:00:00Z" as string,
     sections: [
       {
         name: "Appetizers",
@@ -160,4 +162,106 @@ export const dummyMenuSection = {
       allergens: ["Gluten"]
     }
   ]
+};
+
+/////////// dummy location data....... 
+export const locationData: LocationDataType = {
+  USA: {
+    states: {
+      California: ["Los Angeles", "San Francisco", "San Diego", "Sacramento", "Fresno"],
+      NewYork: ["New York City", "Buffalo", "Albany", "Rochester", "Syracuse"],
+      Texas: ["Houston", "Austin", "Dallas", "San Antonio", "Fort Worth"],
+      Florida: ["Miami", "Orlando", "Tampa", "Jacksonville", "Tallahassee"],
+      Illinois: ["Chicago", "Springfield", "Naperville", "Peoria", "Rockford"],
+    },
+  },
+  Canada: {
+    states: {
+      Ontario: ["Toronto", "Ottawa", "Hamilton", "London", "Mississauga"],
+      BritishColumbia: ["Vancouver", "Victoria", "Kelowna", "Surrey", "Burnaby"],
+      Quebec: ["Montreal", "Quebec City", "Laval", "Gatineau", "Sherbrooke"],
+      Alberta: ["Calgary", "Edmonton", "Red Deer", "Lethbridge", "Medicine Hat"],
+      Manitoba: ["Winnipeg", "Brandon", "Steinbach", "Thompson", "Selkirk"],
+    },
+  },
+  UK: {
+    states: {
+      England: ["London", "Manchester", "Birmingham", "Liverpool", "Bristol"],
+      Scotland: ["Edinburgh", "Glasgow", "Aberdeen", "Dundee", "Inverness"],
+      Wales: ["Cardiff", "Swansea", "Newport", "Bangor", "Wrexham"],
+      NorthernIreland: ["Belfast", "Derry", "Lisburn", "Newry", "Armagh"],
+    },
+  },
+  Australia: {
+    states: {
+      NewSouthWales: ["Sydney", "Newcastle", "Wollongong", "Parramatta", "Penrith"],
+      Victoria: ["Melbourne", "Geelong", "Ballarat", "Bendigo", "Shepparton"],
+      Queensland: ["Brisbane", "Gold Coast", "Cairns", "Townsville", "Toowoomba"],
+      WesternAustralia: ["Perth", "Fremantle", "Mandurah", "Bunbury", "Albany"],
+      SouthAustralia: ["Adelaide", "Mount Gambier", "Whyalla", "Gawler", "Port Lincoln"],
+    },
+  },
+  India: {
+    states: {
+      Maharashtra: ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad"],
+      Karnataka: ["Bangalore", "Mysore", "Mangalore", "Hubli", "Belgaum"],
+      TamilNadu: ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem"],
+      WestBengal: ["Kolkata", "Howrah", "Durgapur", "Asansol", "Siliguri"],
+      UttarPradesh: ["Lucknow", "Kanpur", "Agra", "Varanasi", "Allahabad"],
+    },
+  },
+  Germany: {
+    states: {
+      Bavaria: ["Munich", "Nuremberg", "Augsburg", "Regensburg", "Würzburg"],
+      BadenWürttemberg: ["Stuttgart", "Karlsruhe", "Mannheim", "Freiburg", "Heidelberg"],
+      NorthRhineWestphalia: ["Cologne", "Düsseldorf", "Dortmund", "Essen", "Bonn"],
+      LowerSaxony: ["Hanover", "Braunschweig", "Osnabrück", "Oldenburg", "Wolfsburg"],
+      Hesse: ["Frankfurt", "Wiesbaden", "Kassel", "Darmstadt", "Offenbach"],
+    },
+  },
+  France: {
+    states: {
+      ÎleDeFrance: ["Paris", "Versailles", "Boulogne-Billancourt", "Saint-Denis", "Argenteuil"],
+      ProvenceAlpesCôteDAzur: ["Marseille", "Nice", "Toulon", "Aix-en-Provence", "Avignon"],
+      AuvergneRhôneAlpes: ["Lyon", "Grenoble", "Saint-Étienne", "Clermont-Ferrand", "Annecy"],
+      NouvelleAquitaine: ["Bordeaux", "Limoges", "Pau", "La Rochelle", "Poitiers"],
+      Occitanie: ["Toulouse", "Montpellier", "Nîmes", "Perpignan", "Béziers"],
+    },
+  },
+  Brazil: {
+    states: {
+      SãoPaulo: ["São Paulo", "Campinas", "Santos", "Ribeirão Preto", "São José dos Campos"],
+      RioDeJaneiro: ["Rio de Janeiro", "Niterói", "Petrópolis", "Volta Redonda", "Campos"],
+      MinasGerais: ["Belo Horizonte", "Uberlândia", "Contagem", "Juiz de Fora", "Betim"],
+      Bahia: ["Salvador", "Feira de Santana", "Vitória da Conquista", "Camaçari", "Itabuna"],
+      Paraná: ["Curitiba", "Londrina", "Maringá", "Ponta Grossa", "Cascavel"],
+    },
+  },
+  China: {
+    states: {
+      Guangdong: ["Guangzhou", "Shenzhen", "Dongguan", "Foshan", "Zhuhai"],
+      Beijing: ["Beijing"],
+      Shanghai: ["Shanghai"],
+      Zhejiang: ["Hangzhou", "Ningbo", "Wenzhou", "Shaoxing", "Jinhua"],
+      Sichuan: ["Chengdu", "Mianyang", "Nanchong", "Dazhou", "Luzhou"],
+    },
+  },
+  Japan: {
+    states: {
+      Tokyo: ["Tokyo", "Shinjuku", "Shibuya", "Ikebukuro", "Setagaya"],
+      Osaka: ["Osaka", "Sakai", "Hirakata", "Toyonaka", "Takatsuki"],
+      Kyoto: ["Kyoto", "Uji", "Kameoka", "Nagaokakyo", "Maizuru"],
+      Hokkaido: ["Sapporo", "Asahikawa", "Hakodate", "Obihiro", "Kushiro"],
+      Fukuoka: ["Fukuoka", "Kitakyushu", "Kurume", "Omuta", "Iizuka"],
+    },
+  },
+  SouthAfrica: {
+    states: {
+      Gauteng: ["Johannesburg", "Pretoria", "Soweto", "Centurion", "Benoni"],
+      WesternCape: ["Cape Town", "Stellenbosch", "George", "Paarl", "Mossel Bay"],
+      KwaZuluNatal: ["Durban", "Pietermaritzburg", "Richards Bay", "Newcastle", "Ladysmith"],
+      EasternCape: ["Port Elizabeth", "East London", "Mthatha", "Uitenhage", "King William’s Town"],
+      Limpopo: ["Polokwane", "Thohoyandou", "Tzaneen", "Lephalale", "Mokopane"],
+    },
+  },
 };

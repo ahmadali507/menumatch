@@ -25,8 +25,9 @@ import AddItemToMenu from "./actions/add-item-menu";
 import DeleteMenu from "./delete-menu";
 import EditableSectionName from "./actions/editable";
 import MenuItemCard from "./menu-item";
+// import { dummyMenuSection } from "@/lib/dummy";
 
-export default function MenuSection({ section }: { section: MenuSectionType }) {
+export default function MenuSection({menuId, section }: {menuId: string,  section: MenuSectionType }) {
   const [items, setItems] = useState(section.items);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -98,14 +99,14 @@ export default function MenuSection({ section }: { section: MenuSectionType }) {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <EventIcon fontSize="small" color="action" />
               <Typography variant="body2" color="text.secondary">
-                {format(new Date(section.createdAt), "EEEE, MMMM d, yyyy")}
+                {format(new Date(section?.createdAt), "EEEE, MMMM d, yyyy")}
               </Typography>
             </Box>
           </div>
 
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <DeleteMenu menuId="dummy-for-now" />
-            <AddItemToMenu />
+            <DeleteMenu menuId={menuId} sectionId={section?.id} />
+            <AddItemToMenu menuId = {menuId} sectionId={section?.id} />
             <IconButton
               onClick={handleToggle}
               size="small"

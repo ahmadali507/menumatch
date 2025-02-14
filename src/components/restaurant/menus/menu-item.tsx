@@ -89,7 +89,7 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
             }}
           />
           <Image
-            src={item.photo}
+            src={item?.photo as string || "/400/placeholder/svg"}
             alt={item.name}
             fill
             style={{ objectFit: 'cover' }}
@@ -137,7 +137,9 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
             </Box>
 
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              {item.description}
+             
+              {/* {item.description} */}
+            {item.description.replace(/<[^>]*>/g, '')}
             </Typography>
 
             <Divider sx={{ my: 2 }} />

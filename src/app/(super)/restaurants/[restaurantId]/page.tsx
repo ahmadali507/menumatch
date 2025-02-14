@@ -1,7 +1,7 @@
 import { getRestaurantData } from "@/actions/actions.admin";
 import SectionLayout from "@/components/layouts/section-layout";
 // import RestaurantDetails from "@/components/restaurant-details";
-import RestaurantInformation from "@/components/restaurant/infopage/restaurant-information";
+import RestaurantInformation from "@/components/restaurant/info/restaurant-information";
 import { dummyMenus } from "@/lib/dummy";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";

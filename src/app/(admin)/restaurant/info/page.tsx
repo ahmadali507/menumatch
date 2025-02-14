@@ -2,7 +2,7 @@ import { getRestaurantData } from "@/actions/actions.admin";
 import { getRestaurantIdForAdmin } from "@/actions/actions.menu";
 import SectionLayout from "@/components/layouts/section-layout";
 // import RestaurantDetails from "@/components/restaurant-details";
-import RestaurantInformation from "@/components/restaurant/infopage/restaurant-information";
+import RestaurantInformation from "@/components/restaurant/info/restaurant-information";
 // import PageTitle from "@/components/restaurant/dashboard/page-title";
 
 export const metadata = {
