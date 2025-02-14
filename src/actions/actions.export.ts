@@ -9,17 +9,30 @@ export async function exportMenuAsCSV(menu: Menu) {
       section.items.map(item => ({
         section: section.name,
         name: item.name,
-        price: item.price,
         description: item.description,
+        price: item.price,
+        ingredients: item.ingredients.join(';'),
+        photo: item.photo || '',
+        allergens: item.allergens.join(';'),
+        available: item.available,
+        labels: item.labels.join(';')
       }))
     );
 
-    const headers = Object.keys(rows[0]);
+    const headers = ['Section', 'Name', 'Description', 'Price', 'Ingredients', 'Photo', 'Allergens', 'Available', 'Labels'];
     const csv = [
       headers.join(','),
-      ...rows.map(row =>
-        [row.section, row.name, row.price, row.description].join(',')
-      )
+      ...rows.map(row => [
+        `"${row.section}"`,
+        `"${row.name}"`,
+        `"${row.description}"`,
+        row.price,
+        `"${row.ingredients}"`,
+        `"${row.photo}"`,
+        `"${row.allergens}"`,
+        row.available,
+        `"${row.labels}"`
+      ].join(','))
     ].join('\n');
 
     return {

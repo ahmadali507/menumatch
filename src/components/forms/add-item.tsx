@@ -16,7 +16,6 @@ import {
   // IconButton,
   FormHelperText,
 } from "@mui/material";
-import { CloudUpload } from "@mui/icons-material";
 // import type { MenuItem } from "@/types";
 import dynamic from "next/dynamic";
 import { validateImage } from '@/lib/utils';
@@ -153,7 +152,7 @@ export default function AddItemForm() {
   };
 
   // Add new state for image handling
-  const [itemImage, setItemImage] = useState<File | null>(null);
+  const [, setItemImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
@@ -267,6 +266,7 @@ export default function AddItemForm() {
                 }
               }}
               renderInput={(params) => (
+
                 <TextField
                   {...params}
                   error={!!errors.allergens}
@@ -274,7 +274,7 @@ export default function AddItemForm() {
                   placeholder="Select allergens"
                   sx={{
                     '& .MuiInputBase-root': {
-                      p: '6px 9px',
+                      p: '2px 9px',
                     }
                   }}
                 />
@@ -326,7 +326,7 @@ export default function AddItemForm() {
                   placeholder="Select labels"
                   sx={{
                     '& .MuiInputBase-root': {
-                      padding: '3px 9px',
+                      padding: '2px 9px',
                     }
                   }}
                 />

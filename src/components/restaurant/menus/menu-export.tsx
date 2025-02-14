@@ -1,6 +1,5 @@
 "use client";
 import { Button, Menu, MenuItem } from "@mui/material";
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import TableViewIcon from '@mui/icons-material/TableView';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import { useState } from 'react';
@@ -85,10 +84,6 @@ export default function MenuExport({ menu }: MenuExportProps) {
         <MenuItem onClick={() => handleExport('json')} sx={{ gap: 1 }}>
           <DataObjectIcon fontSize="small" />
           Export as JSON
-        </MenuItem>
-        <MenuItem onClick={handleClose} sx={{ gap: 1 }}>
-          <PictureAsPdfIcon fontSize="small" />
-          Export as PDF
         </MenuItem>
       </Menu>
     </>
