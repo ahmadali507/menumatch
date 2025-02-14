@@ -30,14 +30,18 @@ export default function AddSection({ menuId }: { menuId: string }) {
       }
       router.refresh();
       if(response.success && response.section){
+        console.log("Adding section", response.section);
         const updatedMenu: Menu = {
           ...menu!,
           id: menu!.id,
           name: menu!.name,
           sections: [...(menu?.sections || []), response.section]
         };
+        console.log("Updated menu", updatedMenu);
+
         setMenu(updatedMenu);
-           
+
+        console.log(menu)
       }
       showToast('Section added successfully', 'success');
       setSectionName('');

@@ -7,18 +7,14 @@ import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import AddSection from './add-section';
 import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
 import { SortableContext } from '@dnd-kit/sortable';
-import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/query-keys';
 import { useMenu } from "@/context/menuContext";
 
-export default function MenuSectionsList({ sections: initialSections, menuId }: { sections: MenuSectionType[], menuId: string }) {
-  const { data: sections = initialSections } = useQuery({
-    queryKey: queryKeys.menuSections(menuId),
-    initialData: initialSections,
-  });
+export default function MenuSectionsList({  menuId }: { sections: MenuSectionType[], menuId: string }) {
 
   const {menu} = useMenu(); 
 
+
+  // console.log(menu);
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -35,7 +31,8 @@ export default function MenuSectionsList({ sections: initialSections, menuId }: 
         <AddSection menuId={menuId} />
       </Box>
 
-      {!sections.length ? (
+    
+      {menu?.sections.length === 0 ? (
         <EmptyState
           icon={<RestaurantMenuIcon sx={{ fontSize: 48 }} />}
           title="No Sections Yet"
@@ -46,7 +43,7 @@ export default function MenuSectionsList({ sections: initialSections, menuId }: 
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
-          <SortableContext items={sections.map(section => section.name)}>
+          <SortableContext items={menu?.sections?.map(section => section.name) || []}>
             <Grid container spacing={3}>
               {menu?.sections.map((section, index) => (
                 <Grid item xs={12} key={section.name + index}>

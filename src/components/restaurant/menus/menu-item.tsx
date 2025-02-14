@@ -8,7 +8,9 @@ import {
   Typography,
   Divider,
   Badge,
-  Tooltip
+  Tooltip,
+  IconButton,
+  Box as MuiBox
 } from "@mui/material";
 import Image from "next/image";
 import RestaurantIcon from '@mui/icons-material/Restaurant';
@@ -19,6 +21,8 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteSectionItem from './deleteSectionItem';
 
 interface MenuItemCardProps {
   item: MenuItem;
@@ -28,7 +32,7 @@ interface MenuItemCardProps {
   };
 }
 
-export default function MenuItemCard({ item }: MenuItemCardProps) {
+export default function MenuItemCard({ item, menuId, sectionId }: MenuItemCardProps & { menuId: string; sectionId: string }) {
   const {
     attributes,
     listeners,
@@ -53,10 +57,13 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          transition: 'transform 0.2s ease-in-out',
+          transition: 'all 0.2s ease-in-out',
           '&:hover': {
             transform: 'translateY(-4px)',
-            boxShadow: 3
+            boxShadow: (theme) => theme.shadows[4],
+            '& .action-buttons': {
+              opacity: 1
+            }
           }
         }}
       >
@@ -88,17 +95,71 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
               }
             }}
           />
+          <MuiBox
+            className="action-buttons"
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              zIndex: 2,
+              display: 'flex',
+              gap: 1,
+              opacity: 0,
+              transition: 'opacity 0.2s ease-in-out',
+              backgroundColor: 'rgba(0, 0, 0, 0.6)',
+              borderRadius: 1,
+              padding: '4px',
+              backdropFilter: 'blur(4px)',
+            }}
+          >
+            <IconButton
+              size="small"
+              sx={{
+                color: 'white',
+                '&:hover': { 
+                  color: 'primary.main',
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                }
+              }}
+              onClick={() => {
+                // Add your edit logic here
+                // router.push(`/restaurant/menu/${menuId}/section/${sectionId}/item/${item.id}/edit`);
+                console.log("Editing item. ")
+              }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+            <DeleteSectionItem
+              menuId={menuId}
+              sectionId={sectionId}
+              itemId={item.id}
+            />
+          </MuiBox>
           <Image
             src={item?.photo as string || "/400/placeholder/svg"}
             alt={item.name}
             fill
             style={{ objectFit: 'cover' }}
+            sizes="(max-width: 600px) 100vw, (max-width: 960px) 50vw, 33vw"
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 30%)',
+              zIndex: 1
+            }}
           />
           <Badge
             sx={{
               position: 'absolute',
-              top: 12,
-              right: 41,
+              bottom: 12,
+              right: 44,
+              zIndex: 2, 
+              alignSelf : 'center'
             }}
             badgeContent={
               item.available ? (
@@ -107,6 +168,7 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
                   label="Available"
                   size="small"
                   color="success"
+                  sx={{ backdropFilter: 'blur(4px)' }}
                 />
               ) : (
                 <Chip
@@ -114,6 +176,7 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
                   label="Unavailable"
                   size="small"
                   color="error"
+                  sx={{ backdropFilter: 'blur(4px)' }}
                 />
               )
             }
@@ -137,13 +200,10 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
             </Box>
 
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-             
-              {/* {item.description} */}
-            {item.description.replace(/<[^>]*>/g, '')}
+              {item.description.replace(/<[^>]*>/g, '')}
             </Typography>
 
             <Divider sx={{ my: 2 }} />
-
 
             <Stack pt={2} direction="row" spacing={1} flexWrap="wrap" useFlexGap>
               <Box display="flex" gap={1}>
@@ -162,7 +222,6 @@ export default function MenuItemCard({ item }: MenuItemCardProps) {
                 />
               ))}
             </Stack>
-
 
             {item.labels.length > 0 && (
               <Stack direction="row" pt={1} spacing={1} flexWrap="wrap" useFlexGap>
