@@ -9,7 +9,7 @@ export default function RestaurantInfoLoader() {
         <Box sx={{ p: 3 }}>
           <Skeleton variant="text" width="40%" height={40} />
           <Skeleton variant="text" width="60%" height={24} sx={{ mt: 1 }} />
-          
+
           {/* Restaurant Stats */}
           <Grid container spacing={2} sx={{ mt: 3 }}>
             {[1, 2, 3].map((item) => (

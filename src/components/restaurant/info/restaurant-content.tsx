@@ -1,49 +1,21 @@
 import { Button, Card, Typography, Divider, Grid } from "@mui/material";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import Link from "next/link";
-import { Menu, RestaurantType } from "@/types";
+import { RestaurantType } from "@/types";
 import RestaurantHeader from "../restaurant-header";
 import RestaurantStats from "../restaurant-stats";
-// import MenuList from "../menu-list";
 import AdminsList from "../admins-list";
-import { getRestaurantMenus } from "@/actions/actions.menu";
 import MenuCard from "../menus/menu-card";
-import { Suspense } from "react";
-import RestaurantInfoLoader from "./infopage-loader";
-// import { dateTimePickerTabsClasses } from "@mui/x-date-pickers";
-//   import RestaurantHeader from "./restaurant/restaurant-header";
-//   import MenuList from "./restaurant/menu-list";
-//   import AdminsList from "./restaurant/admins-st";
-//   import RestaurantStats from "./restaurant/restaurant-stats";
 
-export default async function RestaurantInformation({
+
+export default async function RestaurantContent({
   restaurantId,
   details,
 }: {
   restaurantId: string;
   details: RestaurantType;
 }) {
-  return (
-    <Suspense fallback={<RestaurantInfoLoader />}>
-      <RestaurantContent restaurantId={restaurantId} details={details} />
-    </Suspense>
-  );
-}
 
-async function RestaurantContent({
-  restaurantId,
-  details,
-}: {
-  restaurantId: string;
-  details: RestaurantType;
-}) {
-  const response = await getRestaurantMenus(restaurantId);
-  if (response.success) {
-    details.menus = response?.menus as Menu[];
-  }
-  if (!response.success) {
-    console.log("Error fetching menus");
-  }
 
   return (
     <div className="flex gap-6 w-full">

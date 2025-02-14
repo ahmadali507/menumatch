@@ -14,7 +14,7 @@ export async function exportMenuAsCSV(menu: Menu) {
       }))
     );
 
-    const headers = ['Section', 'Name', 'Price', 'Description'];
+    const headers = Object.keys(rows[0]);
     const csv = [
       headers.join(','),
       ...rows.map(row =>

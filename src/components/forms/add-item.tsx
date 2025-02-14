@@ -16,9 +16,12 @@ import {
   // IconButton,
   FormHelperText,
 } from "@mui/material";
-import {  CloudUpload } from "@mui/icons-material";
+import { CloudUpload } from "@mui/icons-material";
 // import type { MenuItem } from "@/types";
 import dynamic from "next/dynamic";
+import { validateImage } from '@/lib/utils';
+import MenuItemImageUpload from "./menu-item-image-upload";
+import ImageCropDialog from "./image-crop";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), {
   ssr: false,
@@ -69,6 +72,7 @@ export default function AddItemForm() {
     setValue,
     watch,
     clearErrors,
+    reset
   } = useForm<ItemSchemaType>({
     resolver: zodResolver(itemSchema),
     defaultValues: {
@@ -83,9 +87,9 @@ export default function AddItemForm() {
   });
 
 
-  const params = useParams(); 
+  const params = useParams();
 
-  const {menu, setMenu} = useMenu(); 
+  const { menu, setMenu } = useMenu();
 
 
 
@@ -148,6 +152,43 @@ export default function AddItemForm() {
     ],
   };
 
+  // Add new state for image handling
+  const [itemImage, setItemImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      const validation = await validateImage(file, 'background'); // Using background config for larger images
+      if (!validation.valid) {
+        showToast(validation.error || 'Invalid image', 'error');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCurrentImage(reader.result as string);
+        setCropDialogOpen(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCropComplete = (croppedImageUrl: string) => {
+    setImagePreview(croppedImageUrl);
+    fetch(croppedImageUrl)
+      .then(res => res.blob())
+      .then(blob => {
+        setItemImage(new File([blob], 'item.jpg', { type: 'image/jpeg' }));
+      });
+  };
+
+  const handleDeleteImage = () => {
+    setItemImage(null);
+    setImagePreview(null);
+  };
 
   return (
     <Paper elevation={0} sx={{ p: 3, borderRadius: 2 }}>
@@ -156,145 +197,38 @@ export default function AddItemForm() {
           Add New Menu Item
         </Typography>
 
+        {/* Top Row - Basic Info and Status */}
+        {/* Top Row - Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Basic Information */}
+          {/* Name and Price Column */}
           <div className="space-y-4">
-            <TextField
-              fullWidth
-              label="Item Name"
-              {...register("name")}
-              error={!!errors.name}
-              helperText={errors.name?.message}
-              sx={{
-                "& .MuiInputLabel-root": {
-                  backgroundColor: "background.paper",
-                  px: 0.5,
-                },
-                "& .MuiInputLabel-shrink": {
-                  transform: "translate(14px, -9px) scale(0.75)",
-                },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    top: 0,
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "primary.main",
-                  },
-                },
-              }}
-            />
-
-            <FormControl fullWidth error={!!errors.description}>
-              <FormLabel
-                sx={{
-                  mb: 1,
-                  color: "text.primary",
-                  "&.Mui-focused": { color: "primary.main" },
-                }}
-              >
-                Description
-              </FormLabel>
-              <Box
-                sx={{
-                  ".ql-container": {
-                    borderBottomLeftRadius: 1,
-                    borderBottomRightRadius: 1,
-                    bgcolor: "action.hover", // Changed this line
-                    border: "1px solid",
-                    borderColor: "divider",
-                  },
-                  ".ql-toolbar": {
-                    borderTopLeftRadius: 1,
-                    borderTopRightRadius: 1,
-                    bgcolor: "action.hover", // Changed this line
-                    border: "1px solid",
-                    borderColor: "divider",
-                    borderBottom: "none",
-                  },
-                  ".ql-editor": {
-                    minHeight: "100px",
-                    fontSize: "1rem",
-                    fontFamily: "inherit",
-                    bgcolor: "action.hover", // Changed this line
-                    "&.ql-blank::before": {
-                      color: "text.secondary",
-                    },
-                  },
-                }}
-              >
-                <ReactQuill
-                  value={watch("description")}
-                  onChange={(content) => {
-                    // const plainText = stripHtml(content); 
-                    setValue("description", content);
-                    if (content.length >= 10) clearErrors("description");
-                  }}
-                  modules={editorModules}
-                  placeholder="Enter item description..."
-                />
-              </Box>
-              {errors.description && (
-                <FormHelperText error>
-                  {errors.description.message}
-                </FormHelperText>
-              )}
+            <FormControl fullWidth error={!!errors.name}>
+              <FormLabel>Item Name</FormLabel>
+              <TextField
+                {...register("name")}
+                placeholder="Enter item name"
+                error={!!errors.name}
+                helperText={errors.name?.message}
+              />
             </FormControl>
 
-            <TextField
-              fullWidth
-              label="Price"
-              placeholder="0.00"
-              type="number"
-              {...register("price", {
-    valueAsNumber: true, // This converts string to number
-    setValueAs: (value) => (value === "" ? undefined : parseFloat(value))
-  })}
-              error={!!errors.price}
-              helperText={errors.price?.message}
-              InputProps={{
-                startAdornment: (
-                  <Typography
-                    sx={{
-                      mr: 1,
-                      color: "text.secondary",
-                      userSelect: "none",
-                    }}
-                  >
-                    $
-                  </Typography>
-                ),
-              }}
-            />
-          </div>
-
-          {/* Image Upload */}
-          <div className="space-y-4">
             <FormControl fullWidth>
-              <FormLabel>Item Image</FormLabel>
-              <Box
-                sx={{
-                  border: "2px dashed",
-                  borderColor: "divider",
-                  borderRadius: 2,
-                  p: 3,
-                  textAlign: "center",
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                  "&:hover": {
-                    borderColor: "primary.main",
-                    bgcolor: "action.hover",
-                  },
+              <FormLabel>Price</FormLabel>
+              <TextField
+                type="number"
+                placeholder="0.00"
+                {...register("price", {
+                  valueAsNumber: true,
+                  setValueAs: (value) => (value === "" ? undefined : parseFloat(value))
+                })}
+                error={!!errors.price}
+                helperText={errors.price?.message}
+                InputProps={{
+                  startAdornment: (
+                    <Typography sx={{ mr: 1, color: "text.secondary" }}>$</Typography>
+                  ),
                 }}
-                component="label"
-              >
-                <input type="file" hidden accept="image/*" />
-                <div className="flex flex-col items-center gap-2">
-                  <CloudUpload sx={{ fontSize: 40, color: "text.secondary" }} />
-                  <Typography color="text.secondary">
-                    Drag and drop or click to upload
-                  </Typography>
-                </div>
-              </Box>
+              />
             </FormControl>
 
             <FormControlLabel
@@ -302,6 +236,127 @@ export default function AddItemForm() {
               label="Available for Order"
             />
           </div>
+
+          {/* Image Upload Column */}
+          <MenuItemImageUpload
+            preview={imagePreview}
+            onUpload={handleImageUpload}
+            onDelete={handleDeleteImage}
+          />
+        </div>
+
+        {/* Middle Row - Dietary Info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Allergens */}
+          <FormControl fullWidth error={!!errors.allergens}>
+            <FormLabel>Allergens</FormLabel>
+            <Autocomplete
+              multiple
+              options={commonAllergens}
+              value={watch("allergens")}
+              onChange={(_, newValue) => {
+                setValue("allergens", newValue);
+                clearErrors("allergens");
+              }}
+              sx={{
+                '& .MuiAutocomplete-popupIndicator': {
+                  transform: 'none',
+                  border: 'none',
+                  p: 0.5,
+                  ml: -0.5,
+                }
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  error={!!errors.allergens}
+                  helperText={errors.allergens?.message}
+                  placeholder="Select allergens"
+                  sx={{
+                    '& .MuiInputBase-root': {
+                      p: '6px 9px',
+                    }
+                  }}
+                />
+              )}
+              renderTags={() => null}
+            />
+            <Box sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 0.5,
+              mt: 1,
+              minHeight: '32px',
+              padding: '4px 0'
+            }}>
+              {watch("allergens").map((allergen) => (
+                <Chip
+                  key={allergen}
+                  label={allergen}
+                  onDelete={() => setValue("allergens", watch("allergens").filter((a) => a !== allergen))}
+                  color="error"
+                  variant="filled"
+                  size="small"
+                  sx={{
+                    borderRadius: '4px',
+                    fontWeight: 500
+                  }}
+                />
+              ))}
+            </Box>
+          </FormControl>
+
+          {/* Labels */}
+          <FormControl fullWidth error={!!errors.labels}>
+            <FormLabel>Labels</FormLabel>
+            <Autocomplete
+              multiple
+              options={commonLabels}
+              value={watch("labels")}
+              onChange={(_, newValue) => {
+                setValue("labels", newValue);
+                clearErrors("labels");
+              }}
+
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  error={!!errors.labels}
+                  helperText={errors.labels?.message}
+                  placeholder="Select labels"
+                  sx={{
+                    '& .MuiInputBase-root': {
+                      padding: '3px 9px',
+                    }
+                  }}
+                />
+              )}
+              renderTags={() => null}
+            />
+            <Box sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 0.5,
+              mt: 1,
+              minHeight: '32px',
+              padding: '4px 0'
+            }}>
+              {watch("labels").map((label) => (
+                <Chip
+                  key={label}
+                  label={label}
+                  onDelete={() => setValue("labels", watch("labels").filter((l) => l !== label))}
+                  color="primary"
+                  variant="filled"
+                  size="small"
+                  sx={{
+                    borderRadius: '4px',
+                    fontWeight: 500
+                  }}
+                />
+              ))}
+            </Box>
+          </FormControl>
         </div>
 
         {/* Ingredients */}
@@ -316,11 +371,7 @@ export default function AddItemForm() {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && ingredientInput.trim()) {
                   e.preventDefault();
-                  const newIngredients = [
-                    ...watch("ingredients"),
-                    ingredientInput.trim(),
-                  ];
-                  setValue("ingredients", newIngredients);
+                  setValue("ingredients", [...watch("ingredients"), ingredientInput.trim()]);
                   setIngredientInput("");
                   clearErrors("ingredients");
                 }
@@ -336,146 +387,54 @@ export default function AddItemForm() {
               <Chip
                 key={ingredient}
                 label={ingredient}
-                onDelete={() => {
-                  const newIngredients = watch("ingredients").filter(
-                    (i) => i !== ingredient
-                  );
-                  setValue("ingredients", newIngredients);
-                }}
+                onDelete={() => setValue("ingredients", watch("ingredients").filter((i) => i !== ingredient))}
               />
             ))}
           </Box>
         </FormControl>
 
-        {/* Allergens and Labels */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormControl fullWidth error={!!errors.allergens}>
-            <FormLabel>Allergens</FormLabel>
-            <Autocomplete
-              multiple
-              options={commonAllergens}
-              value={watch("allergens")}
-              onChange={(_, newValue) => {
-                setValue("allergens", newValue);
-                clearErrors("allergens");
+        {/* Description at Bottom */}
+        <FormControl fullWidth error={!!errors.description}>
+          <FormLabel>Description</FormLabel>
+          <Box sx={{
+            ".ql-container": {
+              borderBottomLeftRadius: 1,
+              borderBottomRightRadius: 1,
+              bgcolor: "action.hover",
+              border: "1px solid",
+              borderColor: errors.description ? "error.main" : "divider",
+            },
+            ".ql-toolbar": {
+              borderTopLeftRadius: 1,
+              borderTopRightRadius: 1,
+              bgcolor: "action.hover",
+              border: "1px solid",
+              borderColor: errors.description ? "error.main" : "divider",
+              borderBottom: "none",
+            },
+            ".ql-editor": {
+              minHeight: "200px",
+              fontSize: "1rem",
+              fontFamily: "inherit",
+              bgcolor: "action.hover",
+            }
+          }}>
+            <ReactQuill
+              value={watch("description")}
+              onChange={(content) => {
+                setValue("description", content);
+                if (content.length >= 10) clearErrors("description");
               }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  error={!!errors.allergens}
-                  helperText={errors.allergens?.message}
-                  placeholder="Select allergens"
-                  sx={{
-                    "& .MuiInputBase-root": {
-                      minHeight: 56,
-                      alignItems: "center",
-                      padding: "0 14px",
-                    },
-                    "& .MuiInputBase-input": {
-                      width: "100% !important",
-                      padding: "4px 0 !important",
-                    },
-                    "& .MuiAutocomplete-clearIndicator": {
-                      padding: "2px",
-                    },
-                    "& .MuiAutocomplete-popupIndicator": {
-                      padding: "2px",
-                    },
-                  }}
-                />
-              )}
-              renderTags={() => null}
+              modules={editorModules}
+              placeholder="Enter item description..."
             />
-            <Box
-              sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 0.5,
-                mt: 1,
-              }}
-            >
-              {watch("allergens").map((allergen) => (
-                <Chip
-                  key={allergen}
-                  label={allergen}
-                  onDelete={() =>
-                    setValue(
-                      "allergens",
-                      watch("allergens").filter((a) => a !== allergen)
-                    )
-                  }
-                  color="error"
-                  variant="outlined"
-                  size="small"
-                />
-              ))}
-            </Box>
-          </FormControl>
+          </Box>
+          {errors.description && (
+            <FormHelperText error>{errors.description.message}</FormHelperText>
+          )}
+        </FormControl>
 
-          <FormControl fullWidth error={!!errors.labels}>
-            <FormLabel>Labels</FormLabel>
-            <Autocomplete
-              multiple
-              options={commonLabels}
-              value={watch("labels")}
-              onChange={(_, newValue) => {
-                setValue("labels", newValue);
-                clearErrors("labels");
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  error={!!errors.labels}
-                  helperText={errors.labels?.message}
-                  placeholder="Select labels"
-                  sx={{
-                    "& .MuiInputBase-root": {
-                      minHeight: 56,
-                      alignItems: "center",
-                      padding: "0 14px",
-                    },
-                    "& .MuiInputBase-input": {
-                      width: "100% !important",
-                      padding: "4px 0 !important",
-                    },
-                    "& .MuiAutocomplete-clearIndicator": {
-                      padding: "2px",
-                    },
-                    "& .MuiAutocomplete-popupIndicator": {
-                      padding: "2px",
-                    },
-                  }}
-                />
-              )}
-              renderTags={() => null}
-            />
-            <Box
-              sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 0.5,
-                mt: 1,
-              }}
-            >
-              {watch("labels").map((label) => (
-                <Chip
-                  key={label}
-                  label={label}
-                  onDelete={() =>
-                    setValue(
-                      "labels",
-                      watch("labels").filter((l) => l !== label)
-                    )
-                  }
-                  color="primary"
-                  variant="outlined"
-                  size="small"
-                />
-              ))}
-            </Box>
-          </FormControl>
-        </div>
-
+        {/* Action Buttons */}
         <div className="flex justify-end gap-2">
           <LoadingButton
             variant="outlined"
@@ -495,6 +454,15 @@ export default function AddItemForm() {
           </LoadingButton>
         </div>
       </form>
+
+      <ImageCropDialog
+        key={currentImage}
+        open={cropDialogOpen}
+        onClose={() => setCropDialogOpen(false)}
+        imageUrl={currentImage || ''}
+        onCropComplete={handleCropComplete}
+        aspectRatio={16 / 9}
+      />
     </Paper>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -9,7 +8,6 @@ import {
   TextField,
   FormControl,
   FormLabel,
-  // CircularProgress,
 } from "@mui/material";
 import { createRestaurant } from "@/actions/actions.admin";
 import { useMutation } from "@tanstack/react-query";
@@ -21,16 +19,9 @@ import { useImageUpload } from "@/hooks/useImageUpload";
 import ImageCropDialog from "./image-crop";
 import ImageUpload from "./image-upload";
 
-import { locationData } from "@/lib/dummy";
-import Autocomplete from "@mui/material/Autocomplete";
-// import { locationData } from "@/lib/data/locations";
 
 export default function AddRestaurantForm() {
   const router = useRouter();
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedState, setSelectedState] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
-
   const { showToast } = useToast();
   const {
     images,
@@ -125,149 +116,28 @@ export default function AddRestaurantForm() {
               helperText={errors.location?.address?.message}
             />
           </FormControl>
-
-          <FormControl fullWidth>
-            <FormLabel>Country</FormLabel>
-            <Autocomplete
-              value={selectedCountry}
-              onChange={(_, newValue) => {
-                setSelectedCountry(newValue || "");
-                setSelectedState("");
-                setSelectedCity("");
-                register("location.country").onChange({
-                  target: { value: newValue },
-                });
-              }}
-              options={Object.keys(locationData)}
-              renderInput={(params) => (
-                <TextField {...params} placeholder="Select country" />
-              )}
-              componentsProps={{
-                popper: {
-                  sx: {
-                    "& .MuiAutocomplete-listbox": {
-                      maxHeight: "100px",
-                    },
-                  },
-                },
-              }}
-              sx={{
-                "& .MuiAutocomplete-clearIndicator": {
-                  padding: "2px",
-                  border: "none",
-                  backgroundColor: "transparent",
-                  "& .MuiSvgIcon-root": {
-                    fontSize: "16px",
-                  },
-                },
-                "& .MuiAutocomplete-popupIndicator": {
-                  padding: "2px",
-                  border: "none",
-                  backgroundColor: "transparent",
-                  "& .MuiSvgIcon-root": {
-                    fontSize: "20px",
-                  },
-                },
-              }}
-            />
-          </FormControl>
-
-          <FormControl fullWidth>
-            <FormLabel>State</FormLabel>
-            <Autocomplete
-              value={selectedState}
-              onChange={(_, newValue) => {
-                setSelectedState(newValue || "");
-                setSelectedCity("");
-                register("location.state").onChange({
-                  target: { value: newValue },
-                });
-              }}
-              options={
-                selectedCountry
-                  ? Object.keys(locationData[selectedCountry].states)
-                  : []
-              }
-              disabled={!selectedCountry}
-              renderInput={(params) => (
-                <TextField {...params} placeholder="Select state" />
-              )}
-              componentsProps={{
-                popper: {
-                  sx: {
-                    "& .MuiAutocomplete-listbox": {
-                      maxHeight: "100px",
-                    },
-                  },
-                },
-              }}
-              sx={{
-                "& .MuiAutocomplete-clearIndicator": {
-                  padding: "2px",
-                  border: "none",
-                  backgroundColor: "transparent",
-                  "& .MuiSvgIcon-root": {
-                    fontSize: "16px",
-                  },
-                },
-                "& .MuiAutocomplete-popupIndicator": {
-                  padding: "2px",
-                  border: "none",
-                  backgroundColor: "transparent",
-                  "& .MuiSvgIcon-root": {
-                    fontSize: "20px",
-                  },
-                },
-              }}
-            />
-          </FormControl>
-
-          <FormControl fullWidth>
+          <FormControl fullWidth error={!!errors.location?.city}>
             <FormLabel>City</FormLabel>
-            <Autocomplete
-              value={selectedCity}
-              onChange={(_, newValue) => {
-                setSelectedCity(newValue || "");
-                register("location.city").onChange({
-                  target: { value: newValue },
-                });
-              }}
-              options={
-                selectedCountry && selectedState
-                  ? locationData[selectedCountry].states[selectedState]
-                  : []
-              }
-              disabled={!selectedState}
-              renderInput={(params) => (
-                <TextField {...params} placeholder="Select city" />
-              )}
-              componentsProps={{
-                popper: {
-                  sx: {
-                    "& .MuiAutocomplete-listbox": {
-                      maxHeight: "100px",
-                    },
-                  },
-                },
-              }}
-              sx={{
-                "& .MuiAutocomplete-clearIndicator": {
-                  padding: "2px",
-                  border: "none",
-                  backgroundColor: "transparent",
-                  "& .MuiSvgIcon-root": {
-                    fontSize: "16px",
-                  },
-                },
-                "& .MuiAutocomplete-popupIndicator": {
-                  padding: "2px",
-                  border: "none",
-                  backgroundColor: "transparent",
-                  "& .MuiSvgIcon-root": {
-                    fontSize: "20px",
-                  },
-                },
-              }}
+            <TextField
+              {...register("location.city")}
+              error={!!errors.location?.city}
+              helperText={errors.location?.city?.message}
+            />
+          </FormControl>
+          <FormControl fullWidth error={!!errors.location?.state}>
+            <FormLabel>State</FormLabel>
+            <TextField
+              {...register("location.state")}
+              error={!!errors.location?.state}
+              helperText={errors.location?.state?.message}
+            />
+          </FormControl>
+          <FormControl fullWidth error={!!errors.location?.country}>
+            <FormLabel>Country</FormLabel>
+            <TextField
+              {...register("location.country")}
+              error={!!errors.location?.country}
+              helperText={errors.location?.country?.message}
             />
           </FormControl>
         </div>

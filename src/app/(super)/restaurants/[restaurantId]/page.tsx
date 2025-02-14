@@ -1,8 +1,9 @@
 import { getRestaurantData } from "@/actions/actions.admin";
+import { getRestaurantMenus } from "@/actions/actions.menu";
 import SectionLayout from "@/components/layouts/section-layout";
-// import RestaurantDetails from "@/components/restaurant-details";
-import RestaurantInformation from "@/components/restaurant/info/restaurant-information";
+import RestaurantInformation from "@/components/restaurant/info/restaurant-content";
 import { dummyMenus } from "@/lib/dummy";
+import { Menu } from "@/types";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -23,6 +24,14 @@ export default async function RestaurantDetailsPage({ params }: {
   restaurantData.menus = dummyMenus;
   restaurantData.status = "active";
   restaurantData.orders = 450;
+
+  const response = await getRestaurantMenus(restaurantId);
+  if (response.success) {
+    restaurantData.menus = response?.menus as Menu[];
+  }
+  if (!response.success) {
+    console.log("Error fetching menus");
+  }
 
   return (
     <SectionLayout
