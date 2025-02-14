@@ -22,15 +22,18 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 import { format } from "date-fns";
 import AddItemToMenu from "./actions/add-item-menu";
-import DeleteMenu from "./delete-menu";
+// import DeleteMenu from "./delete-menu";
 import EditableSectionName from "./actions/editable";
 import MenuItemCard from "./menu-item";
+import DeleteSectionItem from "./deleteSectionItem";
+// import { useMenu } from "@/context/menuContext";
 // import { dummyMenuSection } from "@/lib/dummy";
 
 export default function MenuSection({menuId, section }: {menuId: string,  section: MenuSectionType }) {
   const [items, setItems] = useState(section.items);
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // const {menu}  = useMenu(); 
   const {
     attributes,
     listeners,
@@ -105,7 +108,7 @@ export default function MenuSection({menuId, section }: {menuId: string,  sectio
           </div>
 
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <DeleteMenu menuId={menuId} sectionId={section?.id} />
+            <DeleteSectionItem menuId={menuId} sectionId={section?.id} />
             <AddItemToMenu menuId = {menuId} sectionId={section?.id} />
             <IconButton
               onClick={handleToggle}
@@ -118,15 +121,17 @@ export default function MenuSection({menuId, section }: {menuId: string,  sectio
         </Box>
 
         <Collapse in={isExpanded} timeout="auto">
-          {items.length > 0 ? (
+          {section?.items.length > 0 ? (
             <DndContext
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
             >
-              <SortableContext items={items.map(item => item.name)}>
+              <SortableContext items={section?.items.map(item => item.name)}>
                 <Grid container spacing={3}>
-                  {items.map((item, index) => (
+                  {section?.items.map((item, index) => (
                     <MenuItemCard
+                      menuId={menuId}
+                      sectionId = {section.id}
                       key={item.name + index}
                       item={item}
                     />

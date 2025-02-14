@@ -31,7 +31,7 @@ export default async function SingleMenuPage({ params }: { params: Promise<{ men
     <section className="space-y-6">
       <MenuOverview menu={menu} />
       <MenuStats menu={menu} />
-      <MenuSectionsList sections={menu.sections} menuId={menuId} />
+      <MenuSectionsList sections={menu.sections} menuId={menu?.id} />
     </section>
   </MenuProvider>
   );
