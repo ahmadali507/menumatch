@@ -30,7 +30,7 @@ import { commonAllergens, commonLabels } from '@/lib/dummy';
 // import { useTheme } from '@mui/material/styles';
 import MenuItemImageUpload from '@/components/forms/menu-item-image-upload';
 import ImageCropDialog from '@/components/forms/image-crop';
-import { validateImage } from '@/lib/utils';
+import { uploadImageToStorage, validateImage } from '@/lib/utils';
 import { useMenu } from '@/context/menuContext';
 
 interface EditItemDialogProps {
@@ -43,9 +43,11 @@ interface EditItemDialogProps {
 export default function EditItemDialog({ open, onClose, item, menuId, sectionId }: EditItemDialogProps) {
 //   const theme = useTheme();
 //   const { showToast } = useToast();
+  const [originalPhoto, setOriginalPhoto] = useState<string | null>(item.photo || null);
   const [currentImage, setCurrentImage] = useState<string | null>(item.photo || null);
   const [imagePreview, setImagePreview] = useState<string | null>(item.photo || null);
-  const [, setItemImage] = useState<File | null>(null);
+  const [itemImage, setItemImage] = useState<File | null>(null);
+  const [isPhotoDeleted, setIsPhotoDeleted] = useState(false);
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const { showToast } = useToast();
   const [ingredientInput, setIngredientInput] = useState("");
@@ -75,7 +77,18 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
 
   const mutation = useMutation({
     mutationFn: async (data: ItemSchemaType) => {
-      return await updateSectionItem(menuId, sectionId, item.id as string , data);
+      let photoURL = null;
+      
+      if (itemImage) {
+        photoURL = await uploadImageToStorage(itemImage);
+      } else if (!isPhotoDeleted) {
+        photoURL = originalPhoto;
+      }
+  
+      return await updateSectionItem(menuId, sectionId, item.id as string, {
+        ...data,
+        photo: photoURL as string, 
+      });
     },
     onSuccess: (response) => {
       if (!response.success) {
@@ -112,6 +125,7 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
   const onSubmit = (data: ItemSchemaType) => {
     mutation.mutate(data);
   };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -141,6 +155,8 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
       
       setItemImage(file);
       setImagePreview(croppedImageUrl);
+      setCurrentImage(croppedImageUrl); // Add this line
+      setIsPhotoDeleted(false); // Add this line
       setCropDialogOpen(false);
     } catch (error) {
       showToast('Error processing cropped image', 'error');
@@ -152,6 +168,8 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
     setItemImage(null);
     setImagePreview(null);
     setCurrentImage(null);
+    setOriginalPhoto(null);
+    setIsPhotoDeleted(true);
   };
   
   return (
@@ -247,7 +265,7 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
 
             {/* Image Upload - Add your MenuItemImageUpload component here */}
             <MenuItemImageUpload
-              preview={imagePreview || item.photo || null}
+              preview={imagePreview || currentImage || originalPhoto}
               onUpload={handleImageUpload}
               onDelete={handleDeleteImage}
             />
