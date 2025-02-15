@@ -7,7 +7,8 @@ import { Button } from "@mui/material";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/context/toastContext";
-import { deleteMenuSection, deleteMenuItem } from "@/actions/actions.menu";
+import { deleteMenuSection } from "@/actions/actions.menu";
+import { deleteMenuItem } from "@/actions/actions.menu";
 import { useRouter } from "next/navigation";
 import { useMenu } from "@/context/menuContext";
 

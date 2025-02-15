@@ -1,4 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
+import { storage } from "../firebase/firebaseconfig";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -73,3 +75,31 @@ export const validateImage = async (
     };
   });
 };
+
+
+
+  export const uploadImageToStorage = async (file: File): Promise<string> => {
+    if (!file) throw new Error('No file provided');
+    
+    try {
+      const timestamp = Date.now();
+      const fileName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+      const storageRef = ref(storage, `menu-items/${fileName}`);
+      
+      const snapshot = await uploadBytes(storageRef, file);
+      
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      if (!downloadURL) {
+        throw new Error('Failed to get download URL');
+      }
+      
+      return downloadURL;
+    } catch (error) {
+      console.error('Storage error:', error);
+      throw new Error(
+        error instanceof Error 
+          ? error.message 
+          : 'Failed to upload image to storage'
+      );
+    }
+  };

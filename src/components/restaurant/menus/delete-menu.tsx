@@ -14,8 +14,8 @@ export default function DeleteMenu({ menuId }: { menuId: string }) {
   const { mutate, isPending } = useMutation({
     mutationFn: deleteMenu,
     onSuccess: (response) => {
-      if (!response.success) {
-        showToast(response.error || "Failed to delete menu", 'error')
+      if (!response) {
+        showToast( "Failed to delete menu", 'error')
         return;
       }
       showToast('Menu deleted successfully', 'success')

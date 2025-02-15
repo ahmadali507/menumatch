@@ -6,23 +6,49 @@ import EmptyState from "@/components/ui/empty-state";
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import AddSection from './add-section';
 import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
-import { SortableContext } from '@dnd-kit/sortable';
+import { arrayMove, SortableContext } from '@dnd-kit/sortable';
 import { useMenu } from "@/context/menuContext";
+import { reorderSections } from "@/actions/actions.menu";
+import { useToast } from "@/context/toastContext";
 
 export default function MenuSectionsList({  menuId }: { sections: MenuSectionType[], menuId: string }) {
 
-  const {menu} = useMenu(); 
-
+  const {menu, setMenu} = useMenu(); 
+  const {showToast} = useToast(); 
 
   // console.log(menu);
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (over && active.id !== over.id) {
-      // TODO: Implement optimistic update for reordering
-      // Will be handled in a separate implementation
+    if (!over || !active || active.id === over.id) return;
+
+    try {
+      const oldIndex = menu?.sections.findIndex((section) => section.id === active.id);
+      const newIndex = menu?.sections.findIndex((section) => section.id === over.id);
+
+      if (oldIndex === -1 || newIndex === -1 || !menu?.sections) return;
+
+      const reorderedSections = arrayMove(menu.sections, oldIndex as number, newIndex as number);
+
+      setMenu({
+        ...menu,
+        sections: reorderedSections
+      });
+      const response = await reorderSections(menuId, reorderedSections);
+      if (!response.success) {
+        setMenu({
+          ...menu,
+          sections: menu.sections
+        });
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error('Error reordering sections:', error);
+      showToast('Failed to reorder sections', 'error');
+      // You might want to show an error toast here
     }
   };
+
 
   return (
     <Box className="space-y-4">
@@ -43,7 +69,7 @@ export default function MenuSectionsList({  menuId }: { sections: MenuSectionTyp
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
-          <SortableContext items={menu?.sections?.map(section => section.name) || []}>
+          <SortableContext items={menu?.sections?.map(section => section.id) || []}>
             <Grid container spacing={3}>
               {menu?.sections.map((section, index) => (
                 <Grid item xs={12} key={section.name + index}>

@@ -1,3 +1,4 @@
+
 "use server"
 
 import { TAddMenuFormSchema } from "@/lib/schema";
@@ -424,5 +425,202 @@ export async function generateMenuQRCode(menuId: string) {
       success: false,
       error: "Failed to generate QR code"
     };
+  }
+}
+
+///////////////  Update Menu Section Name //////////////////////
+
+export const updateMenuSectionName = async (menuId: string, sectionId: string, newName: string) => {
+  await initAdmin();
+  const firestore = getFirestore();
+  const restaurantId = await getRestaurantIdForAdmin();
+
+  try {
+    const menuRef = firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId);
+    const menuDoc = await menuRef.get();
+    if (!menuDoc.exists) {
+      throw new Error("Menu not found");
+    }
+
+    const currentSections = menuDoc.data()?.sections || [];
+    const sectionIndex = currentSections.findIndex((section: MenuSection) => section.id === sectionId);
+    if (sectionIndex === -1) {
+      throw new Error("Section not found");
+    }
+
+    // Update section name
+    currentSections[sectionIndex].name = newName;
+
+    await menuRef.update({
+      sections: currentSections,
+      updatedAt: new Date().toString(),
+    });
+
+    // Format the updated section before returning
+    const updatedSection = {
+      ...currentSections[sectionIndex],
+      createdAt: formatFirebaseTimestamp(currentSections[sectionIndex].createdAt)
+    };
+
+    revalidatePath(`/restaurant/menu/${menuId}`);
+    return { 
+      success: true, 
+      section: updatedSection
+    };
+  } catch (error) {
+    return { success: false, error: (error as Error).message }
+  }
+}
+
+/////////// edit single item in a section /////////////////////
+
+export const updateSectionItem = async (menuId: string, sectionId: string, itemId: string, data: MenuItem) => {
+  await initAdmin();
+  const firestore = getFirestore();
+  const restaurantId = await getRestaurantIdForAdmin();
+
+  try {
+    const menuRef = firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId);
+    const menuDoc = await menuRef.get();
+    if (!menuDoc.exists) {
+      throw new Error("Menu not found");
+    }
+
+    const currentSections = menuDoc.data()?.sections || [];
+    const sectionIndex = currentSections.findIndex((section: MenuSection) => section.id === sectionId);
+    if (sectionIndex === -1) {
+      throw new Error("Section not found");
+    }
+
+    const itemIndex = currentSections[sectionIndex].items.findIndex((item: MenuItem) => item.id === itemId);
+    if (itemIndex === -1) {
+      throw new Error("Item not found");
+    }
+
+    // Create updated item with proper timestamp
+    const updatedItem = {
+      ...data,
+      id: itemId,
+      createdAt: currentSections[sectionIndex].items[itemIndex].createdAt, // Preserve original creation date
+      updatedAt: new Date().toString(), // Add update timestamp
+    };
+
+    // Update the item in sections array
+    currentSections[sectionIndex].items[itemIndex] = updatedItem;
+
+    // Update the menu document
+    await menuRef.update({
+      sections: currentSections,
+      updatedAt: new Date(), 
+    });
+
+    // Format the updated item for response
+    const formattedItem = {
+      ...updatedItem,
+      createdAt: formatFirebaseTimestamp(updatedItem.createdAt),
+      updatedAt: (updatedItem.updatedAt),
+    };
+
+    revalidatePath(`/restaurant/menu/${menuId}`);
+    return { success: true, item: formattedItem };
+  } catch (error) {
+    return { success: false, error: (error as Error).message }
+  }
+}
+
+
+//////////// reordering the items in a ceratin section based onthe drag and drop functionlaity /////////////////// 
+
+export const reorderItems = async (menuId: string, sectionId: string, reorderedList: MenuItem[]) => {
+  await initAdmin(); 
+  const firestore = getFirestore();
+  const restaurantId = await getRestaurantIdForAdmin();
+
+  try {
+      const menuRef = firestore
+          .collection('restaurants')
+          .doc(restaurantId)
+          .collection("menus")
+          .doc(menuId);
+
+      const menuDoc = await menuRef.get();
+      if (!menuDoc.exists) {
+          throw new Error("Menu not found");
+      }
+
+      const currentSections = menuDoc.data()?.sections || [];
+      const sectionIndex = currentSections.findIndex((section: MenuSection) => section.id === sectionId);
+      if (sectionIndex === -1) {
+          throw new Error("Section not found");
+      }
+
+      // Update the items in the section with the reordered list
+      currentSections[sectionIndex].items = reorderedList;
+
+      // Update the menu document with the new sections array
+      await menuRef.update({
+          sections: currentSections,
+          updatedAt: new Date().toString()
+      });
+
+      // Get the updated menu data
+      // const menuSnapshot = await menuRef.get();
+      // const menu = {
+      //     id: menuSnapshot.id,
+      //     ...menuSnapshot.data(),
+      //     name: menuSnapshot.data()?.name,
+      //     startDate: menuSnapshot.data()?.startDate.toDate(),
+      //     endDate: menuSnapshot.data()?.endDate.toDate(),
+      //     sections: menuSnapshot.data()?.sections.map((section: MenuSection) => ({
+      //         ...section,
+      //         createdAt: formatFirebaseTimestamp(section?.createdAt),
+      //     })),
+      //     createdAt: formatFirebaseTimestamp(menuSnapshot.data()?.createdAt),
+      //     updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),
+      // } as Menu;
+
+      revalidatePath(`/restaurant/menu/${menuId}`);
+      return { success: true, items : reorderedList };
+  } catch (error) {
+      return { success: false, error: (error as Error).message }; 
+  }
+}
+
+////// now writing a function to reorder the sectiosn ////////// 
+
+export const reorderSections = async (menuId: string, reorderedList: MenuSection[]) => {
+  await initAdmin(); 
+  const firestore = getFirestore();
+
+  try {
+    const restaurantId = await getRestaurantIdForAdmin(); 
+    const menuRef = firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId);
+
+    const menuDoc = await menuRef.get();
+    if (!menuDoc.exists) {
+      throw new Error("Menu not found");
+    }
+
+    // update hte menu document with the reordered Sections... 
+    await menuRef.update({
+      sections: reorderedList,
+      updatedAt: new Date().toString()
+    });
+
+    // Format the sections for response
+    const formattedSections = reorderedList.map(section => ({
+      ...section,
+      createdAt: formatFirebaseTimestamp(section?.createdAt)
+    }));
+
+    revalidatePath(`/restaurant/menu/${menuId}`);
+    return { 
+      success: true, 
+      sections: formattedSections 
+    };
+
+    
+  } catch (error) {
+    return {success : false, error: (error as Error).message}
   }
 }

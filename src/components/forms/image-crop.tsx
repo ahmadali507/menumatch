@@ -11,7 +11,7 @@ interface ImageCropDialogProps {
   aspectRatio: number;
 }
 
-export default function ImageCropDialog({
+export default function  ImageCropDialog({
   open,
   onClose,
   imageUrl,

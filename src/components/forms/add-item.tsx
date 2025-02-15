@@ -16,10 +16,10 @@ import {
   // IconButton,
   FormHelperText,
 } from "@mui/material";
-import { CloudUpload } from "@mui/icons-material";
+// import { CloudUpload } from "@mui/icons-material";
 // import type { MenuItem } from "@/types";
 import dynamic from "next/dynamic";
-import { validateImage } from '@/lib/utils';
+import { uploadImageToStorage, validateImage } from '@/lib/utils';
 import MenuItemImageUpload from "./menu-item-image-upload";
 import ImageCropDialog from "./image-crop";
 
@@ -35,13 +35,12 @@ import { itemSchema, ItemSchemaType } from "@/lib/schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { addMenuSectionItem } from "@/actions/actions.menu";
 import { useParams, useRouter } from "next/navigation";
 import { useToast } from "@/context/toastContext";
 import LoadingButton from "../ui/loading-button";
 import { useMenu } from "@/context/menuContext";
+import { addMenuSectionItem } from "@/actions/actions.menu";
 
-// Predefined options
 const commonAllergens = [
   "Milk",
   "Eggs",
@@ -132,13 +131,30 @@ export default function AddItemForm() {
       showToast(error.message || "Failed to add item", "error");
     },
   });
+
+  // Add this helper function for image upload
+
+
   const onSubmit = async (data: ItemSchemaType) => {
     try {
-      console.log("Form data:", data);
-      // // Add your submission logic here
-      mutation.mutate(data);
+      let photoURL = null;
+      
+      if (itemImage) {
+        showToast('Uploading image...', 'info');
+        photoURL = await uploadImageToStorage(itemImage);
+      }
+  
+      // Add the photo URL to the form data
+      const formData = {
+        ...data,
+        photo: photoURL // This will be stored in item.photo
+      };
+  
+      console.log("Form data:", formData);
+      mutation.mutate(formData);
     } catch (error) {
       console.error("Error submitting form:", error);
+      showToast('Failed to upload image', 'error');
     }
   };
 

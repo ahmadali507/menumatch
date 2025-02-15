@@ -76,4 +76,7 @@ export interface MenuItem {
   allergens: string[];
   available: boolean;
   labels: string[];
+  createdAt?: string | Date, 
+  updatedAt?: string | Date, 
+  order?: number, 
 }
