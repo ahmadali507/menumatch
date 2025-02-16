@@ -4,6 +4,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import GroupsIcon from '@mui/icons-material/Groups'; // Add this import
 import Link from "next/link";
 import { resAdminType } from "@/types";
+import AddAdminButtonLink from "./add-admin-button-link";
 
 export default function AdminsList({ restaurantId, admins }: {
   restaurantId: string;
@@ -16,15 +17,7 @@ export default function AdminsList({ restaurantId, admins }: {
           <PersonIcon sx={{ marginRight: "10px" }} />
           Restaurant Admins
         </Typography>
-        <Button
-          variant="contained"
-          size="small"
-          startIcon={<AddIcon />}
-          component={Link}
-          href={`/restaurants/${restaurantId}/admin/create`}
-        >
-          Add Admin
-        </Button>
+        <AddAdminButtonLink restaurantId={restaurantId} />
       </div>
 
       <div className="h-[300px] overflow-y-auto space-y-4">
