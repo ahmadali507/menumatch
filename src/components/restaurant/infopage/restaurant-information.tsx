@@ -13,7 +13,7 @@ import AdminsList from "../admins-list";
 import { getRestaurantMenus } from "@/actions/actions.menu";
 import MenuCard from "../menus/menu-card";
 import { Suspense } from 'react';
-import RestaurantInfoLoader from './infopage-loader';
+import RestaurantInfoLoader from "./infopage-loader";
 // import { dateTimePickerTabsClasses } from "@mui/x-date-pickers";
 //   import RestaurantHeader from "./restaurant/restaurant-header";
 //   import MenuList from "./restaurant/menu-list";

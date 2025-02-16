@@ -1,5 +1,5 @@
 import SectionLayout from "@/components/layouts/section-layout";
-import RestaurantInfoLoader from "@/components/restaurant/info/infopage-loader";
+import RestaurantInfoLoader from "@/components/restaurant/infopage/infopage-loader";
 
 export default function Loading() {
   return <SectionLayout
