@@ -210,7 +210,13 @@ export default function RestaurantsTable({
                         sx={{ display: "flex", gap: "10px" }}
                       >
                         <EditRestaurant
-                          initialData={restaurant}
+                          initialData={{
+                            ...restaurant,
+                            images: {
+                              logo: restaurant.images?.logo || null,
+                              background: restaurant.images?.background || null
+                            }
+                          }}
                           restaurantId={restaurant.id as string}
                           iconTrigger
                         />

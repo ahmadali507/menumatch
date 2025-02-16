@@ -1,13 +1,13 @@
 "use server";
 
 import { getAuth } from "firebase-admin/auth";
-import { TAddRestaurantSchema, TEditRestaurant } from "@/lib/schema";
+// import { TEditRestaurant } from "@/lib/schema";
 import { initAdmin } from "@/firebase/adminFirebase";
 import { RestaurantType, resAdminType } from "@/types";
 import { getFirestore } from "firebase-admin/firestore";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
-// import { cache } from "react";
+import { getStorage } from 'firebase-admin/storage';
 
 
 type SuperAdminData = {
@@ -68,20 +68,85 @@ export const createSuperAdmin = async (data: SuperAdminData) => {
 ///////////////////  Restaurant creation and admin creation tasks //////////////////////
 
 
-export const createRestaurant = async (data: TAddRestaurantSchema, idToken: string) => {
-  await initAdmin();
-  const firestore = getFirestore();
-  const auth = getAuth();
+export const createRestaurant = async (formData: FormData, idToken: string) => {
   try {
+
+    
+    await initAdmin();
+    const auth = getAuth(); 
+    const firestore = getFirestore(); 
+    const storage = getStorage();
+    const bucket = storage.bucket();
+
+
     const claims = await auth.verifyIdToken(idToken);
     if (claims.role !== "super_admin") {
       throw new Error("You are not authorized to create Restaurants");
     }
-    const restaurantRef = await firestore.collection("restaurants").add(data);
-    return { success: true, restaurantId: restaurantRef.id };
+
+    // Parse the JSON data
+    const data = JSON.parse(formData.get('data') as string);
+    let logoUrl = null;
+    let backgroundUrl = null;
+
+    // Handle logo upload
+    const logoFile = formData.get('logo') as File;
+    if (logoFile) {
+      const logoBuffer = await logoFile.arrayBuffer();
+      const logoFileName = `restaurants/${Date.now()}_logo_${logoFile.name}`;
+      const logoFileUpload = bucket.file(logoFileName);
+      
+      await logoFileUpload.save(Buffer.from(logoBuffer), {
+        metadata: { contentType: logoFile.type }
+      });
+      
+      [logoUrl] = await logoFileUpload.getSignedUrl({
+        action: 'read',
+        expires: '01-01-2500'
+      });
+    }
+
+    // Handle background upload
+    const backgroundFile = formData.get('background') as File;
+    if (backgroundFile) {
+      const backgroundBuffer = await backgroundFile.arrayBuffer();
+      const backgroundFileName = `restaurants/${Date.now()}_background_${backgroundFile.name}`;
+      const backgroundFileUpload = bucket.file(backgroundFileName);
+      
+      await backgroundFileUpload.save(Buffer.from(backgroundBuffer), {
+        metadata: { contentType: backgroundFile.type }
+      });
+      
+      [backgroundUrl] = await backgroundFileUpload.getSignedUrl({
+        action: 'read',
+        expires: '01-01-2500'
+      });
+    }
+
+    // Create restaurant document with image URLs
+    const restaurantData = {
+      ...data,
+      images: {
+        logo: logoUrl,
+        background: backgroundUrl
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    // Add to Firestore
+    const restaurantRef = await firestore.collection('restaurants').add(restaurantData);
+
+    return { 
+      success: true, 
+      restaurantId: restaurantRef.id 
+    };
   } catch (error) {
-    console.error("Error creating restaurant:", error);
-    return { error: (error as Error).message || "Failed to create restaurant" };
+    console.error('Error creating restaurant:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Failed to create restaurant' 
+    };
   }
 };
 
@@ -124,31 +189,96 @@ export const fetchAllRestaurants = async () => {
   }
 };
 
-export const editRestaurant = async (restaurantId: string, data: TEditRestaurant, idToken: string) => {
-  // console.log('editing restaurant')
-  await initAdmin();
-  const firestore = getFirestore();
-  const auth = getAuth();
+export const editRestaurant = async (
+  restaurantId: string, 
+  formData: FormData,
+  idToken: string
+) => {
   try {
+    await initAdmin();
+    const storage = getStorage();
+    const bucket = storage.bucket();
+    const firestore = getFirestore(); 
 
+
+    ///////// validate hte user role ... only super admin can edit the restaurant information//////////// 
+
+    const auth = getAuth();
     const claims = await auth.verifyIdToken(idToken);
     if (claims.role !== "super_admin") {
       throw new Error("You are not authorized to edit Restaurants");
     }
-    await firestore.collection("restaurants").doc(restaurantId).update(data);
-    console.log("Restaurant edited successfully");
 
-    revalidatePath(`/restaurants/${restaurantId}`);
+    // Get and validate the data payload
+    const dataStr = formData.get('data');
+    if (!dataStr || typeof dataStr !== 'string') {
+      throw new Error('Invalid form data');
+    }
 
-    return { success: true, message: "Restaurant edited successfully" };
+    const data = JSON.parse(dataStr);
+    const imageUrls = { ...data.images };
+
+    // Process logo upload
+    const logoFile = formData.get('logo');
+    if (logoFile instanceof Blob) {
+      const buffer = Buffer.from(await logoFile.arrayBuffer());
+      const logoPath = `restaurants/${restaurantId}/logo_${Date.now()}.jpg`;
+      const logoRef = bucket.file(logoPath);
+      
+      await logoRef.save(buffer, {
+        metadata: { contentType: 'image/jpeg' }
+      });
+
+      const [url] = await logoRef.getSignedUrl({
+        action: 'read',
+        expires: '01-01-2500'
+      });
+      imageUrls.logo = url;
+    }
+
+    // Process background upload
+    const bgFile = formData.get('background');
+    if (bgFile instanceof Blob) {
+      const buffer = Buffer.from(await bgFile.arrayBuffer());
+      const bgPath = `restaurants/${restaurantId}/background_${Date.now()}.jpg`;
+      const bgRef = bucket.file(bgPath);
+      
+      await bgRef.save(buffer, {
+        metadata: { contentType: 'image/jpeg' }
+      });
+
+      const [url] = await bgRef.getSignedUrl({
+        action: 'read',
+        expires: '01-01-2500'
+      });
+      imageUrls.background = url;
+    }
+
+    // Update restaurant document
+    const restaurantRef = firestore.collection('restaurants').doc(restaurantId);
+    const updateData = {
+      ...data,
+      images: imageUrls,
+      updatedAt: new Date().toISOString()
+    };
+
+    await restaurantRef.update(updateData);
+
+    return { 
+      success: true,
+      restaurant: {
+        id: restaurantId,
+        ...updateData
+      }
+    };
   } catch (error) {
-    console.error("Error editing restaurant:", error);
-    // return { error: "Failed to edit restaurant" };
-    return { success: false, error: (error as Error).message || "Failed to edit restaurant" };
+    console.error('Error updating restaurant:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Failed to update restaurant' 
+    };
   }
-
-}
-
+};
 
 export const deleteRestaurant = async (restaurantId: string, idToken: string) => {
   await initAdmin();
@@ -257,24 +387,47 @@ export const getRestaurantData = async (restaurantId: string) => {
   await initAdmin();
   const firestore = getFirestore();
 
-  const [restaurantSnap, adminResponse] = await Promise.all([
-    firestore.collection('restaurants').doc(restaurantId).get(),
-    fetchRestaurantAdmins(restaurantId)
-  ]);
+  try {
+    const [restaurantSnap, adminResponse] = await Promise.all([
+      firestore.collection('restaurants').doc(restaurantId).get(),
+      fetchRestaurantAdmins(restaurantId)
+    ]);
 
-  if (!restaurantSnap.exists) {
-    return notFound()
+    if (!restaurantSnap.exists) {
+      return notFound();
+    }
+
+    // Get the base restaurant data
+    const restaurantData = {
+      id: restaurantId,
+      ...restaurantSnap.data(),
+      name: restaurantSnap.data()?.name || '',
+      location: restaurantSnap.data()?.location || '',
+      contact: restaurantSnap.data()?.contact || '',
+      status: restaurantSnap.data()?.status || '',
+      description: restaurantSnap.data()?.description || '',
+      cuisine: restaurantSnap.data()?.cuisine || [],
+      menu: restaurantSnap.data()?.menu || [],
+      images: {
+        logo: restaurantSnap.data()?.images?.logo || null,
+        background: restaurantSnap.data()?.images?.background || null
+      },
+      orders: restaurantSnap.data()?.orders || [],
+      admins: [],
+      menus: restaurantSnap.data()?.menus || []
+    } as RestaurantType;
+
+    // Add admin information
+    if (adminResponse.success && adminResponse.admins) {
+      restaurantData.admins = adminResponse.admins;
+    } else {
+      console.error('Failed to fetch admins:', adminResponse.error);
+      restaurantData.admins = [];
+    }
+
+    return restaurantData;
+  } catch (error) {
+    console.error('Error fetching restaurant data:', error);
+    throw new Error('Failed to fetch restaurant data');
   }
-
-  const restaurantData = restaurantSnap.data() as RestaurantType;
-  console.log("haha", restaurantData)
-  // Enhance restaurant data with admin information
-  if (adminResponse.success && adminResponse.admins) {
-    restaurantData.admins = adminResponse.admins;
-  } else {
-    console.error('Failed to fetch admins:', adminResponse.error);
-    restaurantData.admins = [];
-  }
-
-  return restaurantData;
 };

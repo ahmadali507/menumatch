@@ -147,6 +147,7 @@ export default function MenuItemCard({ item, menuId, sectionId }: MenuItemCardPr
               fill
               style={{ objectFit: 'cover' }}
               sizes="(max-width: 600px) 100vw, (max-width: 960px) 50vw, 33vw"
+              unoptimized
             />
             <Box
               sx={{

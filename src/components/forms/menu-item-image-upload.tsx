@@ -59,6 +59,7 @@ export default function MenuItemImageUpload({
               alt="Item preview"
               fill
               className="object-cover rounded-lg"
+              unoptimized
             />
           ) : (
             <div className="flex flex-col items-center gap-2">
