@@ -249,7 +249,7 @@ export default function EditRestaurant({
                         setLogoImage(null);
                         setLogoPreview(null);
                       }}
-                      label="Logo"
+                      // label="Logo"
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -260,7 +260,7 @@ export default function EditRestaurant({
                         setBgImage(null);
                         setBgPreview(null);
                       }}
-                      label="Background"
+                      // label="Background"
                     />
                   </Grid>
                 </Grid>

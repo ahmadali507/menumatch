@@ -13,7 +13,7 @@ interface MenuItemImageUploadProps {
 export default function MenuItemImageUpload({
   preview,
   onUpload,
-  onDelete
+  onDelete, 
 }: MenuItemImageUploadProps) {
   return (
     <FormControl fullWidth>
