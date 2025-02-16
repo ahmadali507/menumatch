@@ -1,14 +1,11 @@
-import { Button, Card, Typography, Divider, Grid, Box } from "@mui/material";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
-import Link from "next/link";
+import { Card, Typography, Divider, Grid, Box } from "@mui/material";
 import Image from "next/image";
 import { RestaurantType } from "@/types";
 import RestaurantHeader from "../restaurant-header";
 import RestaurantStats from "../restaurant-stats";
 import AdminsList from "../admins-list";
 import MenuCard from "../menus/menu-card";
-// import { StringValidation } from "zod";
-// import { StringDecoder } from "string_decoder";
+import ManageMenusButtonLink from "./manage-menus-button-link";
 
 export default async function RestaurantContent({
   restaurantId,
@@ -21,24 +18,24 @@ export default async function RestaurantContent({
     <div className="flex gap-6 w-full">
       <Card style={{ flexGrow: 2 }}>
         {/* Background Image Container */}
-        <Box sx={{ 
-          position: 'relative', 
-          height: '240px', 
+        {(details.images?.background || details.images?.logo) && <Box sx={{
+          position: 'relative',
+          height: '240px',
           width: '100%',
           mb: 3,
           borderRadius: '8px',
           overflow: 'hidden'
         }}>
-          <Image
+          {details?.images?.background && <Image
             src={details?.images?.background as string}
             alt={`${details.name} background`}
             fill
-            style={{ 
+            style={{
               objectFit: 'cover',
             }}
             priority
             unoptimized
-          />
+          />}
           {/* Gradient Overlay */}
           <Box sx={{
             position: 'absolute',
@@ -49,9 +46,9 @@ export default async function RestaurantContent({
             background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%)',
             zIndex: 1
           }} />
-          
+
           {/* Logo Container */}
-          <Box sx={{
+          {details?.images?.logo && <Box sx={{
             position: 'absolute',
             bottom: '-40px',
             left: '32px',
@@ -67,14 +64,14 @@ export default async function RestaurantContent({
               src={details?.images?.logo as string}
               alt={`${details.name} logo`}
               fill
-              style={{ 
+              style={{
                 objectFit: 'cover',
                 padding: '8px'
               }}
               unoptimized
             />
-          </Box>
-        </Box>
+          </Box>}
+        </Box>}
 
         {/* Add spacing for logo overflow */}
         <Box sx={{ mt: 5, px: 3, pb: 3 }}>
@@ -86,14 +83,7 @@ export default async function RestaurantContent({
           <div className="pt-4">
             <div className="flex justify-between items-center mb-4">
               <Typography variant="h6">Menu Management</Typography>
-              <Button
-                variant="contained"
-                startIcon={<MenuBookIcon />}
-                component={Link}
-                href={`/restaurants/${restaurantId}/menu`}
-              >
-                Manage Menus
-              </Button>
+              <ManageMenusButtonLink />
             </div>
             <Typography color="text.secondary">
               Create and manage restaurant menus, categories, and items
@@ -104,13 +94,15 @@ export default async function RestaurantContent({
             <Typography variant="h6" sx={{ marginBottom: "1rem" }}>
               Current Menus
             </Typography>
-            <Grid container spacing={3}>
-              {details?.menus?.map((menu) => (
-                <Grid item xs={12} sm={6} key={menu.id}>
-                  <MenuCard menu={menu} />
-                </Grid>
-              ))}
-            </Grid>
+            {details?.menus.length === 0 ?
+              <Typography variant="body1">There are currently no menus</Typography>
+              : <Grid container spacing={3}>
+                {details.menus?.map((menu) => (
+                  <Grid item xs={12} sm={6} key={menu.id}>
+                    <MenuCard menu={menu} />
+                  </Grid>
+                ))}
+              </Grid>}
           </div>
         </Box>
       </Card>
