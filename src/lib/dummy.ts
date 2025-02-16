@@ -8,6 +8,7 @@ export const dummyMenus: Menu[] = [
     endDate: "2024-12-31T15:00:00Z" as string,
     sections: [
       {
+        id: "adfads",
         name: "Appetizers",
         items: [
           {
@@ -33,6 +34,7 @@ export const dummyMenus: Menu[] = [
         ]
       },
       {
+        id: "adfad",
         name: "Main Courses",
         items: [
           {
@@ -56,6 +58,7 @@ export const dummyMenus: Menu[] = [
     endDate: "2024-12-31T23:00:00Z",
     sections: [
       {
+        id: "adfad",
         name: "Starters",
         items: [
           {
@@ -71,6 +74,7 @@ export const dummyMenus: Menu[] = [
         ]
       },
       {
+        id: "adfad",
         name: "Pasta",
         items: [
           {
@@ -86,6 +90,7 @@ export const dummyMenus: Menu[] = [
         ]
       },
       {
+        id: "adfad",
         name: "Desserts",
         items: [
           {
@@ -109,6 +114,7 @@ export const dummyMenus: Menu[] = [
     endDate: "2024-02-29T14:00:00Z", // Inactive menu
     sections: [
       {
+        id: "412241",
         name: "Breakfast Favorites",
         items: [
           {
