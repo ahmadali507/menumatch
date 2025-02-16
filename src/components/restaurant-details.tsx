@@ -26,7 +26,7 @@ export default function RestaurantDetails({ restaurantId, details }: { restauran
               variant="contained"
               startIcon={<MenuBookIcon />}
               component={Link}
-              href={`/restaurants/${restaurantId}/menu`}
+              href={`/restaurant/menu/${restaurantId}`}
             >
               Manage Menus
             </Button>

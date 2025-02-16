@@ -19,7 +19,7 @@ export default function RestaurantStats({ details }: { details: RestaurantType }
       </Card>
       <Card className="p-4 bg-gray-900/50">
         <Typography color="text.secondary">Total Orders</Typography>
-        <Typography variant="h6" className="mt-2">{details.orders || 120}</Typography>
+        <Typography variant="h6" className="mt-2"> 120</Typography>
       </Card>
     </div>
   );

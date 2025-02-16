@@ -31,16 +31,16 @@ import { useRouter } from "next/navigation";
 
 interface EditRestaurantProps {
   restaurantId: string;
-  initialData: TEditRestaurant & {
-    images: {
-      logo: string | null;
-      background: string | null;
+  initialData: Omit<TEditRestaurant, "logo" | "background"> & {
+    images?: {
+      logo?: string | null;
+      background?: string | null;
     }
   };
   iconTrigger?: boolean;
 }
 
-export default function EditRestaurant({
+export default function EditRestaurantForm({
   restaurantId,
   initialData,
   iconTrigger
@@ -51,8 +51,8 @@ export default function EditRestaurant({
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [imageType, setImageType] = useState<'logo' | 'background' | null>(null);
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
-  const [logoPreview, setLogoPreview] = useState<string | null>(initialData.images.logo);
-  const [bgPreview, setBgPreview] = useState<string | null>(initialData.images.background);
+  const [logoPreview, setLogoPreview] = useState<string | null>(initialData?.images?.logo || "");
+  const [bgPreview, setBgPreview] = useState<string | null>(initialData?.images?.background || "");
 
   const {
     register,
@@ -62,8 +62,8 @@ export default function EditRestaurant({
     resolver: zodResolver(editRestaurantSchema),
     defaultValues: initialData,
   });
-  
-  const router = useRouter(); 
+
+  const router = useRouter();
   const { showToast } = useToast();
   const mutation = useMutation({
     mutationFn: async (data: TEditRestaurant) => {
@@ -79,7 +79,7 @@ export default function EditRestaurant({
           const logoBlob = await fetch(logoPreview!).then(r => r.blob());
           formData.append('logo', logoBlob, 'logo.jpg');
         }
-        
+
         if (bgImage) {
           const bgBlob = await fetch(bgPreview!).then(r => r.blob());
           formData.append('background', bgBlob, 'background.jpg');
@@ -89,8 +89,8 @@ export default function EditRestaurant({
         const payload = {
           ...data,
           images: {
-            logo: logoImage ? null : logoPreview || initialData.images.logo,
-            background: bgImage ? null : bgPreview || initialData.images.background
+            logo: logoImage ? null : logoPreview || initialData.images?.logo,
+            background: bgImage ? null : bgPreview || initialData.images?.background
           }
         };
 
@@ -158,9 +158,9 @@ export default function EditRestaurant({
     try {
       const response = await fetch(croppedImageUrl);
       if (!response.ok) throw new Error('Failed to fetch cropped image');
-      
+
       const blob = await response.blob();
-      const file = new File([blob], `${imageType}.jpg`, { 
+      const file = new File([blob], `${imageType}.jpg`, {
         type: 'image/jpeg',
         lastModified: Date.now()
       });
@@ -232,12 +232,12 @@ export default function EditRestaurant({
           onSubmit={handleSubmit(onSubmit, (error) => {
             console.log(error);
           })}
-          className="space-y-4 mt-2"
+          className="space-y-4"
         >
-          <DialogContent sx={{ mt: 2 }}>
+          <DialogContent>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                <Typography variant="h6" color="text.secondary" >
                   Restaurant Images
                 </Typography>
                 <Grid container spacing={2}>
@@ -249,7 +249,7 @@ export default function EditRestaurant({
                         setLogoImage(null);
                         setLogoPreview(null);
                       }}
-                      label="Logo"
+                      label="Logo Image"
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -260,7 +260,7 @@ export default function EditRestaurant({
                         setBgImage(null);
                         setBgPreview(null);
                       }}
-                      label="Background"
+                      label="Background Image"
                     />
                   </Grid>
                 </Grid>

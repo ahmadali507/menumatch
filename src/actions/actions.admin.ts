@@ -3,11 +3,12 @@
 import { getAuth } from "firebase-admin/auth";
 // import { TEditRestaurant } from "@/lib/schema";
 import { initAdmin } from "@/firebase/adminFirebase";
-import { RestaurantType, resAdminType } from "@/types";
+import { Menu, RestaurantType, resAdminType } from "@/types";
 import { getFirestore } from "firebase-admin/firestore";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { getStorage } from 'firebase-admin/storage';
+import { formatFirebaseTimestamp } from "@/lib/format";
 
 
 type SuperAdminData = {
@@ -71,10 +72,10 @@ export const createSuperAdmin = async (data: SuperAdminData) => {
 export const createRestaurant = async (formData: FormData, idToken: string) => {
   try {
 
-    
+
     await initAdmin();
-    const auth = getAuth(); 
-    const firestore = getFirestore(); 
+    const auth = getAuth();
+    const firestore = getFirestore();
     const storage = getStorage();
     const bucket = storage.bucket();
 
@@ -95,11 +96,11 @@ export const createRestaurant = async (formData: FormData, idToken: string) => {
       const logoBuffer = await logoFile.arrayBuffer();
       const logoFileName = `restaurants/${Date.now()}_logo_${logoFile.name}`;
       const logoFileUpload = bucket.file(logoFileName);
-      
+
       await logoFileUpload.save(Buffer.from(logoBuffer), {
         metadata: { contentType: logoFile.type }
       });
-      
+
       [logoUrl] = await logoFileUpload.getSignedUrl({
         action: 'read',
         expires: '01-01-2500'
@@ -112,11 +113,11 @@ export const createRestaurant = async (formData: FormData, idToken: string) => {
       const backgroundBuffer = await backgroundFile.arrayBuffer();
       const backgroundFileName = `restaurants/${Date.now()}_background_${backgroundFile.name}`;
       const backgroundFileUpload = bucket.file(backgroundFileName);
-      
+
       await backgroundFileUpload.save(Buffer.from(backgroundBuffer), {
         metadata: { contentType: backgroundFile.type }
       });
-      
+
       [backgroundUrl] = await backgroundFileUpload.getSignedUrl({
         action: 'read',
         expires: '01-01-2500'
@@ -137,15 +138,15 @@ export const createRestaurant = async (formData: FormData, idToken: string) => {
     // Add to Firestore
     const restaurantRef = await firestore.collection('restaurants').add(restaurantData);
 
-    return { 
-      success: true, 
-      restaurantId: restaurantRef.id 
+    return {
+      success: true,
+      restaurantId: restaurantRef.id
     };
   } catch (error) {
     console.error('Error creating restaurant:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Failed to create restaurant' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to create restaurant'
     };
   }
 };
@@ -190,7 +191,7 @@ export const fetchAllRestaurants = async () => {
 };
 
 export const editRestaurant = async (
-  restaurantId: string, 
+  restaurantId: string,
   formData: FormData,
   idToken: string
 ) => {
@@ -198,7 +199,7 @@ export const editRestaurant = async (
     await initAdmin();
     const storage = getStorage();
     const bucket = storage.bucket();
-    const firestore = getFirestore(); 
+    const firestore = getFirestore();
 
 
     ///////// validate hte user role ... only super admin can edit the restaurant information//////////// 
@@ -224,7 +225,7 @@ export const editRestaurant = async (
       const buffer = Buffer.from(await logoFile.arrayBuffer());
       const logoPath = `restaurants/${restaurantId}/logo_${Date.now()}.jpg`;
       const logoRef = bucket.file(logoPath);
-      
+
       await logoRef.save(buffer, {
         metadata: { contentType: 'image/jpeg' }
       });
@@ -242,7 +243,7 @@ export const editRestaurant = async (
       const buffer = Buffer.from(await bgFile.arrayBuffer());
       const bgPath = `restaurants/${restaurantId}/background_${Date.now()}.jpg`;
       const bgRef = bucket.file(bgPath);
-      
+
       await bgRef.save(buffer, {
         metadata: { contentType: 'image/jpeg' }
       });
@@ -264,7 +265,7 @@ export const editRestaurant = async (
 
     await restaurantRef.update(updateData);
 
-    return { 
+    return {
       success: true,
       restaurant: {
         id: restaurantId,
@@ -273,9 +274,9 @@ export const editRestaurant = async (
     };
   } catch (error) {
     console.error('Error updating restaurant:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Failed to update restaurant' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to update restaurant'
     };
   }
 };
@@ -388,9 +389,10 @@ export const getRestaurantData = async (restaurantId: string) => {
   const firestore = getFirestore();
 
   try {
-    const [restaurantSnap, adminResponse] = await Promise.all([
+    const [restaurantSnap, adminResponse, menusSnapshot] = await Promise.all([
       firestore.collection('restaurants').doc(restaurantId).get(),
-      fetchRestaurantAdmins(restaurantId)
+      fetchRestaurantAdmins(restaurantId),
+      firestore.collection('restaurants').doc(restaurantId).collection('menus').get()
     ]);
 
     if (!restaurantSnap.exists) {
@@ -414,7 +416,7 @@ export const getRestaurantData = async (restaurantId: string) => {
       },
       orders: restaurantSnap.data()?.orders || [],
       admins: [],
-      menus: restaurantSnap.data()?.menus || []
+      menus: []
     } as RestaurantType;
 
     // Add admin information
@@ -423,6 +425,32 @@ export const getRestaurantData = async (restaurantId: string) => {
     } else {
       console.error('Failed to fetch admins:', adminResponse.error);
       restaurantData.admins = [];
+    }
+
+    // Add menus from subcollection
+    if (!menusSnapshot.empty) {
+      restaurantData.menus = menusSnapshot.docs.map(doc => (
+        {
+          id: doc.id,
+          ...doc.data(),
+          name: doc.data()?.name,
+          // Convert Firestore Timestamps to JavaScript Dates
+          startDate: doc.data()?.startDate.toDate(),
+          endDate: doc.data()?.endDate.toDate(),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          sections: doc.data()?.sections.map((section: any) => ({
+            ...section,
+            createdAt: formatFirebaseTimestamp(section.createdAt),
+          })),
+          createdAt: formatFirebaseTimestamp(doc.data()?.createdAt),
+          updatedAt: formatFirebaseTimestamp(doc.data()?.updatedAt),
+          // "qrCode": {
+          //   ...doc.data()?.qrCode,
+          //   "createdAt": formatFirebaseTimestamp(menuSnapshot.data()?.qrCode.createdAt)
+          // }
+        } as Menu
+      ));
+
     }
 
     return restaurantData;

@@ -1,5 +1,4 @@
 import { Button } from "@mui/material";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import CategoryIcon from "@mui/icons-material/Category";
@@ -47,11 +46,10 @@ const menuUpdates = [
   },
 ];
 
-const quickActions: { title: string; icon: React.ReactNode, color: "primary" | "secondary" | "success" | "error" | "info" | "warning" }[] = [
-  { title: "Restaurant Information", icon: <RestaurantIcon />, color: "primary" },
-  { title: "Edit Restaurant", icon: <MenuBookIcon />, color: "success" },
-  { title: "Manage Menus", icon: <CategoryIcon />, color: "info" },
-  { title: "Create Menu", icon: <AnalyticsIcon />, color: "warning" },
+const quickActions: { title: string; icon: React.ReactNode, link: string, color: "primary" | "secondary" | "success" | "error" | "info" | "warning" }[] = [
+  { title: "Restaurant Information", icon: <RestaurantIcon />, color: "primary", link: "/restaurant/info" },
+  { title: "Manage Menus", icon: <CategoryIcon />, color: "info", link: "/restaurant/menu" },
+  { title: "Create Menu", icon: <AnalyticsIcon />, color: "warning", link: "/restaurant/menu/add" },
 ];
 
 export default function RestaurantAdminPage() {

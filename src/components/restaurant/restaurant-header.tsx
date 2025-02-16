@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import EditRestaurant from "../forms/edit-restaurant";
+import EditRestaurant from "../forms/edit-restaurant-form";
 import { RestaurantType } from "@/types";
 
 export default function RestaurantHeader({ restaurantId, details }: {
@@ -22,7 +22,7 @@ export default function RestaurantHeader({ restaurantId, details }: {
           </div>
         </div>
       </div>
-      <EditRestaurant restaurantId={restaurantId} initialData={{ ...details, cuisine: "Khota" }} />
+      <EditRestaurant restaurantId={restaurantId} initialData={details} />
     </div>
   );
 }

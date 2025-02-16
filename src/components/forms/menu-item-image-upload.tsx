@@ -8,16 +8,18 @@ interface MenuItemImageUploadProps {
   preview: string | null;
   onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDelete: () => void;
+  label?: string;
 }
 
 export default function MenuItemImageUpload({
   preview,
   onUpload,
-  onDelete
+  onDelete,
+  label = "Item Image"
 }: MenuItemImageUploadProps) {
   return (
     <FormControl fullWidth>
-      <FormLabel>Item Image</FormLabel>
+      <FormLabel>{label}</FormLabel>
       <div className="relative">
         <Box
           sx={{
@@ -58,8 +60,9 @@ export default function MenuItemImageUpload({
               src={preview}
               alt="Item preview"
               fill
-              className="object-cover rounded-lg"
+              className="object-cover rounded-lg aspect-square"
               unoptimized
+
             />
           ) : (
             <div className="flex flex-col items-center gap-2">

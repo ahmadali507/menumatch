@@ -2,11 +2,13 @@
 import { Card, Typography, Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { getCardStyles } from "@/lib/utils/styles/cardStyles";
+import Link from "next/link";
 
 interface QuickAction {
   title: string;
   icon: React.ReactNode;
   color: "primary" | "secondary" | "success" | "error" | "info" | "warning";
+  link: string;
 }
 
 interface QuickActionsProps {
@@ -31,6 +33,7 @@ export default function QuickActions({ actions }: QuickActionsProps) {
             color={action.color as "success"}
             startIcon={action.icon}
             fullWidth
+
             sx={{
               justifyContent: 'flex-start',
               p: 1.5,
@@ -47,9 +50,13 @@ export default function QuickActions({ actions }: QuickActionsProps) {
                   : `${action.color}.200`,
               }
             }}
+
           >
-            {action.title}
+            <Link href={action.link}>
+              {action.title}
+            </Link>
           </Button>
+
         ))}
       </div>
     </Card>

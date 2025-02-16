@@ -126,7 +126,7 @@ export default function MenuItemCard({ item, menuId, sectionId }: MenuItemCardPr
                 size="small"
                 sx={{
                   color: 'white',
-                  '&:hover': { 
+                  '&:hover': {
                     color: 'primary.main',
                     backgroundColor: 'rgba(255, 255, 255, 0.1)'
                   }
@@ -165,8 +165,8 @@ export default function MenuItemCard({ item, menuId, sectionId }: MenuItemCardPr
                 position: 'absolute',
                 bottom: 12,
                 right: 44,
-                zIndex: 2, 
-                alignSelf : 'center'
+                zIndex: 2,
+                alignSelf: 'center'
               }}
               badgeContent={
                 item.available ? (

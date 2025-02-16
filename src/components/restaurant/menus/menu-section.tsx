@@ -30,11 +30,11 @@ import { reorderItems, updateMenuSectionName } from "@/actions/actions.menu";
 import { useMenu } from "@/context/menuContext";
 // import { dummyMenuSection } from "@/lib/dummy";
 
-export default function MenuSection({menuId, section }: {menuId: string,  section: MenuSectionType }) {
+export default function MenuSection({ menuId, section }: { menuId: string, section: MenuSectionType }) {
   const [, setItems] = useState(section.items);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const { menu, setMenu } = useMenu(); 
+  const { menu, setMenu } = useMenu();
   const {
     attributes,
     listeners,
@@ -62,46 +62,46 @@ export default function MenuSection({menuId, section }: {menuId: string,  sectio
     setIsExpanded(!isExpanded);
   };
 
-  const handleDragEnd = async(event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
       const items = [...section.items];
       const oldIndex = items.findIndex((item) => item.id === active.id);
       const newIndex = items.findIndex((item) => item.id === over.id);
-      
+
       if (oldIndex !== -1 && newIndex !== -1) {
         const reorderedItems = arrayMove(items, oldIndex, newIndex);
-        console.log(reorderedItems); 
+        console.log(reorderedItems);
         // Update local state
         setItems(reorderedItems);
-        
+
         // Update menu context
         if (menu) {
 
 
           const updatedMenu = {
             ...menu,
-            sections: menu.sections.map(s => 
+            sections: menu.sections.map(s =>
               s.id === section.id
-              ? { ...s, items: reorderedItems }
-              : s
+                ? { ...s, items: reorderedItems }
+                : s
             )
           };
           setMenu(updatedMenu);
           const response = await reorderItems(menuId, section.id, reorderedItems);
-          if(!response.success){
+          if (!response.success) {
             console.error("Failed to reorder items", response.error);
             return;
           }
-          console.log("Reordering the menuItems"); 
-         
+          console.log("Reordering the menuItems");
+
           console.log("successfullyy reordered items. ")
-          
+
         }
       }
     }
-    
+
   };
 
   return (
@@ -124,7 +124,7 @@ export default function MenuSection({menuId, section }: {menuId: string,  sectio
               }}
             />
             <EditableSectionName
-              sectionId = {section.id}
+              sectionId={section.id}
               name={section.name}
               onSave={handleSectionNameUpdate}
             />
@@ -134,17 +134,17 @@ export default function MenuSection({menuId, section }: {menuId: string,  sectio
                 {section.items.length} items
               </Typography>
             </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {section.createdAt && <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <EventIcon fontSize="small" color="action" />
               <Typography variant="body2" color="text.secondary">
                 {format(new Date(section?.createdAt), "EEEE, MMMM d, yyyy")}
               </Typography>
-            </Box>
+            </Box>}
           </div>
 
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
             <DeleteSectionItem menuId={menuId} sectionId={section?.id} />
-            <AddItemToMenu menuId = {menuId} sectionId={section?.id} />
+            <AddItemToMenu menuId={menuId} sectionId={section?.id} />
             <IconButton
               onClick={handleToggle}
               size="small"
@@ -153,7 +153,7 @@ export default function MenuSection({menuId, section }: {menuId: string,  sectio
               {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
           </Box>
-        </Box>n 
+        </Box>
 
         <Collapse in={isExpanded} timeout="auto">
           {section?.items.length > 0 ? (
@@ -166,7 +166,7 @@ export default function MenuSection({menuId, section }: {menuId: string,  sectio
                   {section?.items.map((item, index) => (
                     <MenuItemCard
                       menuId={menuId}
-                      sectionId = {section.id}
+                      sectionId={section.id}
                       key={item.name + index}
                       item={item}
                     />

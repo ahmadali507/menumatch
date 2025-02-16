@@ -125,25 +125,26 @@ export const getMenu = async (restaurantId: string, menuId: string) => {
     }
 
 
-    const menu = {
-      id: menuSnapshot.id,
-      ...menuSnapshot.data(),
-      name: menuSnapshot.data()?.name,
-      // Convert Firestore Timestamps to JavaScript Dates
-      startDate: menuSnapshot.data()?.startDate.toDate(),
-      endDate: menuSnapshot.data()?.endDate.toDate(),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      sections: menuSnapshot.data()?.sections.map((section: any) => ({
-        ...section,
-        createdAt: formatFirebaseTimestamp(section.createdAt),
-      })),
-      createdAt: formatFirebaseTimestamp(menuSnapshot.data()?.createdAt),
-      updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),
-      // "qrCode": {
-      //   ...menuSnapshot.data()?.qrCode,
-      //   "createdAt": formatFirebaseTimestamp(menuSnapshot.data()?.qrCode.createdAt)
-      // }
-    } as Menu;
+    const menu =
+      {
+        id: menuSnapshot.id,
+        ...menuSnapshot.data(),
+        name: menuSnapshot.data()?.name,
+        // Convert Firestore Timestamps to JavaScript Dates
+        startDate: menuSnapshot.data()?.startDate.toDate(),
+        endDate: menuSnapshot.data()?.endDate.toDate(),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        sections: menuSnapshot.data()?.sections.map((section: any) => ({
+          ...section,
+          createdAt: formatFirebaseTimestamp(section.createdAt),
+        })),
+        createdAt: formatFirebaseTimestamp(menuSnapshot.data()?.createdAt),
+        updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),
+        // "qrCode": {
+        //   ...menuSnapshot.data()?.qrCode,
+        //   "createdAt": formatFirebaseTimestamp(menuSnapshot.data()?.qrCode.createdAt)
+        // }
+      } as Menu;
 
     return {
       success: true,
@@ -369,7 +370,7 @@ export const deleteMenuItem = async (menuId: string, sectionId: string, itemId: 
         ...section,
         createdAt: formatFirebaseTimestamp(section.createdAt),
       })),
-      createdAt:formatFirebaseTimestamp( menuSnapshot.data()?.createdAt),
+      createdAt: formatFirebaseTimestamp(menuSnapshot.data()?.createdAt),
       updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),
     } as Menu;
 
@@ -463,8 +464,8 @@ export const updateMenuSectionName = async (menuId: string, sectionId: string, n
     };
 
     revalidatePath(`/restaurant/menu/${menuId}`);
-    return { 
-      success: true, 
+    return {
+      success: true,
       section: updatedSection
     };
   } catch (error) {
@@ -511,7 +512,7 @@ export const updateSectionItem = async (menuId: string, sectionId: string, itemI
     // Update the menu document
     await menuRef.update({
       sections: currentSections,
-      updatedAt: new Date(), 
+      updatedAt: new Date(),
     });
 
     // Format the updated item for response
@@ -532,68 +533,68 @@ export const updateSectionItem = async (menuId: string, sectionId: string, itemI
 //////////// reordering the items in a ceratin section based onthe drag and drop functionlaity /////////////////// 
 
 export const reorderItems = async (menuId: string, sectionId: string, reorderedList: MenuItem[]) => {
-  await initAdmin(); 
+  await initAdmin();
   const firestore = getFirestore();
   const restaurantId = await getRestaurantIdForAdmin();
 
   try {
-      const menuRef = firestore
-          .collection('restaurants')
-          .doc(restaurantId)
-          .collection("menus")
-          .doc(menuId);
+    const menuRef = firestore
+      .collection('restaurants')
+      .doc(restaurantId)
+      .collection("menus")
+      .doc(menuId);
 
-      const menuDoc = await menuRef.get();
-      if (!menuDoc.exists) {
-          throw new Error("Menu not found");
-      }
+    const menuDoc = await menuRef.get();
+    if (!menuDoc.exists) {
+      throw new Error("Menu not found");
+    }
 
-      const currentSections = menuDoc.data()?.sections || [];
-      const sectionIndex = currentSections.findIndex((section: MenuSection) => section.id === sectionId);
-      if (sectionIndex === -1) {
-          throw new Error("Section not found");
-      }
+    const currentSections = menuDoc.data()?.sections || [];
+    const sectionIndex = currentSections.findIndex((section: MenuSection) => section.id === sectionId);
+    if (sectionIndex === -1) {
+      throw new Error("Section not found");
+    }
 
-      // Update the items in the section with the reordered list
-      currentSections[sectionIndex].items = reorderedList;
+    // Update the items in the section with the reordered list
+    currentSections[sectionIndex].items = reorderedList;
 
-      // Update the menu document with the new sections array
-      await menuRef.update({
-          sections: currentSections,
-          updatedAt: new Date().toString()
-      });
+    // Update the menu document with the new sections array
+    await menuRef.update({
+      sections: currentSections,
+      updatedAt: new Date().toString()
+    });
 
-      // Get the updated menu data
-      // const menuSnapshot = await menuRef.get();
-      // const menu = {
-      //     id: menuSnapshot.id,
-      //     ...menuSnapshot.data(),
-      //     name: menuSnapshot.data()?.name,
-      //     startDate: menuSnapshot.data()?.startDate.toDate(),
-      //     endDate: menuSnapshot.data()?.endDate.toDate(),
-      //     sections: menuSnapshot.data()?.sections.map((section: MenuSection) => ({
-      //         ...section,
-      //         createdAt: formatFirebaseTimestamp(section?.createdAt),
-      //     })),
-      //     createdAt: formatFirebaseTimestamp(menuSnapshot.data()?.createdAt),
-      //     updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),
-      // } as Menu;
+    // Get the updated menu data
+    // const menuSnapshot = await menuRef.get();
+    // const menu = {
+    //     id: menuSnapshot.id,
+    //     ...menuSnapshot.data(),
+    //     name: menuSnapshot.data()?.name,
+    //     startDate: menuSnapshot.data()?.startDate.toDate(),
+    //     endDate: menuSnapshot.data()?.endDate.toDate(),
+    //     sections: menuSnapshot.data()?.sections.map((section: MenuSection) => ({
+    //         ...section,
+    //         createdAt: formatFirebaseTimestamp(section?.createdAt),
+    //     })),
+    //     createdAt: formatFirebaseTimestamp(menuSnapshot.data()?.createdAt),
+    //     updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),
+    // } as Menu;
 
-      revalidatePath(`/restaurant/menu/${menuId}`);
-      return { success: true, items : reorderedList };
+    revalidatePath(`/restaurant/menu/${menuId}`);
+    return { success: true, items: reorderedList };
   } catch (error) {
-      return { success: false, error: (error as Error).message }; 
+    return { success: false, error: (error as Error).message };
   }
 }
 
 ////// now writing a function to reorder the sectiosn ////////// 
 
 export const reorderSections = async (menuId: string, reorderedList: MenuSection[]) => {
-  await initAdmin(); 
+  await initAdmin();
   const firestore = getFirestore();
 
   try {
-    const restaurantId = await getRestaurantIdForAdmin(); 
+    const restaurantId = await getRestaurantIdForAdmin();
     const menuRef = firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId);
 
     const menuDoc = await menuRef.get();
@@ -610,17 +611,17 @@ export const reorderSections = async (menuId: string, reorderedList: MenuSection
     // Format the sections for response
     const formattedSections = reorderedList.map(section => ({
       ...section,
-      createdAt: formatFirebaseTimestamp(section?.createdAt)
+      createdAt: new Date().toString()
     }));
 
     revalidatePath(`/restaurant/menu/${menuId}`);
-    return { 
-      success: true, 
-      sections: formattedSections 
+    return {
+      success: true,
+      sections: formattedSections
     };
 
-    
+
   } catch (error) {
-    return {success : false, error: (error as Error).message}
+    return { success: false, error: (error as Error).message }
   }
 }

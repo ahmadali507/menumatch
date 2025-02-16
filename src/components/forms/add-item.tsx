@@ -51,16 +51,6 @@ const commonAllergens = [
   "Soybeans",
 ];
 
-const commonLabels = [
-  "Vegetarian",
-  "Vegan",
-  "Gluten-Free",
-  "Spicy",
-  "Chef's Special",
-  "Popular",
-  "New",
-  "Seasonal",
-];
 
 export default function AddItemForm() {
   const {
@@ -88,8 +78,7 @@ export default function AddItemForm() {
   const params = useParams();
 
   const { menu, setMenu } = useMenu();
-
-
+  const [imagePending, setImagePending] = useState(false);
 
   //////////// using tanstack query for mutation of adding item  ////////////////
 
@@ -140,9 +129,11 @@ export default function AddItemForm() {
 
       if (itemImage) {
         showToast('Uploading image...', 'info');
+        setImagePending(true)
         photoURL = await uploadImageToStorage(itemImage);
       }
 
+      setImagePending(false);
       // Add the photo URL to the form data
       const formData = {
         ...data,
@@ -168,7 +159,7 @@ export default function AddItemForm() {
   };
 
   // Add new state for image handling
-  const [, setItemImage] = useState<File | null>(null);
+  const [itemImage, setItemImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
@@ -176,7 +167,7 @@ export default function AddItemForm() {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file) {
-      const validation = await validateImage(file, 'background'); // Using background config for larger images
+      const validation = await validateImage(file, "item"); // Using logo for larger images
       if (!validation.valid) {
         showToast(validation.error || 'Invalid image', 'error');
         return;
@@ -327,22 +318,30 @@ export default function AddItemForm() {
             <FormLabel>Labels</FormLabel>
             <Autocomplete
               multiple
-              options={commonLabels}
+              options={commonAllergens}
               value={watch("labels")}
               onChange={(_, newValue) => {
                 setValue("labels", newValue);
                 clearErrors("labels");
               }}
-
+              sx={{
+                '& .MuiAutocomplete-popupIndicator': {
+                  transform: 'none',
+                  border: 'none',
+                  p: 0.5,
+                  ml: -0.5,
+                }
+              }}
               renderInput={(params) => (
+
                 <TextField
                   {...params}
                   error={!!errors.labels}
                   helperText={errors.labels?.message}
-                  placeholder="Select labels"
+                  placeholder="Select Labels"
                   sx={{
                     '& .MuiInputBase-root': {
-                      padding: '2px 9px',
+                      p: '2px 9px',
                     }
                   }}
                 />
@@ -404,6 +403,7 @@ export default function AddItemForm() {
                 key={ingredient}
                 label={ingredient}
                 onDelete={() => setValue("ingredients", watch("ingredients").filter((i) => i !== ingredient))}
+
               />
             ))}
           </Box>
@@ -459,11 +459,12 @@ export default function AddItemForm() {
           >
             Cancel
           </LoadingButton>
+
           <LoadingButton
             variant="contained"
             color="primary"
             type="submit"
-            isLoading={mutation.isPending}
+            isLoading={mutation.isPending || imagePending}
             loadingText="Adding Item..."
           >
             Add Item
@@ -477,7 +478,7 @@ export default function AddItemForm() {
         onClose={() => setCropDialogOpen(false)}
         imageUrl={currentImage || ''}
         onCropComplete={handleCropComplete}
-        aspectRatio={16 / 9}
+        aspectRatio={1 / 1}
       />
     </Paper>
   );

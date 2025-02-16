@@ -21,7 +21,7 @@ import Link from "next/link";
 import SectionLayout from "@/components/layouts/section-layout";
 import AddRestaurant from "@/components/add-restaurant";
 import { RestaurantType } from "@/types";
-import EditRestaurant from "../forms/edit-restaurant";
+import EditRestaurant from "../forms/edit-restaurant-form";
 import DeleteRestaurant from "../delete-restaurant";
 
 // Types

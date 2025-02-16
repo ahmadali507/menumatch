@@ -19,16 +19,24 @@ export const IMAGE_CONFIG = {
   background: {
     maxSize: 5 * 1024 * 1024, // 5MB
     acceptedFormats: ['image/jpeg', 'image/png', 'image/webp'],
-    minWidth: 1280,
+    minWidth: 1080,
     // maxWidth: 3840,
     minHeight: 720,
+    // maxHeight: 2160
+  },
+  item: {
+    maxSize: 2 * 1024 * 1024, // 2MB
+    acceptedFormats: ['image/jpeg', 'image/png', 'image/webp'],
+    minWidth: 512,
+    // maxWidth: 3840,
+    minHeight: 512,
     // maxHeight: 2160
   }
 };
 
 export const validateImage = async (
   file: File,
-  type: 'logo' | 'background'
+  type: keyof typeof IMAGE_CONFIG
 ): Promise<{ valid: boolean; error?: string }> => {
   const config = IMAGE_CONFIG[type];
 
@@ -78,28 +86,28 @@ export const validateImage = async (
 
 
 
-  export const uploadImageToStorage = async (file: File): Promise<string> => {
-    if (!file) throw new Error('No file provided');
-    
-    try {
-      const timestamp = Date.now();
-      const fileName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-      const storageRef = ref(storage, `menu-items/${fileName}`);
-      
-      const snapshot = await uploadBytes(storageRef, file);
-      
-      const downloadURL = await getDownloadURL(snapshot.ref);
-      if (!downloadURL) {
-        throw new Error('Failed to get download URL');
-      }
-      
-      return downloadURL;
-    } catch (error) {
-      console.error('Storage error:', error);
-      throw new Error(
-        error instanceof Error 
-          ? error.message 
-          : 'Failed to upload image to storage'
-      );
+export const uploadImageToStorage = async (file: File): Promise<string> => {
+  if (!file) throw new Error('No file provided');
+
+  try {
+    const timestamp = Date.now();
+    const fileName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+    const storageRef = ref(storage, `menu-items/${fileName}`);
+
+    const snapshot = await uploadBytes(storageRef, file);
+
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    if (!downloadURL) {
+      throw new Error('Failed to get download URL');
     }
-  };
+
+    return downloadURL;
+  } catch (error) {
+    console.error('Storage error:', error);
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : 'Failed to upload image to storage'
+    );
+  }
+};
