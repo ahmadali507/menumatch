@@ -9,10 +9,9 @@ import {
   FormControl,
   FormLabel,
   MenuItem,
-  //   CircularProgress,
-  //   Alert,
   Grid,
   IconButton,
+  Typography,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,11 +22,22 @@ import EditIcon from "@mui/icons-material/Edit";
 import LoadingButton from "../ui/loading-button";
 import { auth } from "@/firebase/firebaseconfig";
 import { useToast } from "@/context/toastContext";
+// import { MenuItemImageUpload } from "../restaurant/menus/menu-item-image";
+// import { ImageCropDialog } from "../ui/image-crop-dialog";
+import { validateImage } from "@/lib/utils";
+import MenuItemImageUpload from "./menu-item-image-upload";
+import ImageCropDialog from "./image-crop";
+import { useRouter } from "next/navigation";
 
 interface EditRestaurantProps {
   restaurantId: string;
-  initialData: TEditRestaurant;
-  iconTrigger?: boolean
+  initialData: TEditRestaurant & {
+    images: {
+      logo: string | null;
+      background: string | null;
+    }
+  };
+  iconTrigger?: boolean;
 }
 
 export default function EditRestaurant({
@@ -36,54 +46,138 @@ export default function EditRestaurant({
   iconTrigger
 }: EditRestaurantProps) {
   const [open, setOpen] = useState(false);
+  const [logoImage, setLogoImage] = useState<File | null>(null);
+  const [bgImage, setBgImage] = useState<File | null>(null);
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [imageType, setImageType] = useState<'logo' | 'background' | null>(null);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [logoPreview, setLogoPreview] = useState<string | null>(initialData.images.logo);
+  const [bgPreview, setBgPreview] = useState<string | null>(initialData.images.background);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    // reset,
   } = useForm<TEditRestaurant>({
     resolver: zodResolver(editRestaurantSchema),
     defaultValues: initialData,
   });
-
-  const {showToast} = useToast(); 
-  const {
-    mutate,
-    isPending,
-    // isError,
-    // error,
-  } = useMutation({
+  
+  const router = useRouter(); 
+  const { showToast } = useToast();
+  const mutation = useMutation({
     mutationFn: async (data: TEditRestaurant) => {
-      console.log("Editing restaurant with data", data);
-      const user = auth.currentUser; 
-      if(!user){
-        throw new Error("User not found"); 
+      try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("User not found");
+
+        const idToken = await user.getIdToken(true);
+        const formData = new FormData();
+
+        // Convert images to Blob before appending to FormData
+        if (logoImage) {
+          const logoBlob = await fetch(logoPreview!).then(r => r.blob());
+          formData.append('logo', logoBlob, 'logo.jpg');
+        }
+        
+        if (bgImage) {
+          const bgBlob = await fetch(bgPreview!).then(r => r.blob());
+          formData.append('background', bgBlob, 'background.jpg');
+        }
+
+        // Create and append the data payload
+        const payload = {
+          ...data,
+          images: {
+            logo: logoImage ? null : logoPreview || initialData.images.logo,
+            background: bgImage ? null : bgPreview || initialData.images.background
+          }
+        };
+
+        formData.append('data', JSON.stringify(payload));
+
+        const response = await editRestaurant(restaurantId, formData, idToken);
+        if (!response.success) {
+          throw new Error(response.error);
+        }
+        return response;
+      } catch (error) {
+        console.error('Mutation error:', error);
+        throw error;
       }
-      const idToken = await user.getIdToken(true);
-      console.log("User role and claims ",await user.getIdTokenResult());
-      return await editRestaurant(restaurantId as string, data, idToken);
     },
     onSuccess: (response) => {
-      // add a toaster here later
-      if(response.success){
+      if (response.success) {
         showToast("Restaurant updated successfully", "success");
-      }
-      else {
-        showToast(response.error || "Failed to update restaurant", "error");
+        setOpen(false);
+        // Use router.refresh() instead of window.location.reload()
+        router.refresh();
       }
     },
+    onError: (error: Error) => {
+      console.error("Error updating restaurant:", error);
+      showToast(error.message || "Failed to update restaurant", "error");
+    }
   });
 
   const handleOpen = () => {
-    console.log("Opening dialog...");
     setOpen(true);
   };
 
   const onSubmit = (data: TEditRestaurant) => {
-    // updateRestaurant(data);
-    console.log("Submitting data", data);
-    mutate(data);
+    try {
+      mutation.mutate(data);
+    } catch (error) {
+      console.error("Error in form submission:", error);
+      showToast("Failed to submit form", "error");
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'background') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const validation = await validateImage(file, type);
+      if (!validation.valid) {
+        showToast(validation.error || 'Invalid image', 'error');
+        return;
+      }
+
+      const fileUrl = URL.createObjectURL(file);
+      setCurrentImage(fileUrl);
+      setImageType(type);
+      setCropDialogOpen(true);
+    } catch (error) {
+      showToast('Error processing image', 'error');
+      console.error('Error handling image upload:', error);
+    }
+  };
+
+  const handleCropComplete = async (croppedImageUrl: string) => {
+    try {
+      const response = await fetch(croppedImageUrl);
+      if (!response.ok) throw new Error('Failed to fetch cropped image');
+      
+      const blob = await response.blob();
+      const file = new File([blob], `${imageType}.jpg`, { 
+        type: 'image/jpeg',
+        lastModified: Date.now()
+      });
+
+      if (imageType === 'logo') {
+        setLogoImage(file);
+        setLogoPreview(croppedImageUrl);
+      } else {
+        setBgImage(file);
+        setBgPreview(croppedImageUrl);
+      }
+
+      setCropDialogOpen(false);
+    } catch (error) {
+      showToast('Error processing cropped image', 'error');
+      console.error('Error handling crop complete:', error);
+    }
   };
 
   return (
@@ -142,7 +236,36 @@ export default function EditRestaurant({
         >
           <DialogContent sx={{ mt: 2 }}>
             <Grid container spacing={2}>
-              {/* Full width name field */}
+              <Grid item xs={12}>
+                <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                  Restaurant Images
+                </Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <MenuItemImageUpload
+                      preview={logoPreview}
+                      onUpload={(e) => handleImageUpload(e, 'logo')}
+                      onDelete={() => {
+                        setLogoImage(null);
+                        setLogoPreview(null);
+                      }}
+                      label="Logo"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <MenuItemImageUpload
+                      preview={bgPreview}
+                      onUpload={(e) => handleImageUpload(e, 'background')}
+                      onDelete={() => {
+                        setBgImage(null);
+                        setBgPreview(null);
+                      }}
+                      label="Background"
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+
               <Grid item xs={12}>
                 <FormControl fullWidth size="small">
                   <FormLabel>Restaurant Name</FormLabel>
@@ -155,7 +278,6 @@ export default function EditRestaurant({
                 </FormControl>
               </Grid>
 
-              {/* Left Column */}
               <Grid item xs={6}>
                 <FormControl fullWidth size="small">
                   <FormLabel>Cuisine</FormLabel>
@@ -201,7 +323,6 @@ export default function EditRestaurant({
                 </FormControl>
               </Grid>
 
-              {/* Right Column - Location Fields */}
               <Grid item xs={6}>
                 <FormControl fullWidth size="small">
                   <FormLabel>Street Address</FormLabel>
@@ -255,12 +376,10 @@ export default function EditRestaurant({
               </Button>
               <LoadingButton
                 type="submit"
-                // fullWidth
                 size="small"
                 variant="contained"
-                isLoading={isPending}
-                loadingText="Signing In"
-              // sx={{}}
+                isLoading={mutation.isPending}
+                loadingText="Saving"
               >
                 Save Changes
               </LoadingButton>
@@ -268,6 +387,15 @@ export default function EditRestaurant({
           </DialogContent>
         </form>
       </Dialog>
+
+      <ImageCropDialog
+        key={currentImage}
+        open={cropDialogOpen}
+        onClose={() => setCropDialogOpen(false)}
+        imageUrl={currentImage || ''}
+        onCropComplete={handleCropComplete}
+        aspectRatio={imageType === 'logo' ? 1 : 16 / 9}
+      />
     </>
   );
 }

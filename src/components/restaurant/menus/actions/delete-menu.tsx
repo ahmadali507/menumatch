@@ -11,6 +11,7 @@ import { useState } from 'react';
 
 export default function DeleteMenu({ menuId }: { menuId: string }) {
   const [open, setOpen] = useState(false);
+  console.log(menuId)
   // const { showToast } = useToast();
 
   // const { mutate, isPending } = useMutation({

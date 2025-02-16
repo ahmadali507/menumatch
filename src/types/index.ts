@@ -11,11 +11,16 @@ export type RestaurantType = {
     phone: string,
     email: string,
   },
+  images ?: {
+    logo: string,
+    background: string,
+  }, 
   status: "active" | "inactive",
   cuisine: string,
   orders: number,
   admins: resAdminType[],
   menus: Menu[],
+ 
 }
 
 export type resAdminType = {
@@ -76,4 +81,7 @@ export interface MenuItem {
   allergens: string[];
   available: boolean;
   labels: string[];
+  createdAt?: string | Date, 
+  updatedAt?: string | Date, 
+  order?: number, 
 }

@@ -72,6 +72,7 @@ export default function MenuQRCode({ menuId, qrCode }: MenuQRCodeProps) {
             width={75}
             height={75}
             className="rounded-md"
+            unoptimized
           />
           <Tooltip title="Share QR Code">
             <IconButton onClick={handleShare} size="small">

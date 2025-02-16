@@ -265,3 +265,26 @@ export const locationData: LocationDataType = {
     },
   },
 };
+
+// Predefined options
+export const commonAllergens = [
+  "Milk",
+  "Eggs",
+  "Fish",
+  "Shellfish",
+  "Tree Nuts",
+  "Peanuts",
+  "Wheat",
+  "Soybeans",
+];
+
+export const commonLabels = [
+  "Vegetarian",
+  "Vegan",
+  "Gluten-Free",
+  "Spicy",
+  "Chef's Special",
+  "Popular",
+  "New",
+  "Seasonal",
+];

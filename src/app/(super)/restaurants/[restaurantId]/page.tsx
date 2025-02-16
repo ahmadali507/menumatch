@@ -16,10 +16,8 @@ export default async function RestaurantDetailsPage({ params }: {
   params: Promise<{ restaurantId: string }>
 }) {
   const { restaurantId } = await params;
-
   const restaurantData = await getRestaurantData(restaurantId);
   if (!restaurantData) return notFound();
-
   // setting some dummy values for now
   restaurantData.menus = dummyMenus;
   restaurantData.status = "active";

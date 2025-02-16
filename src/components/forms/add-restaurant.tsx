@@ -34,13 +34,28 @@ export default function AddRestaurantForm() {
   } = useImageUpload();
 
   const mutation = useMutation({
-    mutationFn: async (data: TAddRestaurantSchema) => {
+    mutationFn: async (data: TAddRestaurantSchema & { 
+      logoFile?: File | null; 
+      backgroundFile?: File | null 
+    }) => {
       const user = auth.currentUser;
       if (!user) {
         throw new Error("User not found");
       }
       const idToken = await user.getIdToken(true);
-      return createRestaurant(data, idToken);
+
+      // Create FormData to send files
+      const formData = new FormData();
+      formData.append('data', JSON.stringify(data));
+      
+      if (data.logoFile) {
+        formData.append('logo', data.logoFile);
+      }
+      if (data.backgroundFile) {
+        formData.append('background', data.backgroundFile);
+      }
+
+      return createRestaurant(formData, idToken);
     },
     onSuccess: (response) => {
       console.log("Response from createRestaurant", response);
@@ -69,11 +84,19 @@ export default function AddRestaurantForm() {
   });
 
   const onSubmit = async (data: TAddRestaurantSchema) => {
-    // Handle form submission
-    mutation.mutate(data);
+    try {
+      // Add image files to the form data
+      const formData = {
+        ...data,
+        logoFile: images.logo.file,
+        backgroundFile: images.background.file
+      };
 
-    console.log(data, images.logo.file, images.background.file);
-    //  Replace 123 with actual ID
+      mutation.mutate(formData);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      showToast("Error creating restaurant", "error");
+    }
   };
 
   return (

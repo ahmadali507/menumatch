@@ -42,6 +42,7 @@ export default function ImageUpload({ type, preview, onUpload, onDelete }: Image
                   alt={`${type} preview`}
                   fill
                   className="object-contain rounded-md"
+                  unoptimized
                 />
               ) : (
                 <div className="absolute inset-0">
@@ -50,6 +51,7 @@ export default function ImageUpload({ type, preview, onUpload, onDelete }: Image
                     alt={`${type} preview`}
                     fill
                     className="object-cover rounded-md"
+                    unoptimized
                   />
                 </div>
               )}

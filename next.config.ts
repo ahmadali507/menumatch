@@ -4,13 +4,14 @@ const nextConfig: NextConfig = {
   /* config options here */
   // "reactStrictMode": true, 
   images: {
+     domains: ["storage.googleapis.com"],
     remotePatterns: [
       {
-        // match all images from a specific domain
-        protocol: "https",
-        hostname: "images.unsplash.com",
-        // the path in the URL that the image is located under
-      }
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+        port: '',
+        pathname: '/v0/b/**',
+      },
     ]
   }
 };
