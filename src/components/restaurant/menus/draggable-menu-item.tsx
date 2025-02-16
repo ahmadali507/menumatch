@@ -44,10 +44,8 @@ export default function DraggableMenuItemCard({ item }: Props) {
               '&:hover': {
                 opacity: 1
               }
-            }}
-          />
-        }}
-      />
+            }} />
+        }} menuId={""} sectionId={""}      />
     </Grid>
   );
 }
