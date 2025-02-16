@@ -137,7 +137,7 @@ export default function MenuSection({ menuId, section }: { menuId: string, secti
             {section.createdAt && <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <EventIcon fontSize="small" color="action" />
               <Typography variant="body2" color="text.secondary">
-                {format(new Date(section?.createdAt), "EEEE, MMMM d, yyyy")}
+                {format(new Date(section?.createdAt as Date) , "EEEE, MMMM d, yyyy")}
               </Typography>
             </Box>}
           </div>
