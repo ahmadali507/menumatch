@@ -14,6 +14,8 @@ export const metadata = {
 export default async function SingleMenuPage({ params }: { params: Promise<{ menuId: string }> }) {
   const { menuId } = await params;
   const restaurantId = await getRestaurantIdForAdmin();
+  if (!restaurantId) return null;
+
   const { success, menu } = await getMenu(restaurantId, menuId);
 
 
@@ -27,12 +29,12 @@ export default async function SingleMenuPage({ params }: { params: Promise<{ men
   }
 
   return (
-  <MenuProvider initialMenu={menu}>
-    <section className="space-y-6">
-      <MenuOverview menu={menu} />
-      <MenuStats menu={menu} />
-      <MenuSectionsList sections={menu.sections} menuId={menu?.id} />
-    </section>
-  </MenuProvider>
+    <MenuProvider initialMenu={menu}>
+      <section className="space-y-6">
+        <MenuOverview menu={menu} />
+        <MenuStats menu={menu} />
+        <MenuSectionsList sections={menu.sections} menuId={menu?.id} />
+      </section>
+    </MenuProvider>
   );
 }

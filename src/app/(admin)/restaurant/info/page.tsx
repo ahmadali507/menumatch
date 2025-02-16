@@ -13,6 +13,7 @@ export const metadata = {
 export default async function RestaurantInformationPage() {
 
   const restaurantId = await getRestaurantIdForAdmin();
+  if (!restaurantId) return null;
   const restaurant = await getRestaurantData(restaurantId);
 
 
