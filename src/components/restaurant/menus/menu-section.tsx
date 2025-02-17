@@ -110,7 +110,6 @@ export default function MenuSection({ menuId, section, selectedLabels }: MenuSec
 
   };
 
-  // Filter items based on selected labels
   const filteredItems = useMemo(() => {
     if (!selectedLabels.length) return section.items;
     
@@ -119,7 +118,6 @@ export default function MenuSection({ menuId, section, selectedLabels }: MenuSec
     );
   }, [section.items, selectedLabels]);
 
-  // Hide section if no items match the filter
   if (selectedLabels.length > 0 && filteredItems.length === 0) {
     return null;
   }
