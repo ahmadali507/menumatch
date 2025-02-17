@@ -35,6 +35,7 @@ export default function RestaurantsTable({
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
+  const [cityFilter, setCityFilter] = useState(""); // Add new state for city filter
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [page, setPage] = useState(0);
@@ -45,35 +46,23 @@ export default function RestaurantsTable({
   // Filter restaurants
   const filteredRestaurants = restaurants
     .filter((restaurant) => {
-      //   const matchesSearch =
-      //     restaurant?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      //     restaurant?.cuisine?.toLowerCase().includes(searchQuery.toLowerCase());
-
-      //   const matchesLocation = !locationFilter ||
-      //     restaurant?.location?.city?.toLowerCase().includes(locationFilter.toLowerCase());
-
-      //   return matchesSearch && matchesLocation;
-      // })
-      // .sort((a, b) => {
-      //   const multiplier = sortOrder === 'asc' ? 1 : -1;
-      //   if (sortField === 'orders') {
-      //     return (a?.orders as number - b?.orders as number) * multiplier;
-      //   }
-      //   return a[sortField]?.localeCompare(b[sortField]) * multiplier;
-
       const matchesSearch = (restaurant?.name?.toLowerCase() || "").includes(
         searchQuery.toLowerCase()
       );
-      // (restaurant?.cuisine?.toLowerCase() || '').includes(searchQuery.toLowerCase());
 
       const matchesLocation =
         !locationFilter ||
-        (restaurant?.location?.city?.toLowerCase() || "").includes(
+        (restaurant?.location?.country?.toLowerCase() || "").includes(
           locationFilter.toLowerCase()
         );
 
-      // ...existing code...
-      return matchesSearch && matchesLocation;
+      const matchesCity =
+        !cityFilter ||
+        (restaurant?.location?.city?.toLowerCase() || "").includes(
+          cityFilter.toLowerCase()
+        );
+
+      return matchesSearch && matchesLocation && matchesCity;
     })
     .sort((a, b) => {
       const multiplier = sortOrder === "asc" ? 1 : -1;
@@ -120,9 +109,17 @@ export default function RestaurantsTable({
 
         <TextField
           size="small"
-          placeholder="Filter by location..."
+          placeholder="Filter by country..."
           value={locationFilter}
           onChange={(e) => setLocationFilter(e.target.value)}
+          className="min-w-[200px]"
+        />
+
+        <TextField
+          size="small"
+          placeholder="Filter by city..."
+          value={cityFilter}
+          onChange={(e) => setCityFilter(e.target.value)}
           className="min-w-[200px]"
         />
 
@@ -155,25 +152,27 @@ export default function RestaurantsTable({
         <div className="h-[70vh] overflow-auto">
           <TableContainer
             component={Paper}
-            sx={{ backgroundColor: "transparent" }}
+            sx={{ 
+              backgroundColor: "transparent",
+              minWidth: 1200, // Add minimum width
+              overflowX: "auto" // Enable horizontal scroll
+            }}
           >
-            <Table>
+            <Table stickyHeader> {/* Add stickyHeader for better UX */} 
               <TableHead>
                 <TableRow sx={{ fontWeight: "bold" }}>
-                  <TableCell width={80}>S.No</TableCell>
-                  <TableCell>Restaurant Name</TableCell>
-                  <TableCell>Country</TableCell>
-                  <TableCell>City</TableCell>
-
-                  <TableCell>Cuisine</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Total Orders</TableCell>
-                  <TableCell align="center" width={100}>
-                    Actions
-                  </TableCell>
+                  <TableCell width={60}>S.No</TableCell>
+                  <TableCell width={200}>Restaurant Name</TableCell>
+                  <TableCell width={120}>Country</TableCell>
+                  <TableCell width={120}>City</TableCell>
+                  <TableCell width={250}>Address</TableCell> {/* New address column */}
+                  <TableCell width={120}>Cuisine</TableCell>
+                  <TableCell width={100}>Status</TableCell>
+                  <TableCell width={120}>Total Orders</TableCell>
+                  <TableCell align="center" width={100}>Actions</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody sx={{ maxHeight: "100px", overflowY: "auto" }}>
+              <TableBody>
                 {filteredRestaurants
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((restaurant, index) => (
@@ -182,18 +181,23 @@ export default function RestaurantsTable({
                       hover
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <TableCell>{page * rowsPerPage + index + 1}</TableCell>
+                      <TableCell>{(page * rowsPerPage + index + 1) || "-"}</TableCell>
                       <TableCell className="font-medium">
                         <Link
                           href={`/restaurants/${restaurant.id}`}
                           className="hover:underline"
                         >
-                          {restaurant.name}
+                          {restaurant.name || "-"}
                         </Link>
                       </TableCell>
-                      <TableCell>{restaurant?.location?.country}</TableCell>
-                      <TableCell>{restaurant?.location?.city}</TableCell>
-
+                      <TableCell>{restaurant?.location?.country || "-"} </TableCell>
+                      <TableCell>{restaurant?.location?.city || "-"}</TableCell>
+                      <TableCell>
+                        {/* New address cell with tooltip for long addresses */}
+                        <div className="max-w-[250px] truncate" title={restaurant?.location?.address}>
+                          {restaurant?.location?.address || "-"}
+                        </div>
+                      </TableCell>
                       <TableCell>{restaurant.cuisine}</TableCell>
                       <TableCell>
                         <Chip
@@ -204,7 +208,7 @@ export default function RestaurantsTable({
                           }
                         />
                       </TableCell>
-                      <TableCell align="center">{restaurant.orders}</TableCell>
+                      <TableCell align="center">{restaurant.orders || "-"}</TableCell>
                       <TableCell
                         align="right"
                         sx={{ display: "flex", gap: "10px" }}
