@@ -194,11 +194,11 @@ export default function RestaurantsTable({
                       <TableCell>{restaurant?.location?.city || "-"}</TableCell>
                       <TableCell>
                         {/* New address cell with tooltip for long addresses */}
-                        <div className="max-w-[250px] truncate" title={restaurant?.location?.address}>
+                        <div className="max-w-[250px] truncate" title={restaurant?.location?.address || "-"}>
                           {restaurant?.location?.address || "-"}
                         </div>
                       </TableCell>
-                      <TableCell>{restaurant.cuisine}</TableCell>
+                      <TableCell>{restaurant.cuisine || "-"}</TableCell>
                       <TableCell>
                         <Chip
                           size="medium"

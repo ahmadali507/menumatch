@@ -149,6 +149,7 @@ export default function AddItemForm() {
   };
 
   const [ingredientInput, setIngredientInput] = useState("");
+  const [labelInput, setLabelInput] = useState("");
 
   const editorModules = {
     toolbar: [
@@ -316,9 +317,29 @@ export default function AddItemForm() {
           {/* Labels */}
           <FormControl fullWidth error={!!errors.labels}>
             <FormLabel>Labels</FormLabel>
+            <div className="flex gap-2 mb-2">
+              <TextField
+                fullWidth
+                placeholder="Add custom label and press Enter"
+                value={labelInput}
+                onChange={(e) => setLabelInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && labelInput.trim()) {
+                    e.preventDefault();
+                    const newLabel = labelInput.trim();
+                    if (!watch("labels").includes(newLabel)) {
+                      setValue("labels", [...watch("labels"), newLabel]);
+                      clearErrors("labels");
+                    }
+                    setLabelInput("");
+                  }
+                }}
+                error={!!errors.labels}
+              />
+            </div>
             <Autocomplete
               multiple
-              options={commonAllergens}
+              options={commonAllergens.filter(label => !watch("labels").includes(label))}
               value={watch("labels")}
               onChange={(_, newValue) => {
                 setValue("labels", newValue);
@@ -333,12 +354,11 @@ export default function AddItemForm() {
                 }
               }}
               renderInput={(params) => (
-
                 <TextField
                   {...params}
                   error={!!errors.labels}
                   helperText={errors.labels?.message}
-                  placeholder="Select Labels"
+                  placeholder="Select predefined labels"
                   sx={{
                     '& .MuiInputBase-root': {
                       p: '2px 9px',
@@ -361,7 +381,7 @@ export default function AddItemForm() {
                   key={label}
                   label={label}
                   onDelete={() => setValue("labels", watch("labels").filter((l) => l !== label))}
-                  color="primary"
+                  color={commonAllergens.includes(label) ? "primary" : "default"}
                   variant="filled"
                   size="small"
                   sx={{
