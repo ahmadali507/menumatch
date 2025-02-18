@@ -1,4 +1,5 @@
 "use client";
+import { useState, useMemo } from 'react';
 import { Box, Typography, Grid } from "@mui/material";
 import MenuSection from "@/components/restaurant/menus/menu-section";
 import { MenuSection as MenuSectionType } from "@/types";
@@ -10,13 +11,26 @@ import { arrayMove, SortableContext } from '@dnd-kit/sortable';
 import { useMenu } from "@/context/menuContext";
 import { reorderSections } from "@/actions/actions.menu";
 import { useToast } from "@/context/toastContext";
+import LabelSearch from "./label-search";
 
-export default function MenuSectionsList({  menuId }: { sections: MenuSectionType[], menuId: string }) {
+export default function MenuSectionsList({ menuId }: { sections: MenuSectionType[], menuId: string }) {
 
-  const {menu, setMenu} = useMenu(); 
-  const {showToast} = useToast(); 
+  const { menu, setMenu } = useMenu();
+  const { showToast } = useToast();
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
 
-  // console.log(menu);
+  // Get all unique labels from all sections
+  const allLabels = useMemo(() => {
+    if (!menu?.sections) return [];
+    const labelsSet = new Set<string>();
+    menu.sections.forEach(section => {
+      section.items?.forEach(item => {
+        item.labels?.forEach(label => labelsSet.add(label));
+      });
+    });
+    return Array.from(labelsSet);
+  }, [menu?.sections]);
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -49,15 +63,22 @@ export default function MenuSectionsList({  menuId }: { sections: MenuSectionTyp
     }
   };
 
-
   return (
     <Box className="space-y-4">
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4">Menu Sections</Typography>
         <AddSection menuId={menuId} />
       </Box>
 
-    
+      {/* Add Label Search */}
+      <Box sx={{ mb: 3 }}>
+        <LabelSearch
+          onLabelChange={setSelectedLabels}
+          allLabels={allLabels}
+          selectedLabels={selectedLabels}
+        />
+      </Box>
+
       {menu?.sections.length === 0 ? (
         <EmptyState
           icon={<RestaurantMenuIcon sx={{ fontSize: 48 }} />}
@@ -73,7 +94,11 @@ export default function MenuSectionsList({  menuId }: { sections: MenuSectionTyp
             <Grid container spacing={3}>
               {menu?.sections.map((section, index) => (
                 <Grid item xs={12} key={section.name + index}>
-                  <MenuSection menuId={menuId} section={section} />
+                  <MenuSection 
+                    menuId={menuId} 
+                    section={section} 
+                    selectedLabels={selectedLabels}
+                  />
                 </Grid>
               ))}
             </Grid>

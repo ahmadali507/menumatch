@@ -1,10 +1,11 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-  // "reactStrictMode": true, 
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
-     domains: ["storage.googleapis.com"],
+    domains: ['storage.googleapis.com'],
+    minimumCacheTTL: 60,
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    formats: ['image/webp'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -13,7 +14,7 @@ const nextConfig: NextConfig = {
         pathname: '/v0/b/**',
       },
     ]
-  }
-};
+  },
+}
 
-export default nextConfig;
+module.exports = nextConfig

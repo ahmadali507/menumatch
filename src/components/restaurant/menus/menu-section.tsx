@@ -13,7 +13,7 @@ import EventIcon from '@mui/icons-material/Event';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
 import { SortableContext, arrayMove } from '@dnd-kit/sortable';
 import { useSortable } from "@dnd-kit/sortable";
@@ -30,7 +30,13 @@ import { reorderItems, updateMenuSectionName } from "@/actions/actions.menu";
 import { useMenu } from "@/context/menuContext";
 // import { dummyMenuSection } from "@/lib/dummy";
 
-export default function MenuSection({ menuId, section }: { menuId: string, section: MenuSectionType }) {
+interface MenuSectionProps {
+  menuId: string;
+  section: MenuSectionType;
+  selectedLabels: string[];
+}
+
+export default function MenuSection({ menuId, section, selectedLabels }: MenuSectionProps) {
   const [, setItems] = useState(section.items);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -57,7 +63,7 @@ export default function MenuSection({ menuId, section }: { menuId: string, secti
     return await updateMenuSectionName(menuId, section.id, newName);
     // Add your update logic here
   };
-
+            
   const handleToggle = () => {
     setIsExpanded(!isExpanded);
   };
@@ -103,6 +109,18 @@ export default function MenuSection({ menuId, section }: { menuId: string, secti
     }
 
   };
+
+  const filteredItems = useMemo(() => {
+    if (!selectedLabels.length) return section.items;
+    
+    return section.items.filter(item => 
+      selectedLabels.some(label => item.labels?.includes(label))
+    );
+  }, [section.items, selectedLabels]);
+
+  if (selectedLabels.length > 0 && filteredItems.length === 0) {
+    return null;
+  }
 
   return (
     <Card sx={{ pt: 3, px: 3 }} ref={setNodeRef} style={style}>
@@ -156,14 +174,14 @@ export default function MenuSection({ menuId, section }: { menuId: string, secti
         </Box>
 
         <Collapse in={isExpanded} timeout="auto">
-          {section?.items.length > 0 ? (
+          {filteredItems.length > 0 ? (
             <DndContext
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
             >
-              <SortableContext items={section?.items.map(item => item.id as string)}>
+              <SortableContext items={filteredItems.map(item => item.id as string)}>
                 <Grid container spacing={3}>
-                  {section?.items.map((item, index) => (
+                  {filteredItems.map((item, index) => (
                     <MenuItemCard
                       menuId={menuId}
                       sectionId={section.id}

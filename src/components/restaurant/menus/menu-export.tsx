@@ -2,10 +2,13 @@
 import { Button, Menu, MenuItem } from "@mui/material";
 import TableViewIcon from '@mui/icons-material/TableView';
 import DataObjectIcon from '@mui/icons-material/DataObject';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { useState } from 'react';
 import { Menu as MenuType } from "@/types";
 import { exportMenuAsCSV, exportMenuAsJSON } from '@/actions/actions.export';
 import { useToast } from '@/context/toastContext';
+import { pdf } from '@react-pdf/renderer';
+import { MenuPDFTemplate } from '@/components/pdf/menu-pdf-template';
 
 interface MenuExportProps {
   menu: MenuType;
@@ -36,17 +39,30 @@ export default function MenuExport({ menu }: MenuExportProps) {
     window.URL.revokeObjectURL(url);
   };
 
-  const handleExport = async (format: 'csv' | 'json') => {
+  const handleExport = async (format: 'csv' | 'json' | 'pdf') => {
     try {
-      const result = format === 'csv'
-        ? await exportMenuAsCSV(menu)
-        : await exportMenuAsJSON(menu);
-
-      if (result.success && result.data) {
-        downloadFile(result.data, result.filename);
-        showToast(`Menu exported as ${format.toUpperCase()} successfully`, 'success');
+      if (format === 'pdf') {
+        const blob = await pdf(<MenuPDFTemplate menu={menu} />).toBlob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${menu.name.toLowerCase().replace(/\s+/g, '-')}-menu.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode?.removeChild(link);
+        URL.revokeObjectURL(url);
+        showToast('Menu exported as PDF successfully', 'success');
       } else {
-        showToast(result.error || `Failed to export menu as ${format.toUpperCase()}`, 'error');
+        const result = format === 'csv'
+          ? await exportMenuAsCSV(menu)
+          : await exportMenuAsJSON(menu);
+
+        if (result.success && result.data) {
+          downloadFile(result.data, result.filename);
+          showToast(`Menu exported as ${format.toUpperCase()} successfully`, 'success');
+        } else {
+          showToast(result.error || `Failed to export menu as ${format.toUpperCase()}`, 'error');
+        }
       }
     } catch (error) {
       showToast((error as Error).message || `Error exporting menu as ${format.toUpperCase()}`, 'error');
@@ -84,6 +100,10 @@ export default function MenuExport({ menu }: MenuExportProps) {
         <MenuItem onClick={() => handleExport('json')} sx={{ gap: 1 }}>
           <DataObjectIcon fontSize="small" />
           Export as JSON
+        </MenuItem>
+        <MenuItem onClick={() => handleExport('pdf')} sx={{ gap: 1 }}>
+          <PictureAsPdfIcon fontSize="small" />
+          Export as PDF
         </MenuItem>
       </Menu>
     </>
