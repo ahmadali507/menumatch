@@ -1,4 +1,3 @@
-
 "use server"
 
 import { TAddMenuFormSchema } from "@/lib/schema";
@@ -25,14 +24,41 @@ export const addMenu = async ({ restaurantId, data }: { restaurantId: string; da
       };
     }
 
-    // Add menu to the menus subcollection
-    const menuRef = await restaurantRef.collection("menus").add({
-      ...data,
+    let menuData: Omit<Menu, "id"> = {
+      name: data.name,
       sections: [],
+      availabilityType: data.availabilityType,
       createdAt: new Date(),
       updatedAt: new Date(),
       status: 'active'
-    });
+    };
+
+    // Handle different availability types
+    switch (data.availabilityType) {
+      case 'custom':
+        menuData = {
+          ...menuData,
+          startDate: data.startDate,
+          endDate: data.endDate
+        };
+        break;
+      case 'ramadan':
+        // Calculate Ramadan dates for current year
+        // This is a simplified example - you might want to use a proper Hijri calendar library
+        const currentYear = new Date().getFullYear();
+        menuData = {
+          ...menuData,
+          startDate: new Date(currentYear, 2, 22), // Example Ramadan start
+          endDate: new Date(currentYear, 3, 21)    // Example Ramadan end
+        };
+        break;
+      case 'indefinite':
+        // No dates needed
+        break;
+    }
+
+    // Add menu to the menus subcollection
+    const menuRef = await restaurantRef.collection("menus").add(menuData);
 
     revalidatePath("/restaurant/menu");
 
@@ -74,8 +100,10 @@ export const getRestaurantMenus = async (restaurantId: string) => {
       ...doc.data(),
       // Convert Firestore Timestamps to JavaScript Dates
       name: doc.data().name,
-      startDate: formatFirebaseTimestamp(doc.data().startDate),
-      endDate: formatFirebaseTimestamp(doc.data().endDate),
+      status: doc.data().status || 'active',
+      availabilityType: doc.data().availabilityType,
+      startDate: doc.data().startDate && formatFirebaseTimestamp(doc.data().startDate),
+      endDate: doc.data().endDate && formatFirebaseTimestamp(doc.data().endDate),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sections: doc.data().sections.map((section: any) => ({
         ...section,
@@ -131,8 +159,8 @@ export const getMenu = async (restaurantId: string, menuId: string) => {
         ...menuSnapshot.data(),
         name: menuSnapshot.data()?.name,
         // Convert Firestore Timestamps to JavaScript Dates
-        startDate: menuSnapshot.data()?.startDate.toDate(),
-        endDate: menuSnapshot.data()?.endDate.toDate(),
+        startDate: menuSnapshot.data()?.startDate && formatFirebaseTimestamp(menuSnapshot.data()?.startDate),
+        endDate: menuSnapshot.data()?.endDate && formatFirebaseTimestamp(menuSnapshot.data()?.endDate),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         sections: menuSnapshot.data()?.sections.map((section: any) => ({
           ...section,
@@ -304,8 +332,8 @@ export const deleteMenuSection = async (menuId: string, sectionId: string) => {
       ...menuSnapshot.data(),
       name: menuSnapshot.data()?.name,
       // Convert Firestore Timestamps to JavaScript Dates
-      startDate: menuSnapshot.data()?.startDate.toDate(),
-      endDate: menuSnapshot.data()?.endDate.toDate(),
+      startDate: menuSnapshot.data()?.startDate && formatFirebaseTimestamp(menuSnapshot.data()?.startDate),
+      endDate: menuSnapshot.data()?.endDate && formatFirebaseTimestamp(menuSnapshot.data()?.endDate),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sections: menuSnapshot.data()?.sections.map((section: any) => ({
         ...section,
@@ -363,8 +391,8 @@ export const deleteMenuItem = async (menuId: string, sectionId: string, itemId: 
       ...menuSnapshot.data(),
       name: menuSnapshot.data()?.name,
       // Convert Firestore Timestamps to JavaScript Dates
-      startDate: menuSnapshot.data()?.startDate.toDate(),
-      endDate: menuSnapshot.data()?.endDate.toDate(),
+      startDate: menuSnapshot.data()?.startDate && formatFirebaseTimestamp(menuSnapshot.data()?.startDate),
+      endDate: menuSnapshot.data()?.endDate && formatFirebaseTimestamp(menuSnapshot.data()?.endDate),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sections: menuSnapshot.data()?.sections.map((section: any) => ({
         ...section,
@@ -570,8 +598,8 @@ export const reorderItems = async (menuId: string, sectionId: string, reorderedL
     //     id: menuSnapshot.id,
     //     ...menuSnapshot.data(),
     //     name: menuSnapshot.data()?.name,
-    //     startDate: menuSnapshot.data()?.startDate.toDate(),
-    //     endDate: menuSnapshot.data()?.endDate.toDate(),
+    //     startDate: menuSnapshot.data()?.startDate && formatFirebaseTimestamp(menuSnapshot.data()?.startDate),),
+    //     endDate: menuSnapshot.data()?.endDate && formatFirebaseTimestamp(menuSnapshot.data()?.endDate),  ),
     //     sections: menuSnapshot.data()?.sections.map((section: MenuSection) => ({
     //         ...section,
     //         createdAt: formatFirebaseTimestamp(section?.createdAt),

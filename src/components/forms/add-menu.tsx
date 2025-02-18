@@ -1,13 +1,19 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useController } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
 import {
   TextField,
   Typography,
   FormControl,
   FormLabel,
+  Card,
+  CardContent,
+  Grid,
+  Box,
 } from "@mui/material";
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import EventIcon from '@mui/icons-material/Event';
 import { DateTimePicker } from "@mui/x-date-pickers";
 import LoadingButton from "../ui/loading-button";
 import { useRouter } from "next/navigation";
@@ -15,6 +21,7 @@ import { useToast } from "@/context/toastContext";
 import { addMenuFormSchema, TAddMenuFormSchema } from "@/lib/schema";
 import { addMenu } from "@/actions/actions.menu";
 import { useUser } from "@/context/userContext";
+import { useMutation } from "@tanstack/react-query";
 
 export default function AddMenuForm() {
 
@@ -28,15 +35,20 @@ export default function AddMenuForm() {
     handleSubmit,
     formState: { errors },
     control,
-    reset
+    reset,
+    watch,
+    setValue
   } = useForm<TAddMenuFormSchema>({
     resolver: zodResolver(addMenuFormSchema),
     defaultValues: {
       name: "",
+      availabilityType: "indefinite",
       startDate: new Date(),
       endDate: new Date(),
     },
   });
+
+  const availabilityType = watch('availabilityType');
 
   const { field: startDateField } = useController({
     name: 'startDate',
@@ -86,46 +98,151 @@ export default function AddMenuForm() {
             sx={{ width: { xs: '100%', md: '50%' } }}
           />
         </FormControl>
-      </div>
 
-      {/* Schedule */}
-      <div className="space-y-4">
-        <Typography variant="h6">Schedule</Typography>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormControl fullWidth error={!!errors.startDate}>
-            <FormLabel>Start Date & Time</FormLabel>
-            <DateTimePicker
-              value={startDateField.value}
-              onChange={startDateField.onChange}
-              minDateTime={new Date()} // This will disable past dates and times
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  error: !!errors.startDate,
-                  helperText: errors.startDate?.message,
-                }
-              }}
-              format="EEEE, MMMM d, yyyy 'at' h:mm a"
-            />
-          </FormControl>
+        <div>
+          <FormLabel>Menu Availability</FormLabel>
+          <Grid container spacing={2} sx={{ mt: 0.25 }}>
+            <Grid item xs={12} md={4}>
+              <Card
+                onClick={() => setValue('availabilityType', 'indefinite')}
+                sx={{
+                  cursor: 'pointer',
+                  height: '100%',
+                  bgcolor: availabilityType === 'indefinite' ? 'primary.main' : 'background.paper',
 
-          <FormControl fullWidth error={!!errors.endDate}>
-            <FormLabel>End Date & Time</FormLabel>
-            <DateTimePicker
-              value={endDateField.value}
-              onChange={endDateField.onChange}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  error: !!errors.endDate,
-                  helperText: errors.endDate?.message,
-                }
-              }}
-              format="EEEE, MMMM d, yyyy 'at' h:mm a"
-            />
-          </FormControl>
+                  '& .MuiTypography-root': {
+                    color: availabilityType === 'indefinite' ? 'primary.contrastText' : 'text.primary'
+                  },
+                  '& .MuiTypography-body2': {
+                    color: availabilityType === 'indefinite' ? 'primary.contrastText' : 'text.secondary'
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: availabilityType === 'indefinite' ? 'primary.contrastText' : 'primary.main'
+                  }
+                }}
+              >
+                <CardContent>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <CalendarTodayIcon />
+                    <Typography variant="h6">Always Available</Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Menu will be available at all times
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Card
+                onClick={() => setValue('availabilityType', 'custom')}
+                sx={{
+                  cursor: 'pointer',
+                  height: '100%',
+                  bgcolor: availabilityType === 'custom' ? 'primary.main' : 'background.paper',
+
+                  '& .MuiTypography-root': {
+                    color: availabilityType === 'custom' ? 'primary.contrastText' : 'text.primary'
+                  },
+                  '& .MuiTypography-body2': {
+                    color: availabilityType === 'custom' ? 'primary.contrastText' : 'text.secondary'
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: availabilityType === 'custom' ? 'primary.contrastText' : 'primary.main'
+                  }
+                }}
+              >
+                <CardContent>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <AccessTimeIcon />
+                    <Typography variant="h6">Custom Schedule</Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Set specific dates and times
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Card
+                onClick={() => setValue('availabilityType', 'ramadan')}
+                sx={{
+                  cursor: 'pointer',
+                  height: '100%',
+                  bgcolor: availabilityType === 'ramadan' ? 'primary.main' : 'background.paper',
+
+                  '& .MuiTypography-root': {
+                    color: availabilityType === 'ramadan' ? 'primary.contrastText' : 'text.primary'
+                  },
+                  '& .MuiTypography-body2': {
+                    color: availabilityType === 'ramadan' ? 'primary.contrastText' : 'text.secondary'
+                  },
+                  '& .MuiSvgIcon-root': {
+                    color: availabilityType === 'ramadan' ? 'primary.contrastText' : 'primary.main'
+                  }
+                }}
+              >
+                <CardContent>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <EventIcon />
+                    <Typography variant="h6">Ramadan Special</Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Available during Ramadan
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </div>
       </div>
+
+      {/* Schedule - Only show if custom availability selected */}
+      {availabilityType === 'custom' && (
+        <div className="space-y-4">
+          <Typography variant="h6">Schedule</Typography>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              Choose when this menu will be available to your customers
+            </Typography>
+          </Box>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormControl fullWidth error={!!errors.startDate}>
+              <FormLabel>Starts</FormLabel>
+              <DateTimePicker
+                value={startDateField.value}
+                onChange={startDateField.onChange}
+                minDateTime={new Date()} // This will disable past dates and times
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: !!errors.startDate,
+                    helperText: errors.startDate?.message,
+                  }
+                }}
+                format="MMM d, yyyy h:mm a"
+              />
+            </FormControl>
+
+            <FormControl fullWidth error={!!errors.endDate}>
+              <FormLabel>Ends</FormLabel>
+              <DateTimePicker
+                value={endDateField.value}
+                onChange={endDateField.onChange}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: !!errors.endDate,
+                    helperText: errors.endDate?.message,
+                  }
+                }}
+                format="MMM d, yyyy h:mm a"
+              />
+            </FormControl>
+          </div>
+        </div>
+      )}
 
       <LoadingButton
         type="submit"

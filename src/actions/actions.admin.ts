@@ -435,8 +435,8 @@ export const getRestaurantData = async (restaurantId: string) => {
           ...doc.data(),
           name: doc.data()?.name,
           // Convert Firestore Timestamps to JavaScript Dates
-          startDate: doc.data()?.startDate.toDate(),
-          endDate: doc.data()?.endDate.toDate(),
+          startDate: doc.data()?.startDate && formatFirebaseTimestamp(doc.data().startDate),
+          endDate: doc.data()?.endDate && formatFirebaseTimestamp(doc.data().endDate),
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           sections: doc.data()?.sections.map((section: any) => ({
             ...section,

@@ -17,7 +17,7 @@ export default async function RestaurantInformationPage() {
   const restaurant = await getRestaurantData(restaurantId);
 
 
-  return <section className="pb-6">
+  return <section>
     {/* <PageTitle title="Restaurant Information" description="View Sall information about your restaurant" /> */}
     <SectionLayout
       title="Restaurant Details"

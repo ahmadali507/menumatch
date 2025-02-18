@@ -18,6 +18,7 @@ export default async function SingleMenuPage({ params }: { params: Promise<{ men
 
   const { success, menu } = await getMenu(restaurantId, menuId);
 
+  console.log(menu);
 
   if (!success || !menu) {
     return (

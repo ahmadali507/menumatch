@@ -11,12 +11,16 @@ export default function MenuStats({ menu }: { menu: Menu }) {
           <Typography variant="caption" color="text.secondary">
             Start Date
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <EventIcon fontSize="small" color="action" />
-            <Typography variant="body2">
-              {format(new Date(menu.startDate), "EEEE, MMMM d, yyyy")}
+          {menu.availabilityType === "indefinite" ?
+            <Typography variant="body2" sx={{ color: "lightgreen" }}>
+              Always Available
             </Typography>
-          </Box>
+            : <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <EventIcon fontSize="small" color="action" />
+              <Typography variant="body2">
+                {format(menu.startDate as Date, "EEEE, MMMM d, yyyy")}
+              </Typography>
+            </Box>}
         </Stack>
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -24,12 +28,16 @@ export default function MenuStats({ menu }: { menu: Menu }) {
           <Typography variant="caption" color="text.secondary">
             End Date
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <EventIcon fontSize="small" color="action" />
-            <Typography variant="body2">
-              {format(new Date(menu.endDate), "EEEE, MMMM d, yyyy")}
+          {menu.availabilityType === "indefinite" ?
+            <Typography variant="body2" sx={{ color: "lightgreen" }}>
+              Always Available
             </Typography>
-          </Box>
+            : <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <EventIcon fontSize="small" color="action" />
+              <Typography variant="body2">
+                {format(menu?.endDate as Date, "EEEE, MMMM d, yyyy")}
+              </Typography>
+            </Box>}
         </Stack>
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -40,7 +48,7 @@ export default function MenuStats({ menu }: { menu: Menu }) {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <EventIcon fontSize="small" color="action" />
             <Typography variant="body2">
-              {format(new Date(menu.endDate), "EEEE, MMMM d, yyyy")}
+              {format(menu.createdAt as Date, "EEEE, MMMM d, yyyy")}
             </Typography>
           </Box>
         </Stack>

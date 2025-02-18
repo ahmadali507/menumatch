@@ -11,16 +11,16 @@ export type RestaurantType = {
     phone: string,
     email: string,
   },
-  images ?: {
+  images?: {
     logo: string,
     background: string,
-  }, 
+  },
   status: "active" | "inactive",
   cuisine: string,
   orders: number,
   admins: resAdminType[],
   menus: Menu[],
- 
+
 }
 
 export type resAdminType = {
@@ -35,7 +35,7 @@ export type resAdminType = {
 
 
 export interface MenuSection {
-  id: string, 
+  id: string,
   name: string;
   items: MenuItem[];
   createdAt?: Date;
@@ -44,9 +44,13 @@ export interface MenuSection {
 export interface Menu {
   id: string;
   name: string;
-  startDate: Date | string;
-  endDate: Date | string;
+  availabilityType: 'indefinite' | 'custom' | 'ramadan';
+  startDate?: Date;  // Optional since indefinite menus don't have dates
+  endDate?: Date;    // Optional since indefinite menus don't have dates
   sections: MenuSection[];
+  status: 'active' | 'inactive';
+  createdAt: Date;
+  updatedAt: Date;
   qrCode?: {
     url: string;
     createdAt: Date;
@@ -65,14 +69,14 @@ export interface UserData {
 
 export type LocationDataType = {
   [key: string]: {
-    [states: string] : {
+    [states: string]: {
       [key: string]: string[]
     }
   }
 }
 
 export interface MenuItem {
-  id?:string; 
+  id?: string;
   name: string;
   description: string;
   ingredients: string[];
@@ -81,7 +85,7 @@ export interface MenuItem {
   allergens: string[];
   available: boolean;
   labels: string[];
-  createdAt?: string | Date, 
-  updatedAt?: string | Date, 
-  order?: number, 
+  createdAt?: Date,
+  updatedAt?: Date,
+  order?: number,
 }

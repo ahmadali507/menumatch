@@ -46,16 +46,24 @@ export const addRestaurantSchema = z.object({
 export type TAddRestaurantSchema = z.infer<typeof addRestaurantSchema>;
 
 // Validation schema
+
+export const menuAvailabilityTypes = ['indefinite', 'custom', 'ramadan'] as const;
+export type MenuAvailabilityType = typeof menuAvailabilityTypes[number];
+
 export const addMenuFormSchema = z.object({
   name: z.string()
     .min(3, "Menu name must be at least 3 characters")
     .max(50, "Menu name must be less than 50 characters"),
-  startDate: z.date()
-    .min(new Date(), "Start date must be in the future"),
-  endDate: z.date()
-    .min(new Date(), "End date must be in the future"),
-}).refine((data) => data.endDate > data.startDate, {
-  message: "End date must be after start date",
+  availabilityType: z.enum(menuAvailabilityTypes),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+}).refine((data) => {
+  if (data.availabilityType === 'custom') {
+    return data.startDate && data.endDate && data.endDate > data.startDate;
+  }
+  return true;
+}, {
+  message: "End date must be after start date for custom scheduling",
   path: ["endDate"],
 });
 
@@ -70,28 +78,28 @@ export const itemSchema = z.object({
   name: z.string()
     .min(2, "Item name must be at least 2 characters")
     .max(50, "Item name must not exceed 50 characters"),
-  
+
   description: z.string()
     .min(10, "Description must be at least 10 characters")
     .max(1000, "Description must not exceed 1000 characters"),
-  
+
   price: z.number()
     .positive("Price must be greater than 0")
     .max(99999.99, "Price must not exceed 99,999.99"),
-  
+
   ingredients: z.array(z.string())
     .min(1, "At least one ingredient is required")
     .max(20, "Cannot have more than 20 ingredients"),
-  
+
   allergens: z.array(z.string())
-    .max(10, "Cannot have more than 10 allergens").min(1,"At least one allergen is required"),
-  
+    .max(10, "Cannot have more than 10 allergens").min(1, "At least one allergen is required"),
+
   labels: z.array(z.string())
     .max(5, "Cannot have more than 5 labels").min(1, "At least one label is required"),
-  
+
   available: z.boolean()
     .default(true),
-  
+
   createdAt: z.date()
     .optional()
 });

@@ -2,12 +2,13 @@ import { Box, Stack, Typography, Chip } from "@mui/material";
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
+import RamadanIcon from '@mui/icons-material/Star';
 import { Menu } from "@/types";
 import MenuQRCode from "./menu-qrcode";
 import MenuExport from "./menu-export";
 
 export default function MenuOverview({ menu }: { menu: Menu }) {
-  const isActive = new Date(menu.startDate) <= new Date() && new Date(menu.endDate) >= new Date();
+  const isActive = menu.startDate! <= new Date() && menu.endDate! >= new Date();
   const totalItems = menu.sections.reduce((acc, section) => acc + section.items.length, 0);
 
   return (
@@ -37,9 +38,25 @@ export default function MenuOverview({ menu }: { menu: Menu }) {
               </Typography>
               <Chip
                 label={isActive ? "Active" : "Inactive"}
-                color={isActive ? "success" : "default"}
+                color={isActive ? "success" : "error"}
                 sx={{ fontWeight: 500 }}
               />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <RamadanIcon
+                  color="success"
+                  sx={{ fontSize: 20 }}
+                />
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "lightgreen",
+                    fontWeight: 500,
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  Ramadan Menu
+                </Typography>
+              </Box>
             </Box>
           </Stack>
         </div>

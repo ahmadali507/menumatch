@@ -381,7 +381,7 @@ export default function AddItemForm() {
                   key={label}
                   label={label}
                   onDelete={() => setValue("labels", watch("labels").filter((l) => l !== label))}
-                  color={commonAllergens.includes(label) ? "primary" : "default"}
+                  color="primary"
                   variant="filled"
                   size="small"
                   sx={{
@@ -423,7 +423,7 @@ export default function AddItemForm() {
                 key={ingredient}
                 label={ingredient}
                 onDelete={() => setValue("ingredients", watch("ingredients").filter((i) => i !== ingredient))}
-
+                color="info"
               />
             ))}
           </Box>

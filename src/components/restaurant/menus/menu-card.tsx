@@ -17,6 +17,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
 import LayersIcon from "@mui/icons-material/Layers";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import RamadanIcon from '@mui/icons-material/Star';
 import Link from "next/link";
 import { routes } from "@/lib/routes";
 import DeleteMenu from "./delete-menu";
@@ -38,17 +39,60 @@ type MenuCardProps = {
 };
 
 export default function MenuCard({ menu }: MenuCardProps) {
-  // Add date status helper
-  const getDateStatus = (startDate: Date, endDate: Date) => {
+  // Helper function to determine menu status
+  const getMenuStatus = (menu: Menu): ({ status: string; statusText: string; color: 'success' | 'error' | 'warning' }) => {
     const now = new Date();
-    if (isBefore(now, startDate)) return "upcoming";
-    if (isAfter(now, endDate)) return "expired";
-    return "active";
+
+    switch (menu.availabilityType) {
+      case 'indefinite':
+        return {
+          status: menu.status === 'active' ? 'active' : 'inactive',
+          statusText: menu.status === 'active' ? 'Always Available' : 'Inactive',
+          color: menu.status === 'active' ? 'success' : 'error'
+        };
+
+      case 'custom':
+      case 'ramadan':
+        if (!menu.startDate || !menu.endDate) {
+          return {
+            status: 'invalid',
+            statusText: 'Invalid Dates',
+            color: 'error'
+          };
+        }
+
+        if (isBefore(now, menu.startDate as Date)) {
+          return {
+            status: 'upcoming',
+            statusText: 'Upcoming',
+            color: 'warning'
+          };
+        }
+
+        if (isAfter(now, menu.endDate as Date)) {
+          return {
+            status: 'expired',
+            statusText: 'Expired',
+            color: 'error'
+          };
+        }
+
+        return {
+          status: 'active',
+          statusText: 'Currently Active',
+          color: 'success'
+        };
+
+      default:
+        return {
+          status: 'invalid',
+          statusText: 'Invalid Type',
+          color: 'error'
+        };
+    }
   };
 
-  const dateStatus = getDateStatus(new Date(menu.startDate), new Date(menu.endDate));
-  // decide status based on dates
-  const active = isAfter(new Date(), new Date(menu.startDate)) && isBefore(new Date(), new Date(menu.endDate));
+  const menuStatus = getMenuStatus(menu);
 
   return (
     <StyledCard>
@@ -79,58 +123,82 @@ export default function MenuCard({ menu }: MenuCardProps) {
 
       <Divider />
 
-      <Stack spacing={2}>
-
-        <Stack spacing={1}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <AccessTimeIcon
-              color={dateStatus === 'active' ? 'success' : 'action'}
-              sx={{ fontSize: 20 }}
-            />
-            <Typography
-              variant="caption"
-              sx={{
-                color: theme =>
-                  dateStatus === 'active' ? theme.palette.success.main :
-                    dateStatus === 'expired' ? theme.palette.error.main :
-                      theme.palette.warning.main,
-                fontWeight: 500,
-                textTransform: 'uppercase'
-              }}
-            >
-              {dateStatus === 'active' ? 'Currently Active' :
-                dateStatus === 'expired' ? 'Expired' : 'Upcoming'}
-            </Typography>
+      <Stack spacing={2} sx={{ height: '100%', minHeight: '160px' }}> {/* Added minHeight */}
+        <Stack spacing={1} sx={{ flex: 1 }}> {/* Added flex: 1 to take remaining space */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {menu.availabilityType === "ramadan" &&
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <RamadanIcon
+                  color="success"
+                  sx={{ fontSize: 20 }}
+                />
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "lightgreen",
+                    fontWeight: 500,
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  Ramadan Menu
+                </Typography>
+              </Box>}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <AccessTimeIcon
+                color={menuStatus.color}
+                sx={{ fontSize: 20 }}
+              />
+              <Typography
+                variant="caption"
+                sx={{
+                  color: theme => theme.palette[menuStatus.color].main,
+                  fontWeight: 500,
+                  textTransform: 'uppercase'
+                }}
+              >
+                {menuStatus.statusText}
+              </Typography>
+            </Box>
           </Box>
 
-          <Stack spacing={0.5}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ minWidth: 80 }}>
-                Starts
-              </Typography>
-              <Typography variant="body2">
-                {format(new Date(menu.startDate), 'EEEE, MMMM d, yyyy')}
+          {menu.availabilityType !== 'indefinite' ? (
+            <Stack spacing={0.5}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ minWidth: 80 }}>
+                  Starts
+                </Typography>
+                <Typography variant="body2">
+                  {format(menu.startDate as Date, 'EEEE, MMMM d, yyyy')}
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ minWidth: 80 }}>
+                  Ends
+                </Typography>
+                <Typography variant="body2">
+                  {format(menu.endDate as Date, 'EEEE, MMMM d, yyyy')}
+                </Typography>
+              </Box>
+
+              {menuStatus.status !== 'invalid' && (
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                  {menuStatus.status === 'active'
+                    ? `Expires ${formatDistanceToNow(menu.endDate as Date, { addSuffix: true })}`
+                    : menuStatus.status === 'upcoming'
+                      ? `Starts ${formatDistanceToNow(menu.startDate as Date, { addSuffix: true })}`
+                      : `Expired ${formatDistanceToNow(menu.endDate as Date, { addSuffix: true })}`
+                  }
+                </Typography>
+              )}
+            </Stack>
+          ) : (
+            <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                This menu is always available to customers
               </Typography>
             </Box>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ minWidth: 80 }}>
-                Ends
-              </Typography>
-              <Typography variant="body2">
-                {format(new Date(menu.endDate), 'EEEE, MMMM d, yyyy')}
-              </Typography>
-            </Box>
-
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
-              {dateStatus === 'active'
-                ? `Expires ${formatDistanceToNow(new Date(menu.endDate), { addSuffix: true })}`
-                : dateStatus === 'upcoming'
-                  ? `Starts ${formatDistanceToNow(new Date(menu.startDate), { addSuffix: true })}`
-                  : `Expired ${formatDistanceToNow(new Date(menu.endDate), { addSuffix: true })}`
-              }
-            </Typography>
-          </Stack>
+          )}
         </Stack>
 
         <Stack
@@ -139,13 +207,14 @@ export default function MenuCard({ menu }: MenuCardProps) {
           alignItems="center"
           flexWrap="wrap"
           useFlexGap
-          sx={{ mt: 'auto' }} // Push to bottom
         >
-          <Chip
-            label={active ? 'Active' : 'Inactive'}
-            color={active ? 'success' : 'error'}
-            size="small"
-          />
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Chip
+              label={menuStatus.statusText}
+              color={menuStatus.color}
+              size="small"
+            />
+          </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <LayersIcon sx={{ fontSize: 16 }} color="action" />
             <Chip
