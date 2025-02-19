@@ -97,7 +97,7 @@ export default async function RestaurantContent({
             {details?.menus.length === 0 ?
               <Typography variant="body1">There are currently no menus</Typography>
               : <Grid container spacing={3}>
-                {details.menus?.map((menu) => (
+                {details?.menus?.map((menu) => (
                   <Grid item xs={12} sm={6} key={menu.id}>
                     <MenuCard menu={menu} />
                   </Grid>

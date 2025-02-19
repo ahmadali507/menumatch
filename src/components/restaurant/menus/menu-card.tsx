@@ -50,6 +50,7 @@ export default function MenuCard({ menu }: MenuCardProps) {
   // decide status based on dates
   const active = isAfter(new Date(), new Date(menu.startDate)) && isBefore(new Date(), new Date(menu.endDate));
 
+  console.log("the manu cards", menu.id)
   return (
     <StyledCard>
       <CardHeader
@@ -72,10 +73,11 @@ export default function MenuCard({ menu }: MenuCardProps) {
                 <EditIcon />
               </IconButton>
             </Link>
-            <DeleteMenu menuId={menu.id} />
+            <DeleteMenu menuId={menu?.id} />
           </Box>
         }
       />
+     
 
       <Divider />
 

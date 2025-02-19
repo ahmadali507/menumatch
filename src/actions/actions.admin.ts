@@ -410,7 +410,7 @@ export const updateAdmin = async (adminId: string, data: Partial<resAdminType>, 
     const updateData = {
       ...(data.name && { name: data.name }),
       ...(data.email && { email: data.email }),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toString(),
     };
 
     await firestore.collection("users").doc(adminId).update(updateData);
@@ -516,8 +516,8 @@ export const getRestaurantData = async (restaurantId: string) => {
           ...doc.data(),
           name: doc.data()?.name,
           // Convert Firestore Timestamps to JavaScript Dates
-          startDate: doc.data()?.startDate.toDate(),
-          endDate: doc.data()?.endDate.toDate(),
+          startDate: formatFirebaseTimestamp(doc.data()?.startDate?.toDate()),
+          endDate: formatFirebaseTimestamp(doc.data()?.endDate?.toDate()),
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           sections: doc.data()?.sections.map((section: any) => ({
             ...section,
