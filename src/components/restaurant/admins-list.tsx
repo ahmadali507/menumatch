@@ -13,6 +13,7 @@ import { updateAdmin, deleteAdmin } from "@/actions/actions.admin";
 import { useToast } from "@/context/toastContext";
 import { useState } from "react";
 import EditAdminDialog from "../dialogs/edit-admin-dialog";
+import DeleteConfirmDialog from "../dialogs/delete-confirm-dialog";
 // import { useAuth } from "@/context/authContext";
 // import { useUser } from "@/context/userContext";
 import { auth } from "@/firebase/firebaseconfig";
@@ -25,6 +26,7 @@ export default function AdminsList({ restaurantId, admins }: {
   // const { user } = useUser();
   const queryClient = useQueryClient();
   const [editingAdmin, setEditingAdmin] = useState<resAdminType | null>(null);
+  const [adminToDelete, setAdminToDelete] = useState<resAdminType | null>(null);
 
   const deleteMutation = useMutation({
     mutationFn: async (adminId: string) => {
@@ -69,9 +71,14 @@ export default function AdminsList({ restaurantId, admins }: {
   });
 
   const handleDelete = async (admin: resAdminType) => {
-    // if (window.confirm(`Are you sure you want to delete ${admin.name}?`)) {
-      deleteMutation.mutate(admin.id);
-    
+    setAdminToDelete(admin);
+  };
+
+  const handleConfirmDelete = () => {
+    if (adminToDelete) {
+      deleteMutation.mutate(adminToDelete.id);
+      setAdminToDelete(null);
+    }
   };
 
   return (
@@ -148,6 +155,17 @@ export default function AdminsList({ restaurantId, admins }: {
           </div>
         )}
       </div>
+
+      {adminToDelete && (
+        <DeleteConfirmDialog
+          open={!!adminToDelete}
+          title="Delete Admin"
+          message={`Are you sure you want to delete ${adminToDelete.name}? This action cannot be undone.`}
+          onClose={() => setAdminToDelete(null)}
+          onConfirm={handleConfirmDelete}
+          isLoading={deleteMutation.isPending}
+        />
+      )}
 
       {editingAdmin && (
         <EditAdminDialog
