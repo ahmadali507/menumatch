@@ -16,16 +16,20 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
 
       - name: Install Dependencies
         run: npm install
-        working-directory: cronjob-function  # 👈 This ensures npm runs inside the correct directory
+        working-directory: cronjob-function  # 👈 Runs inside the correct directory
 
       - name: Create .env File
-        run: echo "${{ vars.ENV_FILE_CONTENTS }}" > .env
+        run: |
+          echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >> .env
+          echo "FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}" >> .env
+          echo "FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }}" >> .env
+          echo "FIREBASE_PRIVATE_KEY=\"${{ secrets.FIREBASE_PRIVATE_KEY }}\"" >> .env
         working-directory: cronjob-function  # 👈 Save .env inside cronjob-function
 
       - name: Run Script
         run: node index.js
-        working-directory: cronjob-function  # 👈 Run script from the correct directory
+        working-directory: cronjob-function  # 👈 Runs inside the correct directory
