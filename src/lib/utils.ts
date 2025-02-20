@@ -12,25 +12,19 @@ export const IMAGE_CONFIG = {
     maxSize: 2 * 1024 * 1024, // 2MB
     acceptedFormats: ['image/jpeg', 'image/png', 'image/webp'],
     minWidth: 200,
-    // maxWidth: 2048,
     minHeight: 200,
-    // maxHeight: 2048
   },
   background: {
     maxSize: 5 * 1024 * 1024, // 5MB
     acceptedFormats: ['image/jpeg', 'image/png', 'image/webp'],
-    minWidth: 1080,
-    // maxWidth: 3840,
-    minHeight: 720,
-    // maxHeight: 2160
+    minWidth: 800,
+    minHeight: 600,
   },
   item: {
     maxSize: 2 * 1024 * 1024, // 2MB
     acceptedFormats: ['image/jpeg', 'image/png', 'image/webp'],
-    minWidth: 512,
-    // maxWidth: 3840,
-    minHeight: 512,
-    // maxHeight: 2160
+    minWidth: 200,
+    minHeight: 200,
   }
 };
 
@@ -111,3 +105,18 @@ export const uploadImageToStorage = async (file: File): Promise<string> => {
     );
   }
 };
+
+
+export const RAMADAN_DATES = {
+  2024: { start: new Date(2024, 2, 11), end: new Date(2024, 3, 9) },
+  2025: { start: new Date(2025, 2, 1), end: new Date(2025, 2, 30) },
+  2026: { start: new Date(2026, 1, 18), end: new Date(2026, 2, 19) },
+  2027: { start: new Date(2027, 1, 7), end: new Date(2027, 2, 8) },
+  2028: { start: new Date(2028, 0, 27), end: new Date(2028, 1, 25) },
+  2029: { start: new Date(2029, 0, 16), end: new Date(2029, 1, 14) },
+  2030: { start: new Date(2030, 0, 5), end: new Date(2030, 1, 3) },
+  2031: { start: new Date(2030, 11, 26), end: new Date(2031, 0, 24) },
+  2032: { start: new Date(2031, 11, 15), end: new Date(2032, 0, 13) },
+  2033: { start: new Date(2032, 11, 4), end: new Date(2033, 0, 2) },
+  2034: { start: new Date(2033, 10, 23), end: new Date(2033, 11, 22) },
+} as const;

@@ -8,6 +8,7 @@ import { Menu, MenuItem, MenuSection } from "@/types";
 import { getUser } from "./actions.cookies";
 import { formatFirebaseTimestamp } from "@/lib/format";
 import QRCode from 'qrcode';
+import { RAMADAN_DATES } from "@/lib/utils";
 
 // Add restaurantId parameter to the function
 export const addMenu = async ({ restaurantId, data }: { restaurantId: string; data: TAddMenuFormSchema }) => {
@@ -43,13 +44,17 @@ export const addMenu = async ({ restaurantId, data }: { restaurantId: string; da
         };
         break;
       case 'ramadan':
-        // Calculate Ramadan dates for current year
-        // This is a simplified example - you might want to use a proper Hijri calendar library
         const currentYear = new Date().getFullYear();
+        const ramadanDates = RAMADAN_DATES[currentYear as keyof typeof RAMADAN_DATES];
+
+        if (!ramadanDates) {
+          throw new Error('Ramadan dates not available for the current year');
+        }
+
         menuData = {
           ...menuData,
-          startDate: new Date(currentYear, 2, 22), // Example Ramadan start
-          endDate: new Date(currentYear, 3, 21)    // Example Ramadan end
+          startDate: ramadanDates.start,
+          endDate: ramadanDates.end
         };
         break;
       case 'indefinite':
@@ -422,7 +427,7 @@ export async function generateMenuQRCode(menuId: string) {
       .doc(menuId);
 
     // Generate QR code URL for the menu
-    const menuUrl = `${process.env.NEXT_PUBLIC_APP_URL}/restaurant/${restaurantId}/${menuId}`;
+    const menuUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${restaurantId}/menu/${menuId}`;
     console.log("here is the menu url for the new qr code", menuUrl);
     const qrCodeDataUrl = await QRCode.toDataURL(menuUrl, {
       width: 400,
