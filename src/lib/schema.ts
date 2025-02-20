@@ -69,35 +69,37 @@ export const addMenuFormSchema = z.object({
 
 export type TAddMenuFormSchema = z.infer<typeof addMenuFormSchema>;
 
-
-/////////// add section item schema /////////// 
-
-// import { z } from "zod";
-
 export const itemSchema = z.object({
   name: z.string()
     .min(2, "Item name must be at least 2 characters")
     .max(50, "Item name must not exceed 50 characters"),
 
   description: z.string()
-    .min(10, "Description must be at least 10 characters")
-    .max(1000, "Description must not exceed 1000 characters"),
+    .max(1000, "Description must not exceed 1000 characters")
+    .optional().default(""),
 
   price: z.number()
     .positive("Price must be greater than 0")
-    .max(99999.99, "Price must not exceed 99,999.99"),
+    .max(99999.99, "Price must not exceed 99,999.99")
+    .optional().default(0),
 
   ingredients: z.array(z.string())
-    .min(1, "At least one ingredient is required")
-    .max(20, "Cannot have more than 20 ingredients"),
+    .max(20, "Cannot have more than 20 ingredients")
+    .optional()
+    .default([]),
 
   allergens: z.array(z.string())
-    .max(10, "Cannot have more than 10 allergens").min(1, "At least one allergen is required"),
+    .max(10, "Cannot have more than 10 allergens")
+    .optional()
+    .default([]),
 
   labels: z.array(z.string())
-    .max(5, "Cannot have more than 5 labels").min(1, "At least one label is required"),
+    .max(5, "Cannot have more than 5 labels")
+    .optional()
+    .default([]),
 
   available: z.boolean()
+    .optional()
     .default(true),
 
   createdAt: z.date()

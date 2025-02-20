@@ -41,8 +41,8 @@ interface EditItemDialogProps {
   sectionId: string;
 }
 export default function EditItemDialog({ open, onClose, item, menuId, sectionId }: EditItemDialogProps) {
-//   const theme = useTheme();
-//   const { showToast } = useToast();
+  //   const theme = useTheme();
+  //   const { showToast } = useToast();
   const [originalPhoto, setOriginalPhoto] = useState<string | null>(item.photo || null);
   const [currentImage, setCurrentImage] = useState<string | null>(item.photo || null);
   const [imagePreview, setImagePreview] = useState<string | null>(item.photo || null);
@@ -52,7 +52,7 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
   const { showToast } = useToast();
   const [ingredientInput, setIngredientInput] = useState("");
 
-  const {menu, setMenu} = useMenu(); 
+  const { menu, setMenu } = useMenu();
 
   const {
     register,
@@ -78,16 +78,16 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
   const mutation = useMutation({
     mutationFn: async (data: ItemSchemaType) => {
       let photoURL = null;
-      
+
       if (itemImage) {
         photoURL = await uploadImageToStorage(itemImage);
       } else if (!isPhotoDeleted) {
         photoURL = originalPhoto;
       }
-  
+
       return await updateSectionItem(menuId, sectionId, item.id as string, {
         ...data,
-        photo: photoURL as string, 
+        photo: photoURL as string,
       });
     },
     onSuccess: (response) => {
@@ -97,22 +97,29 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
       }
 
 
-        // Update the menu state with the new item data
-        if(response.success && menu && response.item){
-            const updatedMenu = {
-                ...menu,
-                sections: menu?.sections.map(section => 
-                section.id === sectionId
-                    ? { ...section, items: section.items.map(item => 
-                    item.id === response.item.id
-                        ? response.item
-                        : item
-                    ) }
-                    : section
+      // Update the menu state with the new item data
+      if (response.success && menu && response.item) {
+        const updatedItem = {
+          ...response.item,
+          createdAt: new Date(response.item.createdAt),
+          updatedAt: new Date(response.item.updatedAt)
+        };
+        const updatedMenu = {
+          ...menu,
+          sections: menu?.sections.map(section =>
+            section.id === sectionId
+              ? {
+                ...section, items: section.items.map(item =>
+                  item.id === response.item.id
+                    ? updatedItem
+                    : item
                 )
-            };
-            setMenu(updatedMenu);
-        }
+              }
+              : section
+          )
+        };
+        setMenu(updatedMenu);
+      }
       showToast('Item updated successfully', 'success');
       onClose();
     },
@@ -129,14 +136,14 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-  
+
     try {
       const validation = await validateImage(file, 'background');
       if (!validation.valid) {
         showToast(validation.error || 'Invalid image', 'error');
         return;
       }
-  
+
       // Create a URL for the file
       const fileUrl = URL.createObjectURL(file);
       setCurrentImage(fileUrl);
@@ -146,13 +153,13 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
       console.error('Error handling image upload:', error);
     }
   };
-  
+
   const handleCropComplete = async (croppedImageUrl: string) => {
     try {
       const response = await fetch(croppedImageUrl);
       const blob = await response.blob();
       const file = new File([blob], 'item.jpg', { type: 'image/jpeg' });
-      
+
       setItemImage(file);
       setImagePreview(croppedImageUrl);
       setCurrentImage(croppedImageUrl); // Add this line
@@ -163,7 +170,7 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
       console.error('Error handling crop complete:', error);
     }
   };
-  
+
   const handleDeleteImage = () => {
     setItemImage(null);
     setImagePreview(null);
@@ -171,23 +178,22 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
     setOriginalPhoto(null);
     setIsPhotoDeleted(true);
   };
-  
+
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={onClose}
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: { 
+        sx: {
           borderRadius: 2,
-          bgcolor: 'background.paper',
           backgroundImage: 'none',
           maxHeight: '90vh'
         }
       }}
     >
-      <DialogTitle sx={{ 
+      <DialogTitle sx={{
         borderBottom: '1px solid',
         borderColor: 'divider',
         px: 3,
@@ -196,7 +202,7 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
         Edit Menu Item
       </DialogTitle>
 
-      <DialogContent sx={{ 
+      <DialogContent sx={{
         p: 0,
         overflowY: 'auto',
         '&::-webkit-scrollbar': {
@@ -207,9 +213,9 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
           borderRadius: '4px'
         }
       }}>
-        <Box 
-          component="form" 
-          onSubmit={handleSubmit(onSubmit)} 
+        <Box
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
           sx={{ p: 3 }}
           className="space-y-6"
         >
@@ -223,11 +229,6 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
                   {...register("name")}
                   error={!!errors.name}
                   helperText={errors.name?.message}
-                  sx={{
-                    '& .MuiInputBase-root': {
-                      bgcolor: 'action.hover'
-                    }
-                  }}
                 />
               </FormControl>
 
@@ -244,18 +245,14 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
                       <Typography sx={{ mr: 1, color: 'text.secondary' }}>$</Typography>
                     ),
                   }}
-                  sx={{
-                    '& .MuiInputBase-root': {
-                      bgcolor: 'action.hover'
-                    }
-                  }}
+
                 />
               </FormControl>
 
               <FormControlLabel
                 control={
-                  <Switch 
-                    {...register("available")} 
+                  <Switch
+                    {...register("available")}
                     defaultChecked={item.available}
                   />
                 }
@@ -272,38 +269,139 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Allergens */}
-          <FormControl fullWidth error={!!errors.allergens}>
-            <FormLabel>Allergens</FormLabel>
-            <Autocomplete
-              multiple
-              options={commonAllergens}
-              value={watch("allergens")}
-              onChange={(_, newValue) => {
-                setValue("allergens", newValue);
-                clearErrors("allergens");
-              }}
-              sx={{
-                '& .MuiAutocomplete-popupIndicator': {
-                  transform: 'none',
-                  border: 'none',
-                  p: 0.5,
-                  ml: -0.5,
-                },
-                '& .MuiInputBase-root': {
-                  bgcolor: 'action.hover',
-                  p: '6px 9px',
+            {/* Allergens */}
+            <FormControl fullWidth error={!!errors.allergens}>
+              <FormLabel>Allergens</FormLabel>
+              <Autocomplete
+                multiple
+                options={commonAllergens}
+                value={watch("allergens")}
+                onChange={(_, newValue) => {
+                  setValue("allergens", newValue);
+                  clearErrors("allergens");
+                }}
+                sx={{
+                  '& .MuiAutocomplete-popupIndicator': {
+                    transform: 'none',
+                    border: 'none',
+                    p: 0.5,
+                    ml: -0.5,
+                  },
+                  '& .MuiInputBase-root': {
+                    p: '6px 9px',
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    error={!!errors.allergens}
+                    helperText={errors.allergens?.message}
+                    placeholder="Select allergens"
+                    sx={{
+                      '& .MuiInputBase-root': {
+                        padding: '3px 9px',
+                      }
+                    }}
+                  />
+                )}
+                renderTags={() => null}
+              />
+              <Box sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 0.5,
+                mt: 1,
+                minHeight: '32px',
+                padding: '4px 0'
+              }}>
+                {watch("allergens").map((allergen) => (
+                  <Chip
+                    key={allergen}
+                    label={allergen}
+                    onDelete={() => setValue("allergens", watch("allergens").filter((a) => a !== allergen))}
+                    color="error"
+                    variant="filled"
+                    size="small"
+                    sx={{
+                      borderRadius: '4px',
+                      fontWeight: 500
+                    }}
+                  />
+                ))}
+              </Box>
+            </FormControl>
+
+            {/* Labels */}
+            <FormControl fullWidth error={!!errors.labels}>
+              <FormLabel>Labels</FormLabel>
+              <Autocomplete
+                multiple
+                options={commonLabels}
+                value={watch("labels")}
+                onChange={(_, newValue) => {
+                  setValue("labels", newValue);
+                  clearErrors("labels");
+                }}
+
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    error={!!errors.labels}
+                    helperText={errors.labels?.message}
+                    placeholder="Select labels"
+                    sx={{
+                      '& .MuiInputBase-root': {
+                        padding: '3px 9px',
+                      }
+                    }}
+                  />
+                )}
+                renderTags={() => null}
+              />
+              <Box sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 0.5,
+                mt: 1,
+                minHeight: '32px',
+                padding: '4px 0'
+              }}>
+                {watch("labels").map((label) => (
+                  <Chip
+                    key={label}
+                    label={label}
+                    onDelete={() => setValue("labels", watch("labels").filter((l) => l !== label))}
+                    color="primary"
+                    variant="filled"
+                    size="small"
+                    sx={{
+                      borderRadius: '4px',
+                      fontWeight: 500
+                    }}
+                  />
+                ))}
+              </Box>
+            </FormControl>
+          </div>
+
+          {/* Ingredients */}
+          <FormControl fullWidth error={!!errors.ingredients}>
+            <FormLabel>Ingredients</FormLabel>
+            <TextField
+              fullWidth
+              placeholder="Add ingredient and press Enter"
+              value={ingredientInput}
+              onChange={(e) => setIngredientInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && ingredientInput.trim()) {
+                  e.preventDefault();
+                  setValue("ingredients", [...watch("ingredients"), ingredientInput.trim()]);
+                  setIngredientInput("");
+                  clearErrors("ingredients");
                 }
               }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  error={!!errors.allergens}
-                  helperText={errors.allergens?.message}
-                  placeholder="Select allergens"
-                />
-              )}
-              renderTags={() => null}
+              error={!!errors.ingredients}
+              helperText={errors.ingredients?.message}
             />
             <Box sx={{
               display: "flex",
@@ -313,12 +411,14 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
               minHeight: '32px',
               padding: '4px 0'
             }}>
-              {watch("allergens").map((allergen) => (
+              {watch("ingredients").map((ingredient) => (
                 <Chip
-                  key={allergen}
-                  label={allergen}
-                  onDelete={() => setValue("allergens", watch("allergens").filter((a) => a !== allergen))}
-                  color="error"
+                  key={ingredient}
+                  label={ingredient}
+                  onDelete={() => setValue("ingredients",
+                    watch("ingredients").filter((i) => i !== ingredient)
+                  )}
+                  color="default"
                   variant="filled"
                   size="small"
                   sx={{
@@ -329,110 +429,6 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
               ))}
             </Box>
           </FormControl>
-
-          {/* Labels */}
-          <FormControl fullWidth error={!!errors.labels}>
-            <FormLabel>Labels</FormLabel>
-            <Autocomplete
-              multiple
-              options={commonLabels}
-              value={watch("labels")}
-              onChange={(_, newValue) => {
-                setValue("labels", newValue);
-                clearErrors("labels");
-              }}
-
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  error={!!errors.labels}
-                  helperText={errors.labels?.message}
-                  placeholder="Select labels"
-                  sx={{
-                    '& .MuiInputBase-root': {
-                      padding: '3px 9px',
-                    }
-                  }}
-                />
-              )}
-              renderTags={() => null}
-            />
-            <Box sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 0.5,
-              mt: 1,
-              minHeight: '32px',
-              padding: '4px 0'
-            }}>
-              {watch("labels").map((label) => (
-                <Chip
-                  key={label}
-                  label={label}
-                  onDelete={() => setValue("labels", watch("labels").filter((l) => l !== label))}
-                  color="primary"
-                  variant="filled"
-                  size="small"
-                  sx={{
-                    borderRadius: '4px',
-                    fontWeight: 500
-                  }}
-                />
-              ))}
-            </Box>
-          </FormControl>
-        </div>
-
-        {/* Ingredients */}
-        <FormControl fullWidth error={!!errors.ingredients}>
-          <FormLabel>Ingredients</FormLabel>
-          <TextField
-            fullWidth
-            placeholder="Add ingredient and press Enter"
-            value={ingredientInput}
-            onChange={(e) => setIngredientInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && ingredientInput.trim()) {
-                e.preventDefault();
-                setValue("ingredients", [...watch("ingredients"), ingredientInput.trim()]);
-                setIngredientInput("");
-                clearErrors("ingredients");
-              }
-            }}
-            error={!!errors.ingredients}
-            helperText={errors.ingredients?.message}
-            sx={{
-              '& .MuiInputBase-root': {
-                bgcolor: 'action.hover'
-              }
-            }}
-          />
-          <Box sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 0.5,
-            mt: 1,
-            minHeight: '32px',
-            padding: '4px 0'
-          }}>
-            {watch("ingredients").map((ingredient) => (
-              <Chip
-                key={ingredient}
-                label={ingredient}
-                onDelete={() => setValue("ingredients", 
-                  watch("ingredients").filter((i) => i !== ingredient)
-                )}
-                color="default"
-                variant="filled"
-                size="small"
-                sx={{
-                  borderRadius: '4px',
-                  fontWeight: 500
-                }}
-              />
-            ))}
-          </Box>
-        </FormControl>
 
           {/* Description */}
           <FormControl fullWidth error={!!errors.description}>
@@ -441,14 +437,14 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
               '.ql-container': {
                 borderBottomLeftRadius: 1,
                 borderBottomRightRadius: 1,
-                bgcolor: 'action.hover',
+                // remove bgcolor: 'action.hover',
                 border: '1px solid',
                 borderColor: errors.description ? 'error.main' : 'divider',
               },
               '.ql-toolbar': {
                 borderTopLeftRadius: 1,
                 borderTopRightRadius: 1,
-                bgcolor: 'action.hover',
+                // remove bgcolor: 'action.hover',
                 border: '1px solid',
                 borderColor: errors.description ? 'error.main' : 'divider',
                 borderBottom: 'none',
@@ -457,7 +453,7 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
                 minHeight: '200px',
                 fontSize: '1rem',
                 fontFamily: 'inherit',
-                bgcolor: 'action.hover',
+                // remove bgcolor: 'action.hover',
               }
             }}>
               <ReactQuill
@@ -478,8 +474,8 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ 
-        px: 3, 
+      <DialogActions sx={{
+        px: 3,
         py: 2,
         borderTop: '1px solid',
         borderColor: 'divider'

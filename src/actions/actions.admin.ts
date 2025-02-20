@@ -10,7 +10,6 @@ import { notFound } from "next/navigation";
 import { getStorage } from 'firebase-admin/storage';
 import { formatFirebaseTimestamp } from "@/lib/format";
 
-
 type SuperAdminData = {
   name: string,
   email: string,
@@ -72,7 +71,6 @@ export const createSuperAdmin = async (data: SuperAdminData) => {
 export const createRestaurant = async (formData: FormData, idToken: string) => {
   try {
 
-
     await initAdmin();
     const auth = getAuth();
     const firestore = getFirestore();
@@ -127,13 +125,14 @@ export const createRestaurant = async (formData: FormData, idToken: string) => {
     // Create restaurant document with image URLs
     const restaurantData = {
       ...data,
+      // slug which will be used in URLs for customer sides
       images: {
         logo: logoUrl,
         background: backgroundUrl
       },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
-    };
+    } satisfies RestaurantType;
 
     // Add to Firestore
     const restaurantRef = await firestore.collection('restaurants').add(restaurantData);
@@ -259,6 +258,7 @@ export const editRestaurant = async (
     const restaurantRef = firestore.collection('restaurants').doc(restaurantId);
     const updateData = {
       ...data,
+      // new slug for the restaurant
       images: imageUrls,
       updatedAt: new Date().toISOString()
     };
@@ -444,10 +444,6 @@ export const getRestaurantData = async (restaurantId: string) => {
           })),
           createdAt: formatFirebaseTimestamp(doc.data()?.createdAt),
           updatedAt: formatFirebaseTimestamp(doc.data()?.updatedAt),
-          // "qrCode": {
-          //   ...doc.data()?.qrCode,
-          //   "createdAt": formatFirebaseTimestamp(menuSnapshot.data()?.qrCode.createdAt)
-          // }
         } as Menu
       ));
 

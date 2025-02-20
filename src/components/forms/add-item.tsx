@@ -220,7 +220,7 @@ export default function AddItemForm() {
             </FormControl>
 
             <FormControl fullWidth>
-              <FormLabel>Price</FormLabel>
+              <FormLabel>Price (Optional)</FormLabel>
               <TextField
                 type="number"
                 placeholder="0.00"
@@ -256,7 +256,7 @@ export default function AddItemForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Allergens */}
           <FormControl fullWidth error={!!errors.allergens}>
-            <FormLabel>Allergens</FormLabel>
+            <FormLabel>Allergens (Optional)</FormLabel>
             <Autocomplete
               multiple
               options={commonAllergens}
@@ -316,7 +316,7 @@ export default function AddItemForm() {
 
           {/* Labels */}
           <FormControl fullWidth error={!!errors.labels}>
-            <FormLabel>Labels</FormLabel>
+            <FormLabel>Labels (Optional)</FormLabel>
             <div className="flex gap-2 mb-2">
               <TextField
                 fullWidth
@@ -396,7 +396,7 @@ export default function AddItemForm() {
 
         {/* Ingredients */}
         <FormControl fullWidth error={!!errors.ingredients}>
-          <FormLabel>Ingredients</FormLabel>
+          <FormLabel>Ingredients (Optional)</FormLabel>
           <div className="flex gap-2">
             <TextField
               fullWidth
@@ -431,7 +431,7 @@ export default function AddItemForm() {
 
         {/* Description at Bottom */}
         <FormControl fullWidth error={!!errors.description}>
-          <FormLabel>Description</FormLabel>
+          <FormLabel>Description (Optional)</FormLabel>
           <Box sx={{
             ".ql-container": {
               borderBottomLeftRadius: 1,

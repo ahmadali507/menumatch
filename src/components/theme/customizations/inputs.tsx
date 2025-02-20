@@ -382,7 +382,9 @@ export const inputsCustomizations: Components<Theme> = {
         padding: 0,
         '&:-webkit-autofill': {
           WebkitBoxShadow: '0 0 0 100px transparent inset',
-          WebkitTextFillColor: "white",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          WebkitTextFillColor: ({ theme }: any) =>
+            theme.palette.mode === 'dark' ? 'white' : 'black',
           'transition': 'background-color 5000s ease-in-out 0s',
         },
         '&:-webkit-autofill:hover': {
