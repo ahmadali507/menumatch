@@ -11,7 +11,7 @@ interface ImageCropDialogProps {
   aspectRatio: number;
 }
 
-export default function  ImageCropDialog({
+export default function ImageCropDialog({
   open,
   onClose,
   imageUrl,
@@ -84,14 +84,16 @@ export default function  ImageCropDialog({
         bgcolor: 'background.default',
         py: 2
       }}>
-        <Typography variant="h6">
-          Crop {aspectRatio === 1 ? 'Logo' : 'Background'} Image
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          {aspectRatio === 1
-            ? 'Create a square crop for your logo'
-            : 'Adjust the crop area for your background image'}
-        </Typography>
+        <div>
+          <div className="text-lg font-semibold">
+            Crop {aspectRatio === 1 ? 'Logo' : 'Background'} Image
+          </div>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            {aspectRatio === 1
+              ? 'Create a square crop for your logo'
+              : 'Adjust the crop area for your background image'}
+          </Typography>
+        </div>
       </DialogTitle>
 
       <DialogContent sx={{
