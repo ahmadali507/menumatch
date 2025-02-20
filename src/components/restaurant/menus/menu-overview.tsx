@@ -41,7 +41,7 @@ export default function MenuOverview({ menu }: { menu: Menu }) {
                 color={isActive ? "success" : "error"}
                 sx={{ fontWeight: 500 }}
               />
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {menu.availabilityType === "ramadan" && <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <RamadanIcon
                   color="success"
                   sx={{ fontSize: 20 }}
@@ -56,8 +56,9 @@ export default function MenuOverview({ menu }: { menu: Menu }) {
                 >
                   Ramadan Menu
                 </Typography>
-              </Box>
+              </Box>}
             </Box>
+
           </Stack>
         </div>
       </Stack>

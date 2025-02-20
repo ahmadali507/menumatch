@@ -150,22 +150,23 @@ export default function RestaurantsTable({
 
       <div className="flex flex-col">
         <div className="h-[70vh] overflow-auto">
+
           <TableContainer
             component={Paper}
-            sx={{ 
+            sx={{
               backgroundColor: "transparent",
-              minWidth: 1200, // Add minimum width
-              overflowX: "auto" // Enable horizontal scroll
+              minWidth: 1200,
+              overflowX: "auto"
             }}
           >
-            <Table stickyHeader> {/* Add stickyHeader for better UX */} 
+            <Table stickyHeader>{/* Remove space between opening and closing tags */}
               <TableHead>
                 <TableRow sx={{ fontWeight: "bold" }}>
                   <TableCell width={60}>S.No</TableCell>
                   <TableCell width={200}>Restaurant Name</TableCell>
                   <TableCell width={120}>Country</TableCell>
                   <TableCell width={120}>City</TableCell>
-                  <TableCell width={250}>Address</TableCell> {/* New address column */}
+                  <TableCell width={250}>Address</TableCell>
                   <TableCell width={120}>Cuisine</TableCell>
                   <TableCell width={100}>Status</TableCell>
                   <TableCell width={120}>Total Orders</TableCell>
@@ -183,17 +184,13 @@ export default function RestaurantsTable({
                     >
                       <TableCell>{(page * rowsPerPage + index + 1) || "-"}</TableCell>
                       <TableCell className="font-medium">
-                        <Link
-                          href={`/restaurants/${restaurant.id}`}
-                          className="hover:underline"
-                        >
+                        <Link href={`/restaurants/${restaurant.id}`} className="hover:underline">
                           {restaurant.name || "-"}
                         </Link>
                       </TableCell>
-                      <TableCell>{restaurant?.location?.country || "-"} </TableCell>
+                      <TableCell>{restaurant?.location?.country || "-"}</TableCell>{/* Remove trailing space */}
                       <TableCell>{restaurant?.location?.city || "-"}</TableCell>
                       <TableCell>
-                        {/* New address cell with tooltip for long addresses */}
                         <div className="max-w-[250px] truncate" title={restaurant?.location?.address || "-"}>
                           {restaurant?.location?.address || "-"}
                         </div>
@@ -203,16 +200,11 @@ export default function RestaurantsTable({
                         <Chip
                           size="medium"
                           label={restaurant.status}
-                          color={
-                            restaurant.status === "active" ? "success" : "error"
-                          }
+                          color={restaurant.status === "active" ? "success" : "error"}
                         />
                       </TableCell>
                       <TableCell align="center">{restaurant.orders || "-"}</TableCell>
-                      <TableCell
-                        align="right"
-                        sx={{ display: "flex", gap: "10px" }}
-                      >
+                      <TableCell align="right" sx={{ display: "flex", gap: "10px" }}>
                         <EditRestaurant
                           initialData={{
                             ...restaurant,

@@ -11,20 +11,20 @@ export const IMAGE_CONFIG = {
   logo: {
     maxSize: 2 * 1024 * 1024, // 2MB
     acceptedFormats: ['image/jpeg', 'image/png', 'image/webp'],
-    minWidth: 200,
-    minHeight: 200,
+    minWidth: 100,
+    minHeight: 100,
   },
   background: {
-    maxSize: 5 * 1024 * 1024, // 5MB
+    maxSize: 3 * 1024 * 1024, // 5MB
     acceptedFormats: ['image/jpeg', 'image/png', 'image/webp'],
-    minWidth: 800,
-    minHeight: 600,
+    minWidth: 256,
+    minHeight: 256,
   },
   item: {
     maxSize: 2 * 1024 * 1024, // 2MB
     acceptedFormats: ['image/jpeg', 'image/png', 'image/webp'],
-    minWidth: 200,
-    minHeight: 200,
+    minWidth: 100,
+    minHeight: 100,
   }
 };
 
