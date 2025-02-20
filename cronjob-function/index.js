@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 const admin = require('firebase-admin');
-require('dotenv').config({ 'path': ".env.local" });
+require('dotenv').config();
 
 // Admin initialization code
 function formatPrivateKey(key) {
@@ -33,8 +33,6 @@ function initAdmin() {
     storageBucket: params.storageBucket,
   });
 }
-
-
 async function activateMenus() {
   try {
     // Initialize Firebase Admin
@@ -49,12 +47,17 @@ async function activateMenus() {
 
     for (const restaurantDoc of restaurantsSnapshot.docs) {
       // Get menus subcollection for each restaurant
-      const menusSnapshot = await restaurantDoc.ref.collection('menus').get();
+      const menusSnapshot = await restaurantDoc.ref.collection('menus')
+        .where('availabilityType', 'in', ['ramadan', 'custom'])
+        .get();
 
       for (const menuDoc of menusSnapshot.docs) {
         const menu = menuDoc.data();
-        const startDate = new Date(menu.startDate);
-        const endDate = new Date(menu.endDate);
+        const startDate = menu.startDate ? new Date(menu.startDate) : null;
+        const endDate = menu.endDate ? new Date(menu.endDate) : null;
+
+        // Skip if dates are not set
+        if (!startDate || !endDate) continue;
 
         // Check if menu should be active
         const isActive = now >= startDate && now <= endDate;
@@ -72,10 +75,19 @@ async function activateMenus() {
     console.error('Error updating menu activation status:', error);
     throw error;
   } finally {
-    // Terminate the admin app
-    await admin.app().delete();
+    // Only attempt to delete the app if it exists
+    if (admin.apps.length > 0) {
+      try {
+        await admin.app().delete();
+      } catch (deleteError) {
+        console.error('Error terminating Firebase app:', deleteError);
+      }
+    }
   }
 }
 
 // Run the script
-activateMenus();
+activateMenus().catch(error => {
+  console.error('Script failed:', error);
+  process.exit(1);
+});
