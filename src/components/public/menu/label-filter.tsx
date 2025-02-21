@@ -66,7 +66,10 @@ export default function LabelFilter({
               key={label}
               label={label}
               onDelete={() => handleRemoveLabel(label)}
+              color='primary'
               sx={{
+                border: '1px solid',
+                borderColor: 'primary.main',
                 color: 'white',
                 textTransform: 'capitalize',
                 '& .MuiChip-deleteIcon': {

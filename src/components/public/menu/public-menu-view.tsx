@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Box, Container, Fade, Paper } from '@mui/material';
+import { Box, Container, Fade } from '@mui/material';
 import { Menu, RestaurantType } from '@/types';
 import PublicMenuHeader from "./public-menu-header"
 import PublicMenuSection from "./public-menu-section";
@@ -29,21 +29,13 @@ export default function PublicMenuView({ menu, restaurant }: {
 
         <Container maxWidth="lg" className="pb-8">
           {/* Labels Filter */}
-          <Paper
-            elevation={0}
-            sx={{
-              my: 3,
-              py: 2.5,
-              backgroundColor: 'rgba(0,0,0,0.02)',
-              borderRadius: 2
-            }}
-          >
+          <div className='mb-6'>
             <LabelFilter
               allLabels={allLabels}
               selectedLabels={selectedLabels}
               onLabelChange={setSelectedLabels}
             />
-          </Paper>
+          </div>
 
           {/* Menu Sections */}
           <div className="space-y-8">
