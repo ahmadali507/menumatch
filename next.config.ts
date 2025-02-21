@@ -1,5 +1,5 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import { NextConfig } from "next"
+const nextConfig: NextConfig = {
   images: {
     domains: ['storage.googleapis.com'],
     minimumCacheTTL: 60,
@@ -13,6 +13,10 @@ const nextConfig = {
         port: '',
         pathname: '/v0/b/**',
       },
+      {
+        protocol: 'https',
+        hostname: "images.unsplash.com"
+      }
     ]
   },
 }
