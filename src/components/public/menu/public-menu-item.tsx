@@ -1,7 +1,8 @@
 import { MenuItem } from '@/types';
 import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import InfoIcon from '@mui/icons-material/Info';
+import InfoIcon from '@mui/icons-material/Warning';
+import LocalDiningIcon from '@mui/icons-material/LocalDining';
 import Image from 'next/image';
 import parse from 'react-html-parser'
 
@@ -59,13 +60,27 @@ export default function PublicMenuItemCard({ item }: MenuItemCardProps) {
         }
       }}
     >
-      <Image
-        height={200}
-        width={200}
-        src={item.photo || "/placeholder.svg"}
-        alt={item.name}
-        className='w-full h-auto object-contain'
-      />
+      <Box
+        sx={{
+          position: 'relative',
+          width: '100%',
+          height: 0,
+          paddingBottom: '56.25%', // 16:9 aspect ratio
+          backgroundColor: 'grey.100',
+          overflow: 'hidden'
+        }}
+      >
+        <Image
+          src={item.photo || "/placeholder.svg"}
+          alt={item.name}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          style={{
+            objectFit: item.photo ? 'cover' : 'contain',
+          }}
+          priority={false}
+        />
+      </Box>
 
       <CardContent sx={{ flexGrow: 1 }}>
         <Box sx={{ mb: 2 }}>
@@ -107,11 +122,20 @@ export default function PublicMenuItemCard({ item }: MenuItemCardProps) {
           </Box>
         )}
 
+        {(item.ingredients && item.ingredients.length > 0) && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5, color: "text.primary" }}>
+            <LocalDiningIcon color="primary" fontSize="small" />
+            <Typography variant="caption" color="text.secondary">
+              <span className='font-bold'>Ingredients  :</span> {item.ingredients.join(', ')}
+            </Typography>
+          </Box>
+        )}
+
         {(item.allergens && item.allergens.length > 0) && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <InfoIcon color="warning" fontSize="small" />
             <Typography variant="caption" color="text.secondary">
-              <span className='font-bold text-white'>Contains:</span> {item.allergens.join(', ')}
+              <span className='font-bold'>Contains:</span> {item.allergens.join(', ')}
             </Typography>
           </Box>
         )}

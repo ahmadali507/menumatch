@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Box, Container, Paper, Fade } from '@mui/material';
+import { Box, Container, Fade, Paper } from '@mui/material';
 import { Menu, RestaurantType } from '@/types';
 import PublicMenuHeader from "./public-menu-header"
 import PublicMenuSection from "./public-menu-section";
@@ -22,6 +22,7 @@ export default function PublicMenuView({ menu, restaurant }: {
 
   return (
     <Fade in timeout={800}>
+
       <Box className="min-h-screen">
         <PublicMenuHeader restaurant={restaurant} menu={menu} />
         <ThemeSwitcher />
@@ -33,7 +34,6 @@ export default function PublicMenuView({ menu, restaurant }: {
             sx={{
               my: 3,
               py: 2.5,
-              px: 3,
               backgroundColor: 'rgba(0,0,0,0.02)',
               borderRadius: 2
             }}
@@ -58,5 +58,7 @@ export default function PublicMenuView({ menu, restaurant }: {
         </Container>
       </Box>
     </Fade>
+
   );
+
 }

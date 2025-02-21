@@ -50,15 +50,15 @@ export default async function RestaurantContent({
           {/* Logo Container */}
           {details?.images?.logo && <Box sx={{
             position: 'absolute',
-            bottom: '-40px',
+            bottom: '-10px',
             left: '32px',
             zIndex: 2,
             width: '120px',
             height: '120px',
-            borderRadius: '16px',
+            borderRadius: '1rem',
             bgcolor: 'background.paper',
             boxShadow: 3,
-            overflow: 'hidden'
+            overflow: 'hidden',
           }}>
             <Image
               src={details?.images?.logo as string}

@@ -1,5 +1,14 @@
-import { Chip, Box, Tooltip, Typography } from '@mui/material';
-import { motion, AnimatePresence } from 'framer-motion';
+"use client";
+import {
+  Chip,
+  Box,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+  FormControl,
+  InputLabel
+} from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
 
 interface LabelFilterProps {
   allLabels: string[];
@@ -12,114 +21,81 @@ export default function LabelFilter({
   selectedLabels,
   onLabelChange,
 }: LabelFilterProps) {
-  const handleLabelClick = (label: string) => {
-    if (selectedLabels.includes(label)) {
-      onLabelChange(selectedLabels.filter((l) => l !== label));
-    } else {
+  const handleLabelSelect = (event: SelectChangeEvent<string>) => {
+    const label = event.target.value;
+    if (!selectedLabels.includes(label)) {
       onLabelChange([...selectedLabels, label]);
     }
   };
 
-  const getLabelColor = (label: string) => {
-    switch (label.toLowerCase()) {
-      case 'spicy':
-        return '#ef4444';
-      case 'vegetarian':
-        return '#22c55e';
-      case 'vegan':
-        return '#16a34a';
-      case 'halal':
-        return '#06b6d4';
-      case 'gluten-free':
-        return '#8b5cf6';
-      default:
-        return '#6b7280';
-    }
+  const handleRemoveLabel = (labelToRemove: string) => {
+    onLabelChange(selectedLabels.filter(label => label !== labelToRemove));
   };
 
-  return (
-    <Box className="flex items-center gap-4">
-      <Typography variant="h6" className="whitespace-nowrap">
-        Filter by Labels
-      </Typography>
 
-      <Box
-        className="flex gap-2 overflow-x-auto"
-        sx={{
-          '::-webkit-scrollbar': {
-            height: '6px',
-          },
-          '::-webkit-scrollbar-track': {
-            background: '#f1f1f1',
-            borderRadius: '10px',
-          },
-          '::-webkit-scrollbar-thumb': {
-            background: '#888',
-            borderRadius: '10px',
-            '&:hover': {
-              background: '#666',
-            },
-          },
-        }}
-      >
-        <AnimatePresence>
+  return (
+    <Box className="flex flex-wrap items-center gap-4">
+      <FormControl sx={{ minWidth: 200 }} size="small">
+        <InputLabel>Filter by Labels</InputLabel>
+        <Select
+          value=""
+          label="Filter by Labels"
+          onChange={handleLabelSelect}
+          displayEmpty
+        >
           {allLabels.map((label) => (
-            <motion.div
+            <MenuItem
               key={label}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              value={label}
+              disabled={selectedLabels.includes(label)}
+              sx={{
+                textTransform: 'capitalize',
+                color: selectedLabels.includes(label) ? 'text.disabled' : 'inherit'
+              }}
             >
-              <Tooltip title={`Filter by ${label}`}>
-                <Chip
-                  label={label}
-                  onClick={() => handleLabelClick(label)}
-                  sx={{
-                    backgroundColor: selectedLabels.includes(label)
-                      ? getLabelColor(label)
-                      : 'transparent',
-                    color: selectedLabels.includes(label) ? 'white' : 'inherit',
-                    border: `1px solid ${getLabelColor(label)}`,
-                    '&:hover': {
-                      backgroundColor: selectedLabels.includes(label)
-                        ? getLabelColor(label)
-                        : `${getLabelColor(label)}20`,
-                    },
-                    transition: 'all 0.2s ease-in-out',
-                    fontWeight: 500,
-                    textTransform: 'capitalize',
-                    height: '36px',
-                    fontSize: '0.95rem',
-                    px: 1.5,
-                  }}
-                  clickable
-                />
-              </Tooltip>
-            </motion.div>
+              {label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {selectedLabels.length > 0 && (
+        <Box className="flex flex-wrap gap-2 items-center">
+          {selectedLabels.map((label) => (
+            <Chip
+              key={label}
+              label={label}
+              onDelete={() => handleRemoveLabel(label)}
+              sx={{
+                color: 'white',
+                textTransform: 'capitalize',
+                '& .MuiChip-deleteIcon': {
+                  color: 'white',
+                  '&:hover': {
+                    color: 'rgba(255,255,255,0.8)',
+                  },
+                },
+              }}
+            />
           ))}
 
-          {selectedLabels.length > 0 && (
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-            >
-              <Chip
-                label="Clear All"
-                onClick={() => onLabelChange([])}
-                variant="outlined"
-                color="error"
-                sx={{
-                  height: '36px',
-                  fontSize: '0.95rem',
-                  fontWeight: 500,
-                }}
-              />
-            </motion.div>
+          {selectedLabels.length > 1 && (
+            <Chip
+              label="Clear All"
+              onClick={() => onLabelChange([])}
+              onDelete={() => onLabelChange([])}
+              deleteIcon={<ClearIcon />}
+              variant="outlined"
+              color="error"
+              size="small"
+              sx={{
+                ml: 1,
+                fontWeight: 500,
+              }}
+            />
           )}
-        </AnimatePresence>
-      </Box>
+        </Box>
+      )}
     </Box>
   );
 }

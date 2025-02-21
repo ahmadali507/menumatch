@@ -16,7 +16,7 @@ export default function PublicMenuHeader({
   return (
     <Box className="relative bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700">
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-        <Box sx={{ py: { xs: 4, md: 6 } }} className="text-white">
+        <Box sx={{ py: { xs: 4, md: 6 } }}>
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             {/* Logo */}
             <Avatar
@@ -39,7 +39,6 @@ export default function PublicMenuHeader({
                   variant="h3"
                   fontWeight="bold"
                   sx={{
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
                     letterSpacing: '-0.5px'
                   }}
                 >
@@ -51,7 +50,6 @@ export default function PublicMenuHeader({
                 <LocationOnIcon sx={{ color: 'grey.400' }} />
                 <Typography
                   variant="subtitle1"
-                  sx={{ color: 'grey.300' }}
                 >
                   {restaurant.location.address}, {restaurant.location.city}
                 </Typography>
@@ -74,7 +72,6 @@ export default function PublicMenuHeader({
                 <PhoneIcon sx={{ color: 'primary.light', fontSize: 20 }} />
                 <Typography
                   variant="body1"
-                  sx={{ color: 'grey.300' }}
                   component="a"
                   href={`tel:${restaurant.contact.phone}`}
                 >
@@ -85,7 +82,6 @@ export default function PublicMenuHeader({
                 <EmailIcon sx={{ color: 'primary.light', fontSize: 20 }} />
                 <Typography
                   variant="body1"
-                  sx={{ color: 'grey.300' }}
                   component="a"
                   href={`mailto:${restaurant.contact.email}`}
                 >

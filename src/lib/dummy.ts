@@ -294,3 +294,213 @@ export const commonLabels = [
   "New",
   "Seasonal",
 ];
+
+import { MenuItem, RestaurantType } from "@/types";
+
+const dummyRestaurant: RestaurantType = {
+  id: "rest123",
+  name: "La Belle Cuisine",
+  location: {
+    address: "123 Gourmet Street",
+    city: "New York",
+    state: "NY",
+    country: "USA",
+  },
+  contact: {
+    phone: "+1 234-567-8900",
+    email: "contact@labellecuisine.com",
+  },
+  images: {
+    logo: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800",
+    background: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200",
+  },
+  status: "active",
+  cuisine: "French Contemporary",
+  orders: 1500,
+  admins: [],
+  menus: []
+};
+
+const menuItems: { [key: string]: MenuItem[] } = {
+  appetizers: [
+    {
+      id: "app1",
+      name: "French Onion Soup",
+      description: "<p>Classic French onion soup topped with melted Gruyère cheese and crusty bread.</p>",
+      ingredients: ["onions", "beef broth", "Gruyère cheese", "bread"],
+      photo: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800",
+      price: 12.99,
+      allergens: ["dairy", "gluten"],
+      available: true,
+      labels: ["vegetarian", "classic"],
+    },
+    {
+      id: "app2",
+      name: "Escargot en Croûte",
+      description: "<p>Burgundy snails baked in garlic herb butter, served in a flaky pastry shell.</p>",
+      ingredients: ["snails", "butter", "garlic", "herbs", "pastry"],
+      photo: "https://images.unsplash.com/photo-1614545795549-b8db0bf8cc35?w=800",
+      price: 16.99,
+      allergens: ["dairy", "gluten"],
+      available: true,
+      labels: ["specialty", "classic"],
+    },
+  ],
+  mainCourse: [
+    {
+      id: "main1",
+      name: "Coq au Vin",
+      description: "<p>Traditional French chicken braised in wine, with pearl onions and mushrooms.</p><p><strong>Served with:</strong> Mashed potatoes</p>",
+      ingredients: ["chicken", "red wine", "mushrooms", "bacon"],
+      photo: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800",
+      price: 32.99,
+      allergens: ["dairy"],
+      available: true,
+      labels: ["chef's special", "classic"],
+    },
+    {
+      id: "main2",
+      name: "Beef Bourguignon",
+      description: "<p>Slow-cooked beef in red wine sauce with carrots and mushrooms.</p><p><em>A timeless French classic</em></p>",
+      ingredients: ["beef", "red wine", "carrots", "mushrooms"],
+      photo: "https://images.unsplash.com/photo-1534939561126-855b8675edd7?w=800",
+      price: 36.99,
+      allergens: [],
+      available: true,
+      labels: ["popular", "signature"],
+    },
+  ],
+  desserts: [
+    {
+      id: "des1",
+      name: "Crème Brûlée",
+      description: "<p>Classic vanilla custard with caramelized sugar crust.</p>",
+      ingredients: ["cream", "vanilla", "sugar", "eggs"],
+      photo: "https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=800",
+      price: 12.99,
+      allergens: ["dairy", "eggs"],
+      available: true,
+      labels: ["vegetarian", "classic"],
+    },
+  ],
+  wines: [
+    {
+      id: "wine1",
+      name: "Château Margaux 2015",
+      description: "<p>Premium red wine with notes of dark fruits and tobacco.</p><p><strong>Region:</strong> Bordeaux, France</p>",
+      ingredients: ["red wine"],
+      photo: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800",
+      price: 299.99,
+      allergens: ["sulfites"],
+      available: true,
+      labels: ["premium", "wine"],
+    },
+    {
+      id: "wine2",
+      name: "Château Margaux 2015",
+      description: "<p>Premium red wine with notes of dark fruits and tobacco.</p><p><strong>Region:</strong> Bordeaux, France</p>",
+      ingredients: ["red wine"],
+      photo: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800",
+      price: 299.99,
+      allergens: ["sulfites"],
+      available: true,
+      labels: ["premium", "wine"],
+    },
+    {
+      id: "wine3",
+      name: "Château Margaux 2015",
+      description: "<p>Premium red wine with notes of dark fruits and tobacco.</p><p><strong>Region:</strong> Bordeaux, France</p>",
+      ingredients: ["red wine"],
+      photo: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800",
+      price: 299.99,
+      allergens: ["sulfites"],
+      available: true,
+      labels: ["premium", "wine"],
+    },
+    {
+      id: "wine4",
+      name: "Château Margaux 2015",
+      description: "<p>Premium red wine with notes of dark fruits and tobacco.</p><p><strong>Region:</strong> Bordeaux, France</p>",
+      ingredients: ["red wine"],
+      photo: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800",
+      price: 299.99,
+      allergens: ["sulfites"],
+      available: true,
+      labels: ["premium", "wine"],
+    },
+    {
+      id: "wine234",
+      name: "Château Margaux 2015",
+      description: "<p>Premium red wine with notes of dark fruits and tobacco.</p><p><strong>Region:</strong> Bordeaux, France</p>",
+      ingredients: ["red wine"],
+      photo: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800",
+      price: 299.99,
+      allergens: ["sulfites"],
+      available: true,
+      labels: ["premium", "wine"],
+    },
+    {
+      id: "wine2434",
+      name: "Château Margaux 2015",
+      description: "<p>Premium red wine with notes of dark fruits and tobacco.</p><p><strong>Region:</strong> Bordeaux, France</p>",
+      ingredients: ["red wine"],
+      photo: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800",
+      price: 299.99,
+      allergens: ["sulfites"],
+      available: true,
+      labels: ["premium", "wine"],
+    },
+    {
+      id: "wine423423",
+      name: "Château Margaux 2015",
+      description: "<p>Premium red wine with notes of dark fruits and tobacco.</p><p><strong>Region:</strong> Bordeaux, France</p>",
+      ingredients: ["red wine"],
+      photo: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800",
+      price: 299.99,
+      allergens: ["sulfites"],
+      available: true,
+      labels: ["premium", "wine"],
+    },
+  ]
+};
+
+const dummyMenu: Menu = {
+  id: "menu123",
+  name: "À La Carte Menu",
+  availabilityType: "indefinite",
+  sections: [
+    {
+      id: "sect1",
+      name: "Appetizers",
+      items: menuItems.appetizers,
+      createdAt: new Date(),
+    },
+    {
+      id: "sect2",
+      name: "Main Courses",
+      items: menuItems.mainCourse,
+      createdAt: new Date(),
+    },
+    {
+      id: "sect3",
+      name: "Desserts",
+      items: menuItems.desserts,
+      createdAt: new Date(),
+    },
+    {
+      id: "sect4",
+      name: "Wine Selection",
+      items: menuItems.wines,
+      createdAt: new Date(),
+    },
+  ],
+  status: "active",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  qrCode: {
+    url: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=example",
+    createdAt: new Date(),
+  },
+};
+
+export { dummyMenu, dummyRestaurant };

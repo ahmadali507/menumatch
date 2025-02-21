@@ -192,22 +192,13 @@ export const fetchAllRestaurants = async () => {
 export const editRestaurant = async (
   restaurantId: string,
   formData: FormData,
-  idToken: string
+  // idToken: string
 ) => {
   try {
     await initAdmin();
     const storage = getStorage();
     const bucket = storage.bucket();
     const firestore = getFirestore();
-
-
-    ///////// validate hte user role ... only super admin can edit the restaurant information//////////// 
-
-    const auth = getAuth();
-    const claims = await auth.verifyIdToken(idToken);
-    if (claims.role !== "super_admin") {
-      throw new Error("You are not authorized to edit Restaurants");
-    }
 
     // Get and validate the data payload
     const dataStr = formData.get('data');

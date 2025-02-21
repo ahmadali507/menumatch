@@ -60,7 +60,7 @@ export default function EditRestaurantForm({
     formState: { errors },
   } = useForm<TEditRestaurant>({
     resolver: zodResolver(editRestaurantSchema),
-    defaultValues: initialData,
+    defaultValues: { ...initialData, status: initialData.status || 'active' },
   });
 
   const router = useRouter();
@@ -71,7 +71,6 @@ export default function EditRestaurantForm({
         const user = auth.currentUser;
         if (!user) throw new Error("User not found");
 
-        const idToken = await user.getIdToken(true);
         const formData = new FormData();
 
         // Convert images to Blob before appending to FormData
@@ -96,7 +95,7 @@ export default function EditRestaurantForm({
 
         formData.append('data', JSON.stringify(payload));
 
-        const response = await editRestaurant(restaurantId, formData, idToken);
+        const response = await editRestaurant(restaurantId, formData);
         if (!response.success) {
           throw new Error(response.error);
         }
@@ -112,7 +111,10 @@ export default function EditRestaurantForm({
         setOpen(false);
         // Use router.refresh() instead of window.location.reload()
         router.refresh();
+        return;
       }
+
+      showToast(response.error || "Failed to update restaurant", "error");
     },
     onError: (error: Error) => {
       console.error("Error updating restaurant:", error);
