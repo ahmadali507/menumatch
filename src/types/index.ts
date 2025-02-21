@@ -57,6 +57,14 @@ export interface Menu {
   };
 }
 
+export interface MenuVersion {
+  id: string;
+  menuId: string;
+  tag: string;
+  menuData: Menu;
+  createdAt: Date;
+}
+
 export interface UserData {
   uid: string;
   role: "super_admin" | "admin" | "user",
@@ -65,6 +73,11 @@ export interface UserData {
   name?: string,
 }
 
+export type VersionDataType = {
+  id: string;
+  tag: string;
+  createdAt: string;
+}
 
 
 export type LocationDataType = {

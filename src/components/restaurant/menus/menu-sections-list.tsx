@@ -12,8 +12,10 @@ import { useMenu } from "@/context/menuContext";
 import { reorderSections } from "@/actions/actions.menu";
 import { useToast } from "@/context/toastContext";
 import LabelSearch from "./label-search";
+import SaveVersion from './save-version';
+import SwitchVersion from './switch-version';
 
-export default function MenuSectionsList({ menuId }: { sections: MenuSectionType[], menuId: string }) {
+export default function MenuSectionsList({ menuId, restaurantId }: { sections: MenuSectionType[], menuId: string, restaurantId: string }) {
 
   const { menu, setMenu } = useMenu();
   const { showToast } = useToast();
@@ -67,7 +69,11 @@ export default function MenuSectionsList({ menuId }: { sections: MenuSectionType
     <Box className="space-y-4">
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4">Menu Sections</Typography>
-        <AddSection menuId={menuId} />
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <SaveVersion menuId={menuId} restaurantId={restaurantId} />
+          <SwitchVersion menuId={menuId} restaurantId={restaurantId} />
+          <AddSection menuId={menuId} />
+        </Box>
       </Box>
 
       {/* Add Label Search */}
@@ -94,9 +100,9 @@ export default function MenuSectionsList({ menuId }: { sections: MenuSectionType
             <Grid container spacing={3}>
               {menu?.sections.map((section, index) => (
                 <Grid item xs={12} key={section.name + index}>
-                  <MenuSection 
-                    menuId={menuId} 
-                    section={section} 
+                  <MenuSection
+                    menuId={menuId}
+                    section={section}
                     selectedLabels={selectedLabels}
                   />
                 </Grid>
