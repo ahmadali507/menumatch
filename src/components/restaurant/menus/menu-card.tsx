@@ -94,6 +94,7 @@ export default function MenuCard({ menu }: MenuCardProps) {
 
   const menuStatus = getMenuStatus(menu);
 
+  console.log("the manu cards", menu.id)
   return (
     <StyledCard>
       <CardHeader
@@ -116,10 +117,11 @@ export default function MenuCard({ menu }: MenuCardProps) {
                 <EditIcon />
               </IconButton>
             </Link>
-            <DeleteMenu menuId={menu.id} />
+            <DeleteMenu menuId={menu?.id} />
           </Box>
         }
       />
+     
 
       <Divider />
 

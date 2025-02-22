@@ -3,26 +3,35 @@ import LoadingButton from "@/components/ui/loading-button";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from "@mui/material";
 import { Button } from "@mui/material";
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/context/toastContext";
 import { deleteMenu } from "@/actions/actions.menu";
+import { auth } from "@/firebase/firebaseconfig";
+// import { useAuth } from "@/context/authContext";
 
 export default function DeleteMenu({ menuId }: { menuId: string }) {
   const [open, setOpen] = useState(false);
-  const { showToast } = useToast()
+  const { showToast } = useToast();
+  const queryClient = useQueryClient();
+  const user = auth.currentUser; 
 
   const { mutate, isPending } = useMutation({
-    mutationFn: deleteMenu,
+    mutationFn: async () => {
+      if (!user) throw new Error("Not authenticated");
+      const idToken = await user.getIdToken(true);
+      return deleteMenu({ menuId, idToken });
+    },
     onSuccess: (response) => {
-      if (!response) {
-        showToast( "Failed to delete menu", 'error')
+      if (!response?.success) {
+        showToast("Failed to delete menu", 'error');
         return;
       }
-      showToast('Menu deleted successfully', 'success')
+      showToast('Menu deleted successfully', 'success');
       setOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['menus'] });
     },
     onError: (error) => {
-      showToast('Failed to delete menu', 'error')
+      showToast('Failed to delete menu', 'error');
       console.error(error);
     }
   });
@@ -48,7 +57,7 @@ export default function DeleteMenu({ menuId }: { menuId: string }) {
           <Button onClick={() => setOpen(false)}>Cancel</Button>
           <LoadingButton
             loading={isPending}
-            onClick={() => mutate(menuId)}
+            onClick={() => mutate()}
             color="error"
             variant="contained"
             loadingText="Deleting..."

@@ -375,6 +375,87 @@ export const fetchRestaurantAdmins = async (restaurantId: string) => {
   }
 };
 
+// Add these functions after the fetchRestaurantAdmins function
+
+export const updateAdmin = async (adminId: string, data: Partial<resAdminType>, idToken: string) => {
+  await initAdmin();
+  const auth = getAuth();
+  const firestore = getFirestore();
+
+  try {
+    // Verify super_admin role
+    const claims = await auth.verifyIdToken(idToken);
+    if (claims.role !== "super_admin") {
+      throw new Error("You are not authorized to update Admins");
+    }
+
+    // Update auth user if email or name changed
+    if (data.email || data.name) {
+      await auth.updateUser(adminId, {
+        ...(data.email && { email: data.email }),
+        ...(data.name && { displayName: data.name })
+      });
+    }
+
+    // Update user data in Firestore
+    const updateData = {
+      ...(data.name && { name: data.name }),
+      ...(data.email && { email: data.email }),
+      updatedAt: new Date().toString(),
+    };
+
+    await firestore.collection("users").doc(adminId).update(updateData);
+
+    revalidatePath("/restaurants");
+
+    return {
+      success: true,
+      message: "Admin updated successfully"
+    };
+
+  } catch (error) {
+    console.error("Error updating admin:", error);
+    return {
+      success: false,
+      error: (error as Error).message || "Failed to update admin"
+    };
+  }
+};
+
+export const deleteAdmin = async (adminId: string, idToken: string) => {
+  await initAdmin();
+  const auth = getAuth();
+  const firestore = getFirestore();
+
+  try {
+    // Verify super_admin role
+    const claims = await auth.verifyIdToken(idToken);
+    if (claims.role !== "super_admin") {
+      throw new Error("You are not authorized to delete Admins");
+    }
+
+    // Delete from Authentication
+    await auth.deleteUser(adminId);
+
+    // Delete from Firestore
+    await firestore.collection("users").doc(adminId).delete();
+
+    revalidatePath("/restaurants");
+
+    return {
+      success: true,
+      message: "Admin deleted successfully"
+    };
+
+  } catch (error) {
+    console.error("Error deleting admin:", error);
+    return {
+      success: false,
+      error: (error as Error).message || "Failed to delete admin"
+    };
+  }
+};
+
 export const getRestaurantData = async (restaurantId: string) => {
   await initAdmin();
   const firestore = getFirestore();

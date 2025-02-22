@@ -194,13 +194,33 @@ export const getMenu = async (restaurantId: string, menuId: string) => {
 }
 
 
-export async function deleteMenu(menuId: string) {
+export async function deleteMenu({ menuId, idToken }: { menuId: string; idToken?: string }) {
   await initAdmin();
   const firestore = getFirestore();
 
-  const restaurantId = await getRestaurantIdForAdmin();
-
   try {
+    let restaurantId;
+
+    // If idToken is provided (super_admin flow)
+    if (idToken) {
+      const auth = getAuth();
+      const claims = await auth.verifyIdToken(idToken);
+      if (claims.role !== "super_admin") {
+        throw new Error("Not authorized to delete menu");
+      }
+      const restaurantId = await getRestaurantIdForAdmin();
+      // Get restaurant ID from the menu document
+      const menuDoc = await firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId).get();
+      // restaurantId = menuDoc.data()?.restaurantId;
+
+      console.log("menuDoc", menuDoc);
+    } else {
+      // Admin flow - use existing function
+      restaurantId = await getRestaurantIdForAdmin();
+    }
+
+    if (!restaurantId) throw new Error("Restaurant ID not found");
+
     const menuRef = firestore
       .collection("restaurants")
       .doc(restaurantId)
@@ -209,16 +229,13 @@ export async function deleteMenu(menuId: string) {
 
     await menuRef.delete();
     revalidatePath("/restaurant/menu");
-    return {
-      success: true,
-      menu: menuId,
-    };
+    return { success: true };
 
   } catch (error) {
     console.error("Error deleting menu:", error);
     return {
       success: false,
-      error: "Failed to delete menu"
+      error: (error as Error).message || "Failed to delete menu"
     };
   }
 }

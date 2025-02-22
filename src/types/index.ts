@@ -24,6 +24,7 @@ export type RestaurantType = {
 }
 
 export type resAdminType = {
+  id: string, 
   restaurantId: string,
   name: string,
   email: string,

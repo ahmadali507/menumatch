@@ -3,7 +3,7 @@ import { firestore } from "firebase-admin";
 
 
 export function formatFirebaseTimestamp(timestamp: firestore.Timestamp) {
-  return new Date(timestamp.seconds * 1000)
+  return new Date(timestamp?.seconds * 1000)
 }
 
 
