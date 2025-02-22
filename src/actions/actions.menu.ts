@@ -9,6 +9,7 @@ import { getUser } from "./actions.cookies";
 import { formatFirebaseTimestamp } from "@/lib/format";
 import QRCode from 'qrcode';
 import { RAMADAN_DATES } from "@/lib/utils";
+import { getAuth } from "firebase-admin/auth";
 
 // Add restaurantId parameter to the function
 export const addMenu = async ({ restaurantId, data }: { restaurantId: string; data: TAddMenuFormSchema }) => {
