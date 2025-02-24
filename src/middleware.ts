@@ -13,7 +13,7 @@ export default async function middleware(request: NextRequest) {
   }
 
   try {
-    console.log("pathname", request.nextUrl.pathname)
+
     const { role } = await decryptData(cookie?.value as string) as UserData;
 
     // Handle invalid role values
@@ -86,6 +86,8 @@ export const config = {
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
      * - Dynamic route for restaurant menus
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|auth|[^/]+/menu/[^/]+).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|auth|\\w+/menu/\\w+).*)',
+    '/restaurant/menu/:path*'  // Include restaurant menu admin routes
+
   ],
 }
