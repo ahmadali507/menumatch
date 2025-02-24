@@ -1,4 +1,5 @@
 import z from "zod";
+import { SUPPORTED_LANGUAGES } from "@/lib/languages";
 
 export const editRestaurantSchema = z.object({
   name: z.string()
@@ -57,6 +58,7 @@ export const addMenuFormSchema = z.object({
   availabilityType: z.enum(menuAvailabilityTypes),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
+  language: z.enum(SUPPORTED_LANGUAGES.map(l => l.code) as [string, ...string[]]),
 }).refine((data) => {
   if (data.availabilityType === 'custom') {
     return data.startDate && data.endDate && data.endDate > data.startDate;

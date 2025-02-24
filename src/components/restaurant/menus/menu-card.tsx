@@ -21,6 +21,8 @@ import RamadanIcon from '@mui/icons-material/Star';
 import Link from "next/link";
 import { routes } from "@/lib/routes";
 import DeleteMenu from "./delete-menu";
+import { SUPPORTED_LANGUAGES } from '@/lib/languages';
+import LanguageIcon from '@mui/icons-material/Language';
 
 // Styled components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -39,6 +41,8 @@ type MenuCardProps = {
 };
 
 export default function MenuCard({ menu }: MenuCardProps) {
+  const languageName = SUPPORTED_LANGUAGES.find(l => l.code === menu.language)?.name || menu.language;
+
   // Helper function to determine menu status
   const getMenuStatus = (menu: Menu): ({ status: string; statusText: string; color: 'success' | 'error' | 'warning' }) => {
     const now = new Date();
@@ -226,6 +230,10 @@ export default function MenuCard({ menu }: MenuCardProps) {
             />
           </Box>
         </Stack>
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <LanguageIcon fontSize="small" />
+          <span>{languageName}</span>
+        </div>
       </Stack>
     </StyledCard>
   );
