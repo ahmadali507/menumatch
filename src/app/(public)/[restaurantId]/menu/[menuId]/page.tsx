@@ -21,6 +21,17 @@ export default async function PublicMenuPage({ params }: { params: { restaurantI
   }
 
   return (
-    <PublicMenuView menu={menuData.menu} restaurant={restaurantData} />
+    <div>
+      {menuData.menu.status === "inactive" && <InactiveMenu />}
+      <PublicMenuView menu={menuData.menu} restaurant={restaurantData} />
+    </div>
   );
+}
+
+function InactiveMenu() {
+  return <div className="w-full p-4 flex justify-center">
+    <div className="px-4 py-2 rounded-full text-sm bg-red-100 text-red-800">
+      This menu is currently Inactive
+    </div>
+  </div>
 }
