@@ -17,13 +17,14 @@ import DeleteConfirmDialog from "../dialogs/delete-confirm-dialog";
 // import { useAuth } from "@/context/authContext";
 // import { useUser } from "@/context/userContext";
 import { auth } from "@/firebase/firebaseconfig";
+import { useUser } from "@/context/userContext";
 
 export default function AdminsList({ restaurantId, admins }: {
   restaurantId: string;
   admins: resAdminType[];
 }) {
   const { showToast } = useToast();
-  // const { user } = useUser();
+  const { user } = useUser();
   const queryClient = useQueryClient();
   const [editingAdmin, setEditingAdmin] = useState<resAdminType | null>(null);
   const [adminToDelete, setAdminToDelete] = useState<resAdminType | null>(null);
@@ -31,7 +32,7 @@ export default function AdminsList({ restaurantId, admins }: {
   const deleteMutation = useMutation({
     mutationFn: async (adminId: string) => {
 
-      const user = auth.currentUser; 
+      const user = auth.currentUser;
       if (!user) {
         throw new Error("User not found");
       }
@@ -51,12 +52,12 @@ export default function AdminsList({ restaurantId, admins }: {
 
   const updateMutation = useMutation({
     mutationFn: async ({ adminId, data }: { adminId: string, data: Partial<resAdminType> }) => {
-      const user = auth.currentUser; 
+      const user = auth.currentUser;
       if (!user) {
         throw new Error("User not found");
       }
       const idToken = await user.getIdToken(true);
-      const result = await updateAdmin(adminId, data,idToken as string);
+      const result = await updateAdmin(adminId, data, idToken as string);
       if (!result.success) throw new Error(result.error);
       return result;
     },
@@ -107,22 +108,22 @@ export default function AdminsList({ restaurantId, admins }: {
                   </Typography>
                 </div>
               </div>
-              <div className="flex gap-1">
-                <IconButton 
+              {user?.role === "super_admin" && <div className="flex gap-1">
+                <IconButton
                   size="small"
                   onClick={() => setEditingAdmin(admin)}
                   disabled={deleteMutation.isPending}
                 >
                   <EditIcon fontSize="small" />
                 </IconButton>
-                <IconButton 
+                <IconButton
                   size="small"
                   onClick={() => handleDelete(admin)}
                   disabled={deleteMutation.isPending}
                 >
                   <DeleteIcon fontSize="small" />
                 </IconButton>
-              </div>
+              </div>}
             </div>
           ))
         ) : (
@@ -172,9 +173,9 @@ export default function AdminsList({ restaurantId, admins }: {
           admin={editingAdmin}
           onClose={() => setEditingAdmin(null)}
           onSubmit={(data) => {
-            updateMutation.mutate({ 
-              adminId: editingAdmin.id, 
-              data 
+            updateMutation.mutate({
+              adminId: editingAdmin.id,
+              data
             });
           }}
           isLoading={updateMutation.isPending}

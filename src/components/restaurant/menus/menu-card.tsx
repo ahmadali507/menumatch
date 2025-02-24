@@ -121,7 +121,7 @@ export default function MenuCard({ menu }: MenuCardProps) {
           </Box>
         }
       />
-     
+
 
       <Divider />
 
