@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Box, Container, Fade } from '@mui/material';
+import { Box, Container, Fade, useTheme } from '@mui/material';
 import { Menu, RestaurantType } from '@/types';
 import PublicMenuHeader from "./public-menu-header"
 import PublicMenuSection from "./public-menu-section";
@@ -11,6 +11,7 @@ export default function PublicMenuView({ menu, restaurant }: {
   menu: Menu,
   restaurant: RestaurantType
 }) {
+  const theme = useTheme();
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
 
   // Get all unique labels
@@ -25,6 +26,20 @@ export default function PublicMenuView({ menu, restaurant }: {
 
       <Box className="min-h-screen">
         <PublicMenuHeader restaurant={restaurant} menu={menu} />
+        {menu.promoContent &&
+          <Container maxWidth="lg" sx={{ pb: 4 }}>
+            <Box
+              className="quill-preview"
+              dangerouslySetInnerHTML={{
+                __html: menu.promoContent
+              }}
+              sx={{
+                color: theme.palette.mode === 'dark' ? 'white' : 'black',
+                width: '100%'
+              }}
+            />
+          </Container>
+        }
         <ThemeSwitcher />
 
         <Container maxWidth="lg" className="pb-8">

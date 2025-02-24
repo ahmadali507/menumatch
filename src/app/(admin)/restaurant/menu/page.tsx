@@ -26,7 +26,7 @@ export default async function RestaurantMenuPage() {
 
   const { success, menus } = await getRestaurantMenus(user?.restaurantId as string);
 
-  console.log(menus);
+  // console.log(menus);
 
   if (!success) {
     return <div>Failed to fetch menus. An error occured</div>

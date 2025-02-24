@@ -18,7 +18,8 @@ export default function MenuStats({ menu }: { menu: Menu }) {
             : <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <EventIcon fontSize="small" color="action" />
               <Typography variant="body2">
-                {format(menu.startDate as Date, "EEEE, MMMM d, yyyy")}
+                {/* {menu.startDate ? format(menu.startDate as Date, "EEEE, MMMM d, yyyy") : "Not Set"} */}
+                {/* {menu.startDate?.toLocaleDateString()} */}
               </Typography>
             </Box>}
         </Stack>
@@ -35,7 +36,8 @@ export default function MenuStats({ menu }: { menu: Menu }) {
             : <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <EventIcon fontSize="small" color="action" />
               <Typography variant="body2">
-                {format(menu?.endDate as Date, "EEEE, MMMM d, yyyy")}
+                {/* {menu.endDate ? format(menu.endDate as Date, "EEEE, MMMM d, yyyy") : "Not Set"} */}
+                {/* {menu.endDate?.toLocaleDateString()} */}
               </Typography>
             </Box>}
         </Stack>
@@ -48,7 +50,8 @@ export default function MenuStats({ menu }: { menu: Menu }) {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <EventIcon fontSize="small" color="action" />
             <Typography variant="body2">
-              {format(menu.createdAt as Date, "EEEE, MMMM d, yyyy")}
+              {/* {format(menu.createdAt as Date, "EEEE, MMMM d, yyyy")} */}
+              {/* {JSON.stringify(menu.createdAt)} */}
             </Typography>
           </Box>
         </Stack>

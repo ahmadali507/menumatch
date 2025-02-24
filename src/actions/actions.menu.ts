@@ -303,13 +303,13 @@ export const addMenuSectionItem = async (menuId: string, sectionId: string, item
     currentSections[sectionIndex].items.push({
       ...item,
       id: crypto.randomUUID(),
-      createdAt: new Date().toString()// Changed from new Date()
+      createdAt: new Date()// Changed from new Date()
     })
 
     // Update the menu document with the modified sections array
     await menuRef.update({
       sections: currentSections,
-      updatedAt: new Date().toString() // Changed from new Date()
+      updatedAt: new Date() // Changed from new Date()
     });
 
 
@@ -344,7 +344,7 @@ export const deleteMenuSection = async (menuId: string, sectionId: string) => {
 
     await menuRef.update({
       sections: currentSections,
-      updatedAt: new Date().toString() // Changed from new Date()
+      updatedAt: new Date() // Changed from new Date()
     });
 
 
@@ -403,7 +403,7 @@ export const deleteMenuItem = async (menuId: string, sectionId: string, itemId: 
 
     await menuRef.update({
       sections: currentSections,
-      updatedAt: new Date().toString() // Changed from new Date()
+      updatedAt: new Date() // Changed from new Date()
     });
 
 
@@ -505,7 +505,7 @@ export const updateMenuSectionName = async (menuId: string, sectionId: string, n
 
     await menuRef.update({
       sections: currentSections,
-      updatedAt: new Date().toString(),
+      updatedAt: new Date(),
     });
 
     // Format the updated section before returning
@@ -554,7 +554,7 @@ export const updateSectionItem = async (menuId: string, sectionId: string, itemI
       ...data,
       id: itemId,
       createdAt: currentSections[sectionIndex].items[itemIndex].createdAt, // Preserve original creation date
-      updatedAt: new Date().toString(), // Add update timestamp
+      updatedAt: new Date(), // Add update timestamp
     };
 
     // Update the item in sections array
@@ -612,7 +612,7 @@ export const reorderItems = async (menuId: string, sectionId: string, reorderedL
     // Update the menu document with the new sections array
     await menuRef.update({
       sections: currentSections,
-      updatedAt: new Date().toString()
+      updatedAt: new Date()
     });
 
     // Get the updated menu data
@@ -656,13 +656,13 @@ export const reorderSections = async (menuId: string, reorderedList: MenuSection
     // update hte menu document with the reordered Sections... 
     await menuRef.update({
       sections: reorderedList,
-      updatedAt: new Date().toString()
+      updatedAt: new Date()
     });
 
     // Format the sections for response
     const formattedSections = reorderedList.map(section => ({
       ...section,
-      createdAt: new Date().toString()
+      createdAt: new Date()
     }));
 
     revalidatePath(`/restaurant/menu/${menuId}`);
@@ -676,3 +676,35 @@ export const reorderSections = async (menuId: string, reorderedList: MenuSection
     return { success: false, error: (error as Error).message }
   }
 }
+
+export const addMenuPromo = async (menuId: string, content: string) => {
+  await initAdmin();
+  const firestore = getFirestore();
+  const restaurantId = await getRestaurantIdForAdmin();
+
+  try {
+    const menuRef = firestore
+      .collection("restaurants")
+      .doc(restaurantId)
+      .collection("menus")
+      .doc(menuId);
+
+    const menuDoc = await menuRef.get();
+    if (!menuDoc.exists) {
+      throw new Error("Menu not found");
+    }
+
+    await menuRef.update({
+      promoContent: content,
+      updatedAt: new Date(),
+    } satisfies Pick<Menu, "promoContent" | "updatedAt">);
+
+    revalidatePath(`/restaurant/menu/${menuId}`);
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: (error as Error).message
+    };
+  }
+};

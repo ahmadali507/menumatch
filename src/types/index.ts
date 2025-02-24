@@ -24,7 +24,7 @@ export type RestaurantType = {
 }
 
 export type resAdminType = {
-  id: string, 
+  id: string,
   restaurantId: string,
   name: string,
   email: string,
@@ -46,6 +46,7 @@ export interface Menu {
   id: string;
   name: string;
   availabilityType: 'indefinite' | 'custom' | 'ramadan';
+  promoContent?: string;
   startDate?: Date;  // Optional since indefinite menus don't have dates
   endDate?: Date;    // Optional since indefinite menus don't have dates
   sections: MenuSection[];

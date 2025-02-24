@@ -1,0 +1,150 @@
+/* Quill Container */
+.quill {
+  height: calc(100% - 30px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Toolbar Styles */
+.ql-toolbar {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.ql-container {
+  font-family: inherit !important;
+  flex: 1;
+  font-size: 1rem;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.ql-editor {
+  min-height: 100%;
+  padding: 16px;
+}
+
+/* Dark mode adjustments */
+[data-mui-color-scheme="dark"] .ql-toolbar {
+  background-color: var(--mui-palette-background-paper);
+}
+
+[data-mui-color-scheme="dark"] .ql-container {
+  background-color: var(--mui-palette-background-paper);
+}
+
+[data-mui-color-scheme="dark"] .ql-toolbar .ql-stroke {
+  stroke: white !important;
+}
+
+[data-mui-color-scheme="dark"] .ql-toolbar .ql-fill {
+  fill: white !important;
+}
+
+[data-mui-color-scheme="dark"] .ql-toolbar .ql-picker {
+  color: white !important;
+}
+
+[data-mui-color-scheme="dark"] .ql-editor {
+  color: var(--mui-palette-text-primary);
+}
+
+/* Picker Dropdowns */
+.ql-picker-options {
+  border-color: var(--mui-palette-divider) !important;
+  background-color: var(--mui-palette-background-paper) !important;
+}
+
+[data-mui-color-scheme="dark"] .ql-picker-options {
+  border-color: var(--mui-palette-divider) !important;
+  background-color: var(--mui-palette-background-paper) !important;
+}
+
+/* Active States */
+.ql-active {
+  color: var(--mui-palette-primary-main) !important;
+}
+
+.ql-active .ql-stroke {
+  stroke: var(--mui-palette-primary-main) !important;
+}
+
+.ql-active .ql-fill {
+  fill: var(--mui-palette-primary-main) !important;
+}
+
+/* Add this new section for active format indicators */
+.ql-toolbar button.ql-active,
+.ql-toolbar .ql-picker-label.ql-active,
+.ql-toolbar .ql-picker-item.ql-selected {
+  color: var(--mui-palette-primary-main) !important;
+}
+
+.ql-toolbar button.ql-active .ql-stroke,
+.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
+.ql-toolbar .ql-picker-item.ql-selected .ql-stroke {
+  stroke: var(--mui-palette-primary-main) !important;
+}
+
+.ql-toolbar button.ql-active .ql-fill,
+.ql-toolbar .ql-picker-label.ql-active .ql-fill,
+.ql-toolbar .ql-picker-item.ql-selected .ql-fill {
+  fill: var(--mui-palette-primary-main) !important;
+}
+
+/* Fix for toolbar text and arrows */
+.ql-snow .ql-picker {
+  color: var(--mui-palette-text-primary) !important;
+}
+
+.ql-snow .ql-stroke {
+  stroke: var(--mui-palette-text-primary) !important;
+}
+
+.ql-snow .ql-fill {
+  fill: var(--mui-palette-text-primary) !important;
+}
+
+.ql-snow .ql-picker-label::before {
+  color: var(--mui-palette-text-primary) !important;
+}
+
+/* Hover states */
+.ql-snow .ql-picker:hover .ql-stroke {
+  stroke: var(--mui-palette-primary-main) !important;
+}
+
+.ql-snow .ql-picker:hover .ql-fill {
+  fill: var(--mui-palette-primary-main) !important;
+}
+
+.ql-snow button:hover .ql-stroke {
+  stroke: var(--mui-palette-primary-main) !important;
+}
+
+.ql-snow button:hover .ql-fill {
+  fill: var(--mui-palette-primary-main) !important;
+}
+
+/* Dropdown text color */
+.ql-snow .ql-picker-options .ql-picker-item {
+  color: var(--mui-palette-primary-main) !important;
+}
+
+.ql-snow .ql-picker-options .ql-picker-item:hover {
+  background-color: rgb(234, 233, 233) !important;
+  color: white;
+}
+
+/* Fix dark mode module text colors */
+[data-mui-color-scheme="dark"] .ql-snow .ql-picker-options .ql-picker-item {
+  color: white !important;
+}
+
+[data-mui-color-scheme="dark"] .ql-snow .ql-picker-label {
+  color: white !important;
+}
+
+[data-mui-color-scheme="dark"] .ql-snow .ql-formats span {
+  color: white !important;
+}

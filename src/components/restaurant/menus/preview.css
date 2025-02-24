@@ -1,0 +1,188 @@
+/* Container */
+.quill-preview {
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+/* Headers */
+.quill-preview h1 {
+  font-size: 2em;
+  margin-bottom: 0.35em;
+  /* reduced from 0.75em */
+  font-weight: 600;
+}
+
+.quill-preview h2 {
+  font-size: 1.5em;
+  margin-bottom: 0.3em;
+  /* reduced from 0.75em */
+  font-weight: 600;
+}
+
+.quill-preview h3 {
+  font-size: 1.25em;
+  margin-bottom: 0.25em;
+  /* reduced from 0.75em */
+  font-weight: 600;
+}
+
+.quill-preview h1,
+.quill-preview h2,
+.quill-preview h3 {
+  color: var(--mui-palette-text-primary);
+  font-weight: 600;
+}
+
+/* Paragraphs */
+.quill-preview p {
+  margin-bottom: 0.2em;
+  /* reduced from 1em */
+}
+
+/* Lists */
+.quill-preview ul,
+.quill-preview ol {
+  margin: 0 0 0.1em 1.5em;
+  /* reduced from 1em */
+  padding: 0;
+}
+
+.quill-preview li {
+  margin-bottom: 0.3em;
+  /* reduced from 0.5em */
+}
+
+/* Blockquotes */
+.quill-preview blockquote {
+  border-left: 4px solid var(--mui-palette-primary-main);
+  margin: 1em 0;
+  /* reduced from 1.5em */
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  color: var(--mui-palette-text-primary);
+}
+
+/* Links */
+.quill-preview a {
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.quill-preview a:hover {
+  text-decoration: underline;
+}
+
+/* Text Formatting */
+.quill-preview strong {
+  font-weight: 600;
+}
+
+.quill-preview em {
+  font-style: italic;
+}
+
+.quill-preview u {
+  text-decoration: underline;
+}
+
+.quill-preview s {
+  text-decoration: line-through;
+}
+
+/* Lists Specific */
+.quill-preview ul {
+  list-style-type: disc;
+}
+
+.quill-preview ol {
+  list-style-type: decimal;
+}
+
+.quill-preview ul ul,
+.quill-preview ol ul {
+  list-style-type: circle;
+}
+
+/* Indentation */
+.quill-preview .ql-indent-1 {
+  margin-left: 2em;
+}
+
+.quill-preview .ql-indent-2 {
+  margin-left: 4em;
+}
+
+.quill-preview .ql-indent-3 {
+  margin-left: 6em;
+}
+
+/* Colors */
+.quill-preview .ql-color-white {
+  color: #ffffff;
+}
+
+.quill-preview .ql-bg-black {
+  background-color: #000000;
+}
+
+/* Dark mode adjustments */
+[data-mui-color-scheme="dark"] .quill-preview blockquote {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Spacing between elements */
+.quill-preview *+h1,
+.quill-preview *+h2,
+.quill-preview *+h3 {
+  margin-top: 1em;
+  /* reduced from 1.5em */
+}
+
+/* Images if needed */
+.quill-preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 0.75em 0;
+  /* reduced from 1em */
+}
+
+/* Dark mode specific adjustments */
+[data-mui-color-scheme="dark"] .quill-preview,
+[data-mui-color-scheme="dark"] .quill-preview h1,
+[data-mui-color-scheme="dark"] .quill-preview h2,
+[data-mui-color-scheme="dark"] .quill-preview h3,
+[data-mui-color-scheme="dark"] .quill-preview p,
+[data-mui-color-scheme="dark"] .quill-preview li,
+[data-mui-color-scheme="dark"] .quill-preview blockquote {
+  color: red;
+}
+
+/* Light mode specific adjustments */
+[data-mui-color-scheme="light"] .quill-preview,
+[data-mui-color-scheme="light"] .quill-preview h1,
+[data-mui-color-scheme="light"] .quill-preview h2,
+[data-mui-color-scheme="light"] .quill-preview h3,
+[data-mui-color-scheme="light"] .quill-preview p,
+[data-mui-color-scheme="light"] .quill-preview li,
+[data-mui-color-scheme="light"] .quill-preview blockquote {
+  color: purple;
+}
+
+/* Links - adjust for better contrast in both modes */
+[data-mui-color-scheme="dark"] .quill-preview a {
+  color: var(--mui-palette-primary-light);
+}
+
+[data-mui-color-scheme="light"] .quill-preview a {
+  color: var(--mui-palette-primary-main);
+}
+
+/* Blockquote background adjustments */
+[data-mui-color-scheme="dark"] .quill-preview blockquote {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-mui-color-scheme="light"] .quill-preview blockquote {
+  background-color: rgba(0, 0, 0, 0.05);
+}

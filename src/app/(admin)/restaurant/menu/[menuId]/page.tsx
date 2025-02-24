@@ -4,6 +4,8 @@ import MenuOverview from "@/components/restaurant/menus/menu-overview";
 import MenuStats from "@/components/restaurant/menus/menu-stats";
 import MenuSectionsList from "@/components/restaurant/menus/menu-sections-list";
 import { MenuProvider } from "@/context/menuContext";
+import { unstable_cache } from "next/cache";
+import AddPromotionalContent from "@/components/restaurant/menus/add-promotional-content";
 
 export const metadata = {
   title: "Menu Details",
@@ -16,7 +18,7 @@ export default async function SingleMenuPage({ params }: { params: Promise<{ men
   const restaurantId = await getRestaurantIdForAdmin();
   if (!restaurantId) return null;
 
-  const { success, menu } = await getMenu(restaurantId, menuId);
+  const { success, menu } = await unstable_cache(getMenu)(restaurantId, menuId);
 
 
   if (!success || !menu) {
@@ -32,7 +34,10 @@ export default async function SingleMenuPage({ params }: { params: Promise<{ men
     <MenuProvider initialMenu={menu}>
       <section className="space-y-6">
         <MenuOverview menu={menu} />
-        <MenuStats menu={menu} />
+        <div className="flex justify-between items-center">
+          <MenuStats menu={menu} />
+          <AddPromotionalContent menuId={menu?.id} initialContent={menu?.promoContent} />
+        </div>
         <MenuSectionsList restaurantId={restaurantId} sections={menu.sections} menuId={menu?.id} />
       </section>
     </MenuProvider>
