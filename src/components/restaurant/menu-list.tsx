@@ -19,7 +19,7 @@ export default function MenuList({ restaurantId, menus }: {
           className="p-4 hover:shadow-xl transition-all duration-200"
           sx={{
             borderLeft: '4px solid',
-            borderLeftColor: new Date() >= new Date(menu.startDate) && new Date() <= new Date(menu.endDate)
+            borderLeftColor: menu.endDate && menu.startDate && new Date() >= new Date(menu.startDate) && new Date() <= new Date(menu.endDate)
               ? green[400]
               : amber[700],
           }}
@@ -42,7 +42,7 @@ export default function MenuList({ restaurantId, menus }: {
                 </div>
               </div>
             </div>
-            <Chip
+            {menu.endDate && menu.startDate && <Chip
               size="small"
               label={new Date() >= new Date(menu.startDate) && new Date() <= new Date(menu.endDate) ? 'Active' : 'Inactive'}
               color={new Date() >= new Date(menu.startDate) && new Date() <= new Date(menu.endDate) ? 'success' : 'error'}
@@ -52,7 +52,7 @@ export default function MenuList({ restaurantId, menus }: {
                   textShadow: '0 1px 2px rgba(0,0,0,0.2)'
                 }
               }}
-            />
+            />}
           </div>
 
           <div className="flex justify-end gap-2">

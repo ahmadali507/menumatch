@@ -124,7 +124,7 @@ const convertHtmlToText = (html: string): string => {
       selectors: [
         { selector: 'img', format: 'skip' },
         { selector: 'a', options: { ignoreHref: true } },
-        { 
+        {
           selector: 'p',
           format: 'inline' // Use inline format instead of paragraph
         }
@@ -143,15 +143,18 @@ export function MenuPDFTemplate({ menu }: { menu: MenuType }) {
         <View style={styles.header}>
           <Text style={styles.menuTitle}>{menu.name}</Text>
           <Text style={styles.menuDates}>
-            Available from {new Date(menu.startDate).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })} to {new Date(menu.endDate).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
+            {menu.availabilityType === "indefinite" ?
+              "Always Available" :
+              `Available from ${new Date(menu.startDate!).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })} to ${new Date(menu.endDate!).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}`}
+
           </Text>
         </View>
 

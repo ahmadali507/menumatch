@@ -4,8 +4,8 @@ export const dummyMenus: Menu[] = [
   {
     id: "1",
     name: "Lunch Special",
-    startDate: "2024-03-01T11:00:00Z" as string,
-    endDate: "2024-12-31T15:00:00Z" as string,
+    startDate: new Date("2024-01-01T11:00:00Z"),
+    endDate: new Date("2024-12-31T15:00:00Z"),
     sections: [
       {
         id: "adfads",
@@ -49,13 +49,17 @@ export const dummyMenus: Menu[] = [
           }
         ]
       }
-    ]
+    ],
+    availabilityType: "indefinite",
+    status: "active",
+    createdAt: new Date(),
+    updatedAt: new Date()
   },
   {
     id: "2",
     name: "Dinner Menu",
-    startDate: "2024-03-01T17:00:00Z",
-    endDate: "2024-12-31T23:00:00Z",
+    startDate: new Date("2024-03-01T17:00:00Z"),
+    endDate: new Date("2024-12-31T23:00:00Z"),
     sections: [
       {
         id: "adfad",
@@ -105,13 +109,17 @@ export const dummyMenus: Menu[] = [
           }
         ]
       }
-    ]
+    ],
+    availabilityType: "indefinite",
+    status: "active",
+    createdAt: new Date(),
+    updatedAt: new Date()
   },
   {
     id: "3",
     name: "Weekend Brunch",
-    startDate: "2024-01-01T09:00:00Z",
-    endDate: "2024-02-29T14:00:00Z", // Inactive menu
+    startDate: new Date("2024-01-01T09:00:00Z"),
+    endDate: new Date("2024-12-31T14:00:00Z"),
     sections: [
       {
         id: "412241",
@@ -129,7 +137,11 @@ export const dummyMenus: Menu[] = [
           }
         ]
       }
-    ]
+    ],
+    availabilityType: "indefinite",
+    status: "active",
+    createdAt: new Date(),
+    updatedAt: new Date()
   }
 ]
 

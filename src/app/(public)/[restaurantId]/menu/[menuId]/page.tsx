@@ -3,7 +3,7 @@ import { getRestaurantData } from "@/actions/actions.admin";
 import PublicMenuView from "@/components/public/menu/public-menu-view";
 // import { dummyMenu, dummyRestaurant } from "@/lib/dummy";
 
-export default async function PublicMenuPage({ params }: { params: { restaurantId: string, menuId: string } }) {
+export default async function PublicMenuPage({ params }: { params: Promise<{ restaurantId: string, menuId: string }> }) {
   const restaurantId = (await params).restaurantId;
   const menuId = (await params).menuId;
 

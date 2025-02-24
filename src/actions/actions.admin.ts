@@ -294,7 +294,7 @@ export const deleteRestaurant = async (restaurantId: string, idToken: string) =>
 
 ///////////////////////////// RESTAURANT ADMIN CREATION AND FETCHING /////////////////////////
 
-export const addRestaurantAdmin = async (data: resAdminType, idToken: string) => {
+export const addRestaurantAdmin = async (data: Omit<resAdminType, "id">, idToken: string) => {
   await initAdmin();
   const auth = getAuth();
   const firestore = getFirestore();
