@@ -81,7 +81,6 @@ export const itemSchema = z.object({
     .optional().default(""),
 
   price: z.number()
-    .positive("Price must be greater than 0")
     .max(99999.99, "Price must not exceed 99,999.99")
     .optional().default(0),
 

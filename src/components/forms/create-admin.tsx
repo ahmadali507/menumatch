@@ -143,6 +143,7 @@ export default function CreateAdminForm() {
                     onClick={() => setShowPassword(!showPassword)}
                     edge="end"
                     sx={{ border: "none" }}
+                    tabIndex={-1}
                   >
                     {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                   </IconButton>
@@ -168,6 +169,7 @@ export default function CreateAdminForm() {
                     edge="end"
                     size="small"
                     sx={{ border: "none" }}
+                    tabIndex={-1}
                   >
                     {showConfirmPassword ? (
                       <VisibilityOffIcon />

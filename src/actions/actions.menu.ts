@@ -116,7 +116,16 @@ export const getRestaurantMenus = async (restaurantId: string) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sections: doc.data().sections.map((section: any) => ({
         ...section,
-        createdAt: formatFirebaseTimestamp(section.createdAt)
+        createdAt: formatFirebaseTimestamp(section.createdAt),
+        items: section.items.map((item: MenuItem) => {
+          return {
+            ...item,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            createdAt: formatFirebaseTimestamp(item.createdAt as any),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            updatedAt: formatFirebaseTimestamp(item.updatedAt as any)
+          }
+        })
       })
       ),
       createdAt: formatFirebaseTimestamp(doc.data().createdAt),

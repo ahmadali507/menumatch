@@ -6,7 +6,6 @@ export function formatFirebaseTimestamp(timestamp: firestore.Timestamp) {
   return new Date(timestamp?.seconds * 1000)
 }
 
-
 // will test this later at one moment
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SerializableData = { [key: string]: any } | any[];

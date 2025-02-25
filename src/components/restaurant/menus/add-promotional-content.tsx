@@ -57,15 +57,16 @@ export default function AddPromotionalContent({ menuId, initialContent }: {
     mutationFn: async (content: string) => {
       const result = await addMenuPromo(menuId, content);
       if (!result.success) throw new Error(result.error);
-      setContent(content)
-      return result;
+      return content;
     },
-    onSuccess: () => {
+    onSuccess: (content: string) => {
       showToast(
         "Promotional content added successfully",
         "success"
       );
+      setContent(content)
       handleClose();
+
     },
     onError: (error) => {
       showToast(error.message || "Failed to add promotional content", "error");
@@ -74,7 +75,6 @@ export default function AddPromotionalContent({ menuId, initialContent }: {
 
   const handleClose = () => {
     setOpen(false);
-    setContent('');
   };
 
   const handleSave = () => {
@@ -149,7 +149,7 @@ export default function AddPromotionalContent({ menuId, initialContent }: {
                       __html: content
                     }}
                     style={{
-                      color: theme.palette.mode === 'dark' ? 'white' : 'black'
+                      color: theme.palette.mode === 'dark' ? 'white' : 'black',
                     }}
                   />
                 ) : (
