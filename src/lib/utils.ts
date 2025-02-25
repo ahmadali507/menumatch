@@ -11,8 +11,8 @@ export const IMAGE_CONFIG = {
   logo: {
     maxSize: 2 * 1024 * 1024, // 2MB
     acceptedFormats: ['image/jpeg', 'image/png', 'image/webp'],
-    minWidth: 100,
-    minHeight: 100,
+    minWidth: 200,
+    minHeight: 200,
   },
   background: {
     maxSize: 3 * 1024 * 1024, // 5MB
@@ -23,8 +23,8 @@ export const IMAGE_CONFIG = {
   item: {
     maxSize: 2 * 1024 * 1024, // 2MB
     acceptedFormats: ['image/jpeg', 'image/png', 'image/webp'],
-    minWidth: 100,
-    minHeight: 100,
+    minWidth: 200,
+    minHeight: 200,
   }
 };
 

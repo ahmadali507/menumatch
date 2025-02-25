@@ -15,6 +15,8 @@ export const useImageUpload = () => {
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: ImageType) => {
     const file = e.target.files?.[0] || null;
+    e.target.value = ''; // Reset the input to allow the same file to be selected again
+
     if (file) {
       const validation = await validateImage(file, type);
       if (!validation.valid) {
@@ -24,6 +26,11 @@ export const useImageUpload = () => {
 
       const reader = new FileReader();
       reader.onloadend = () => {
+        // Revoke any previous object URL to prevent memory leaks
+        if (images[type].preview) {
+          URL.revokeObjectURL(images[type].preview);
+        }
+
         setCurrentImage({
           type,
           url: reader.result as string
@@ -41,6 +48,12 @@ export const useImageUpload = () => {
       .then(res => res.blob())
       .then(blob => {
         const file = new File([blob], `${currentImage.type}.jpg`, { type: 'image/jpeg' });
+
+        // Revoke the old preview URL if it exists
+        if (images[currentImage.type].preview) {
+          URL.revokeObjectURL(images[currentImage.type].preview!);
+        }
+
         setImages(prev => ({
           ...prev,
           [currentImage.type]: {
@@ -52,6 +65,11 @@ export const useImageUpload = () => {
   };
 
   const handleDeleteImage = (type: ImageType) => {
+    // Revoke the object URL to prevent memory leaks
+    if (images[type].preview) {
+      URL.revokeObjectURL(images[type].preview);
+    }
+
     setImages(prev => ({
       ...prev,
       [type]: { file: null, preview: null }

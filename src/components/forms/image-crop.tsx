@@ -1,7 +1,7 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
-import ReactCrop, { Crop } from 'react-image-crop';
+import ReactCrop, { Crop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface ImageCropDialogProps {
   open: boolean;
@@ -19,44 +19,144 @@ export default function ImageCropDialog({
   aspectRatio,
 }: ImageCropDialogProps) {
   const [crop, setCrop] = useState<Crop>({
-    unit: '%',
-    width: aspectRatio >= 1 ? 90 : 90 * aspectRatio,
-    height: aspectRatio >= 1 ? 90 / aspectRatio : 90,
+    unit: 'px',
+    width: 200,
+    height: 200,
     x: 5,
     y: 5,
   });
   const [imageRef, setImageRef] = useState<HTMLImageElement | null>(null);
+  const [completedCrop, setCompletedCrop] = useState<Crop | null>(null);
+  const cropContainerRef = useRef<HTMLDivElement>(null);
+
+  // This function centers the initial crop
+  const centerAspectCrop = useCallback(
+    (mediaWidth: number, mediaHeight: number, aspect: number) => {
+      return centerCrop(
+        makeAspectCrop(
+          {
+            unit: 'px',
+            width: 200,
+            height: 200,
+            x: 5,
+            y: 5,
+          },
+          aspect,
+          mediaWidth,
+          mediaHeight
+        ),
+        mediaWidth,
+        mediaHeight
+      );
+    },
+    []
+  );
+
+  // Function to handle image load
+  const onImageLoad = useCallback(
+    (e: React.SyntheticEvent<HTMLImageElement>) => {
+      const { width, height } = e.currentTarget;
+      setImageRef(e.currentTarget);
+
+      // Center and create the initial crop with proper aspect ratio
+      const newCrop = centerAspectCrop(width, height, aspectRatio);
+      setCrop(newCrop);
+      // Immediately set the completed crop as well - this is the key workaround
+      setCompletedCrop(newCrop);
+    },
+    [aspectRatio, centerAspectCrop]
+  );
+
+  // Function to simulate crop box interaction
+  const simulateCropBoxInteraction = useCallback(() => {
+    if (cropContainerRef.current) {
+      const cropBox = cropContainerRef.current.querySelector('.ReactCrop__crop-selection');
+      if (cropBox) {
+        // Create and dispatch mouse events
+        const clickEvent = new MouseEvent('mousedown', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        });
+        cropBox.dispatchEvent(clickEvent);
+
+        // Small timeout before dispatching mouseup
+        setTimeout(() => {
+          const releaseEvent = new MouseEvent('mouseup', {
+            bubbles: true,
+            cancelable: true,
+            view: window
+          });
+          cropBox.dispatchEvent(releaseEvent);
+        }, 50);
+      }
+    }
+  }, []);
+
+  // Effect to trigger crop box interaction after image load
+  useEffect(() => {
+    if (open && imageRef && crop) {
+      const timer = setTimeout(() => {
+        simulateCropBoxInteraction();
+      }, 100); // Small delay to ensure the crop box is rendered
+
+      return () => clearTimeout(timer);
+    }
+  }, [open, imageRef, crop, simulateCropBoxInteraction]);
+
+  // Reset when image URL changes
+  // useEffect(() => {
+  //   if (!imageUrl) {
+  //     setCrop({
+  //       unit: '%',
+  //       width: 90,
+  //       height: 90,
+  //       x: 5,
+  //       y: 5,
+  //     });
+  //     setCompletedCrop(null);
+  //   }
+  // }, [imageUrl]);
+
+  // Make sure to trigger completedCrop when the dialog opens
+  useEffect(() => {
+    if (open && imageRef && crop) {
+      setCompletedCrop(crop);
+    }
+  }, [open, imageRef, crop]);
+
+  console.log("complted crop", completedCrop)
 
   const getCroppedImg = () => {
-    if (!imageRef) return;
+    if (!imageRef || !completedCrop) return;
+
+    console.log(completedCrop)
 
     const canvas = document.createElement('canvas');
     const scaleX = imageRef.naturalWidth / imageRef.width;
     const scaleY = imageRef.naturalHeight / imageRef.height;
 
-    // Set canvas size to match the cropped area
-    canvas.width = crop.width * scaleX;
-    canvas.height = crop.height * scaleY;
+    canvas.width = completedCrop.width * scaleX;
+    canvas.height = completedCrop.height * scaleY;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     ctx.drawImage(
       imageRef,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
+      completedCrop.x * scaleX,
+      completedCrop.y * scaleY,
+      completedCrop.width * scaleX,
+      completedCrop.height * scaleY,
       0,
       0,
       canvas.width,
       canvas.height
     );
 
+    // Convert canvas to blob and pass to the callback
     canvas.toBlob((blob) => {
       if (blob) {
-        // Clean up previous ObjectURL if it exists
-        URL.revokeObjectURL(imageUrl);
         const croppedImageUrl = URL.createObjectURL(blob);
         onCropComplete(croppedImageUrl);
         onClose();
@@ -104,29 +204,36 @@ export default function ImageCropDialog({
         p: 3,
         overflow: 'hidden'
       }}>
-        <div className="relative w-full h-full flex items-center justify-center">
-          <ReactCrop
-            crop={crop}
-            onChange={(c) => setCrop(c)}
-            aspect={aspectRatio}
-            className="flex items-center justify-center max-h-full"
-            style={{
-              maxWidth: '100%',
-              maxHeight: '100%'
-            }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={imageUrl}
-              onLoad={(e) => setImageRef(e.target as HTMLImageElement)}
-              alt="Crop preview"
+        <div className="relative w-full h-full flex items-center justify-center" ref={cropContainerRef}>
+          {imageUrl && (
+            <ReactCrop
+              crop={crop}
+              onChange={(c) => {
+                setCrop(c);
+                // Also update completedCrop on any change - part of the workaround
+                setCompletedCrop(c);
+              }}
+              onComplete={(c) => setCompletedCrop(c)}
+              aspect={aspectRatio}
+              className="flex items-center justify-center max-h-full"
               style={{
                 maxWidth: '100%',
-                maxHeight: 'calc(90vh - 200px)',
-                objectFit: 'contain'
+                maxHeight: '100%'
               }}
-            />
-          </ReactCrop>
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imageUrl}
+                alt="Crop preview"
+                onLoad={onImageLoad}
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: 'calc(90vh - 200px)',
+                  objectFit: 'contain'
+                }}
+              />
+            </ReactCrop>
+          )}
         </div>
       </DialogContent>
 
@@ -147,6 +254,7 @@ export default function ImageCropDialog({
           variant="contained"
           color="primary"
           sx={{ ml: 2 }}
+          disabled={!imageRef || !imageUrl || !completedCrop}
         >
           Apply Crop
         </Button>

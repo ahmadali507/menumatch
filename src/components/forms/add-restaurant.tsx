@@ -34,9 +34,9 @@ export default function AddRestaurantForm() {
   } = useImageUpload();
 
   const mutation = useMutation({
-    mutationFn: async (data: TAddRestaurantSchema & { 
-      logoFile?: File | null; 
-      backgroundFile?: File | null 
+    mutationFn: async (data: TAddRestaurantSchema & {
+      logoFile?: File | null;
+      backgroundFile?: File | null
     }) => {
       const user = auth.currentUser;
       if (!user) {
@@ -47,7 +47,7 @@ export default function AddRestaurantForm() {
       // Create FormData to send files
       const formData = new FormData();
       formData.append('data', JSON.stringify(data));
-      
+
       if (data.logoFile) {
         formData.append('logo', data.logoFile);
       }
