@@ -15,6 +15,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  IconButton,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import Link from "next/link";
@@ -23,6 +24,8 @@ import AddRestaurant from "@/components/add-restaurant";
 import { RestaurantType } from "@/types";
 import EditRestaurant from "../forms/edit-restaurant-form";
 import DeleteRestaurant from "../delete-restaurant";
+import FilterListIcon from '@mui/icons-material/FilterList';
+import FilterSheet from "../filter-sheet";
 
 // Types
 type SortField = "name" | "orders" | "city" | "cuisine";
@@ -40,6 +43,7 @@ export default function RestaurantsTable({
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
 
   // console.log(allRestaurants);
 
@@ -91,11 +95,27 @@ export default function RestaurantsTable({
 
   return (
     <SectionLayout
-      title="Restaurant Management"
-      description="Lists all restaurants to manage them"
-      endButton={<AddRestaurant />}
+      title="Restaurants"
+      description="Manage all restaurants from here"
+      endButton={
+        <>
+          <IconButton
+            onClick={() => setFilterSheetOpen(true)}
+            sx={{
+              color: 'inherit',
+              display: { md: 'none' }
+            }}
+          >
+            <FilterListIcon />
+          </IconButton>
+          <div className="hidden md:block">
+            <AddRestaurant />
+          </div>
+        </>
+      }
     >
-      <div className="flex w-full gap-4 items-center bg-opacity-50 backdrop-blur-sm mb-2">
+      {/* Desktop Filters */}
+      <div className="hidden md:flex w-full gap-4 items-center bg-opacity-50 backdrop-blur-sm mb-2">
         <TextField
           size="small"
           placeholder="Search restaurants..."
@@ -147,6 +167,25 @@ export default function RestaurantsTable({
           </Select>
         </FormControl>
       </div>
+
+      {/* Mobile Filter Sheet */}
+      <FilterSheet
+        open={filterSheetOpen}
+        onClose={() => setFilterSheetOpen(false)}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        locationFilter={locationFilter}
+        setLocationFilter={setLocationFilter}
+        cityFilter={cityFilter}
+        setCityFilter={setCityFilter}
+        sortField={sortField}
+        sortOrder={sortOrder}
+        onSortChange={(value) => {
+          const [field, order] = value.split("-");
+          setSortField(field as SortField);
+          setSortOrder(order as SortOrder);
+        }}
+      />
 
       <div className="flex flex-col">
         <div className="h-[70vh] overflow-auto">
