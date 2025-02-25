@@ -62,21 +62,27 @@ export default function RestaurantAdminPage() {
 
 async function RestaurantContent() {
   return (
-    <section className="pb-6 space-y-6">
+    <section className="pb-6 space-y-4 sm:space-y-6 sm:px-6 lg:px-8">
       <PageTitle title="Restaurant Overview" description="This is an overview of performance of your restaurant">
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 mt-4 sm:mt-0">
           <Button
             variant="contained"
             color="primary"
             startIcon={<EditRestaurantIcon />}
+            fullWidth={false}
+            size="medium"
+            className="text-sm sm:text-base whitespace-nowrap"
           >
             Edit Restaurant
           </Button>
-          <Link href={routes.menu}>
+          <Link href={routes.menu} className="w-full sm:w-auto">
             <Button
               variant="outlined"
               color="success"
               startIcon={<RestaurantMenuIcon />}
+              fullWidth={true}
+              size="medium"
+              className="text-sm sm:text-base whitespace-nowrap w-full sm:w-auto"
             >
               Manage Menu
             </Button>
@@ -85,10 +91,12 @@ async function RestaurantContent() {
       </PageTitle>
 
       {/* Overview Cards */}
-      <Stats />
+      <div className="px-2 sm:px-0">
+        <Stats />
+      </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-2 sm:px-0">
         <MenuPerformance />
         <TopSellingItems />
         <RecentUpdates updates={menuUpdates} />

@@ -1,22 +1,17 @@
-import { Typography } from "@mui/material";
-import { PropsWithChildren } from "react";
-
-interface PageTitleProps extends PropsWithChildren {
+interface PageTitleProps {
   title: string;
-  description?: string;
+  description: string;
+  children?: React.ReactNode;
 }
 
 export default function PageTitle({ title, description, children }: PageTitleProps) {
-  return <div className="flex justify-between items-center mb-6">
-    <div>
-      <Typography component="h1" variant="h4">
-        {title}
-      </Typography>
-      {description && <Typography component="p" color="text.secondary">
-        {description}
-      </Typography>}
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="space-y-1">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{title}</h1>
+        <p className="text-sm sm:text-base text-gray-500">{description}</p>
+      </div>
+      {children}
     </div>
-
-    {children}
-  </div>
+  );
 }
