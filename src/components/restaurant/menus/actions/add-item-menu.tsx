@@ -8,7 +8,8 @@ export default function AddItemToMenu({ menuId, sectionId }: { menuId: string, s
       variant="contained"
       startIcon={<AddIcon />}
       size="small"
-      sx={{ ml: 2 }}
+      sx={{ ml: 2, maxWidth: "200px" }}
+
     >
       Add Item
     </Button>

@@ -63,7 +63,7 @@ export default function MenuSection({ menuId, section, selectedLabels }: MenuSec
     return await updateMenuSectionName(menuId, section.id, newName);
     // Add your update logic here
   };
-            
+
   const handleToggle = () => {
     setIsExpanded(!isExpanded);
   };
@@ -112,8 +112,8 @@ export default function MenuSection({ menuId, section, selectedLabels }: MenuSec
 
   const filteredItems = useMemo(() => {
     if (!selectedLabels.length) return section.items;
-    
-    return section.items.filter(item => 
+
+    return section.items.filter(item =>
       selectedLabels.some(label => item.labels?.includes(label))
     );
   }, [section.items, selectedLabels]);
@@ -125,42 +125,76 @@ export default function MenuSection({ menuId, section, selectedLabels }: MenuSec
   return (
     <Card sx={{ pt: 3, px: 3 }} ref={setNodeRef} style={style}>
       <Box display="flex" flexDirection="column" gap={2}>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <div className="flex gap-4 items-center">
-            <DragIndicatorIcon
-              {...attributes}
-              {...listeners}
+        {/* Mobile-first responsive layout */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 2, sm: 0 },
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            justifyContent: 'space-between'
+          }}
+        >
+          {/* Section name and metadata */}
+          <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+            <div className="flex items-center gap-4">
+              <DragIndicatorIcon
+                {...attributes}
+                {...listeners}
+                sx={{
+                  cursor: 'grab',
+                  color: 'text.secondary',
+                  opacity: 0.5,
+                  transition: 'all 0.2s ease-in-out',
+                  '&:hover': {
+                    opacity: 1,
+                    transform: 'scale(1.1)',
+                  }
+                }}
+              />
+              <EditableSectionName
+                sectionId={section.id}
+                name={section.name}
+                onSave={handleSectionNameUpdate}
+              />
+            </div>
+
+            {/* Stats and metadata */}
+            <Box
               sx={{
-                cursor: 'grab',
-                color: 'text.secondary',
-                opacity: 0.5,
-                transition: 'all 0.2s ease-in-out',
-                '&:hover': {
-                  opacity: 1,
-                  transform: 'scale(1.1)',
-                }
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 2,
+                mt: { xs: 1, sm: 0 }
               }}
-            />
-            <EditableSectionName
-              sectionId={section.id}
-              name={section.name}
-              onSave={handleSectionNameUpdate}
-            />
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <FastfoodIcon fontSize="small" color="action" />
-              <Typography variant="body2" color="text.secondary">
-                {section.items.length} items
-              </Typography>
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <FastfoodIcon fontSize="small" color="action" />
+                <Typography variant="body2" color="text.secondary">
+                  {section.items.length} items
+                </Typography>
+              </Box>
+              {section.createdAt && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <EventIcon fontSize="small" color="action" />
+                  <Typography variant="body2" color="text.secondary">
+                    {format(new Date(section?.createdAt as Date), "MMM d, yyyy")}
+                  </Typography>
+                </Box>
+              )}
             </Box>
-            {section.createdAt && <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <EventIcon fontSize="small" color="action" />
-              <Typography variant="body2" color="text.secondary">
-                {format(new Date(section?.createdAt as Date) , "EEEE, MMMM d, yyyy")}
-              </Typography>
-            </Box>}
           </div>
 
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          {/* Action buttons */}
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              alignItems: 'center',
+              width: { xs: '100%', sm: 'auto' },
+              justifyContent: { xs: 'flex-end', sm: 'flex-start' }
+            }}
+          >
             <DeleteSectionItem menuId={menuId} sectionId={section?.id} />
             <AddItemToMenu menuId={menuId} sectionId={section?.id} />
             <IconButton
