@@ -83,13 +83,15 @@ export default function AdminsList({ restaurantId, admins }: {
   };
 
   return (
-    <Card style={{ flexGrow: 1, height: "400px" }}>
-      <div className="flex justify-between items-center mb-6">
-        <Typography variant="h6">
+    <Card className="w-full lg:w-[400px]" sx={{ minHeight: { xs: '300px', lg: '400px' } }}>
+      <div className="flex flex-col sm:flex-row lg:flex-col justify-between items-start sm:items-center lg:items-start gap-4 mb-6">
+        <Typography variant="h6" className="flex items-center">
           <PersonIcon sx={{ marginRight: "10px" }} />
           Restaurant Admins
         </Typography>
-        <AddAdminButtonLink restaurantId={restaurantId} />
+        <div className="w-full sm:w-auto">
+          <AddAdminButtonLink restaurantId={restaurantId} />
+        </div>
       </div>
 
       <div className="h-[300px] overflow-y-auto space-y-4">
@@ -97,7 +99,7 @@ export default function AdminsList({ restaurantId, admins }: {
           admins.map((admin) => (
             <div
               key={admin.id}
-              className="flex items-center justify-between p-3 hover:bg-gray-900/50 rounded-lg transition-colors"
+              className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 hover:bg-gray-900/50 rounded-lg transition-colors gap-3"
             >
               <div className="flex items-center gap-3">
                 <Avatar>{admin.name.charAt(0)}</Avatar>

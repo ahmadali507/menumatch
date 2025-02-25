@@ -15,7 +15,7 @@ export default async function RestaurantContent({
   details: RestaurantType;
 }) {
   return (
-    <div className="flex gap-6 w-full">
+    <div className="flex flex-col lg:flex-row gap-6 w-full">
       <Card style={{ flexGrow: 2 }}>
         {/* Background Image Container */}
         {(details.images?.background || details.images?.logo) && <Box sx={{
@@ -74,14 +74,14 @@ export default async function RestaurantContent({
         </Box>}
 
         {/* Add spacing for logo overflow */}
-        <Box sx={{ mt: 5, px: 3, pb: 3 }}>
+        <Box sx={{ mt: 5, px: { xs: 2, sm: 3 }, pb: 3 }}>
           <RestaurantHeader restaurantId={restaurantId} details={details} />
           <RestaurantStats details={details} />
 
           <Divider className="my-6" />
 
           <div className="pt-4">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
               <Typography variant="h6">Menu Management</Typography>
               <ManageMenusButtonLink />
             </div>
@@ -98,7 +98,7 @@ export default async function RestaurantContent({
               <Typography variant="body1">There are currently no menus</Typography>
               : <Grid container spacing={3}>
                 {details?.menus?.map((menu) => (
-                  <Grid item xs={12} sm={6} key={menu.id}>
+                  <Grid item xs={12} md={6} key={menu.id}>
                     <MenuCard menu={menu} />
                   </Grid>
                 ))}
@@ -107,7 +107,9 @@ export default async function RestaurantContent({
         </Box>
       </Card>
 
-      <AdminsList restaurantId={restaurantId} admins={details.admins} />
+      <div className="w-full lg:w-auto">
+        <AdminsList restaurantId={restaurantId} admins={details.admins} />
+      </div>
     </div>
   );
 }
