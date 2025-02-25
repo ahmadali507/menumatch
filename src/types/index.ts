@@ -1,3 +1,5 @@
+import { LanguageCode } from "@/lib/languages";
+
 export type RestaurantType = {
   name: string,
   id: string,
@@ -57,6 +59,7 @@ export interface Menu {
     url: string;
     createdAt: Date;
   };
+  language?: LanguageCode;
 }
 
 export interface MenuVersion {

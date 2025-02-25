@@ -22,11 +22,11 @@ import { addMenuFormSchema, TAddMenuFormSchema } from "@/lib/schema";
 import { addMenu } from "@/actions/actions.menu";
 import { useUser } from "@/context/userContext";
 import { useMutation } from "@tanstack/react-query";
+import LanguageSelector from '@/components/ui/language-selector';
+import { LanguageCode } from '@/lib/languages';
 
 export default function AddMenuForm() {
-
   const { user } = useUser();
-
   const { showToast } = useToast();
   const router = useRouter();
 
@@ -45,6 +45,7 @@ export default function AddMenuForm() {
       availabilityType: "indefinite",
       startDate: new Date(),
       endDate: new Date(),
+      language: "en" as LanguageCode, // Set default language
     },
   });
 
@@ -68,7 +69,6 @@ export default function AddMenuForm() {
         return;
       }
       reset();
-
       showToast("Menu created successfully", "success");
       router.push('/restaurant/menu');
     },
@@ -78,11 +78,33 @@ export default function AddMenuForm() {
   });
 
   const onSubmit = (data: TAddMenuFormSchema) => {
-    mutation.mutate({ restaurantId: user?.restaurantId as string, data });
+    mutation.mutate({ 
+      restaurantId: user?.restaurantId as string, 
+      data: {
+        ...data,
+        language: data.language as LanguageCode
+      }
+    });
+  };
+
+  // Remove the redundant menuData state since we're using form state
+  const handleLanguageChange = (language: LanguageCode) => {
+    setValue('language', language);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      {/* Language Selector */}
+      <div className="space-y-4">
+        <Typography variant="h6">Menu Language</Typography>
+        <FormControl fullWidth error={!!errors.language}>
+          <FormLabel>Select Language</FormLabel>
+          <LanguageSelector
+            value={watch('language') as LanguageCode}
+            onChange={handleLanguageChange}
+          />
+        </FormControl>
+      </div>
 
       {/* Basic Details */}
       <div className="space-y-4">

@@ -10,14 +10,17 @@ import { formatFirebaseTimestamp } from "@/lib/format";
 import QRCode from 'qrcode';
 import { RAMADAN_DATES } from "@/lib/utils";
 import { getAuth } from "firebase-admin/auth";
+import { LanguageCode } from "@/lib/languages";
 
-// Add restaurantId parameter to the function
-export const addMenu = async ({ restaurantId, data }: { restaurantId: string; data: TAddMenuFormSchema }) => {
+// Update the existing addMenu function
+export const addMenu = async ({ restaurantId, data }: { 
+  restaurantId: string; 
+  data: TAddMenuFormSchema & { language: LanguageCode } 
+}) => {
   await initAdmin();
   const firestore = getFirestore();
 
   try {
-    // Get reference to the specific restaurant
     const restaurantRef = firestore.collection("restaurants").doc(restaurantId);
     if (!(await restaurantRef.get()).exists) {
       return {
@@ -29,6 +32,7 @@ export const addMenu = async ({ restaurantId, data }: { restaurantId: string; da
     let menuData: Omit<Menu, "id"> = {
       name: data.name,
       sections: [],
+      language: data.language, // Add language field
       availabilityType: data.availabilityType,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -63,7 +67,6 @@ export const addMenu = async ({ restaurantId, data }: { restaurantId: string; da
         break;
     }
 
-    // Add menu to the menus subcollection
     const menuRef = await restaurantRef.collection("menus").add(menuData);
 
     revalidatePath("/restaurant/menu");
@@ -73,6 +76,7 @@ export const addMenu = async ({ restaurantId, data }: { restaurantId: string; da
       success: true,
       menuId: menuRef.id
     };
+
   } catch (error) {
     console.error("Error creating menu:", error);
     return {
