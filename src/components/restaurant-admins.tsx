@@ -1,7 +1,13 @@
 "use client";
 import { AvatarGroup, Card, Avatar, Typography, Box, useTheme } from "@mui/material";
 
-export default function RestaurantAdmins() {
+type Admin = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+export default function RestaurantAdmins({ admins }: { admins: Admin[] }) {
   const theme = useTheme();
 
   return (
@@ -20,22 +26,45 @@ export default function RestaurantAdmins() {
           justifyContent: 'space-between',
           mb: { xs: 1.5, sm: 2 }
         }}>
-          <AvatarGroup max={3}>
-            <Avatar sx={{ fontSize: 20 }}>MA</Avatar>
-            <Avatar sx={{ fontSize: 20 }}>JD</Avatar>
-            <Avatar sx={{ fontSize: 20 }}>RK</Avatar>
-            <Avatar sx={{ fontSize: 20 }}>SK</Avatar>
+          <AvatarGroup max={4}>
+            {admins.map((admin) => (
+              <Avatar key={admin.id} sx={{ fontSize: 20 }}>
+                {admin.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </Avatar>
+            ))}
           </AvatarGroup>
         </Box>
 
         <Box sx={{
           display: 'flex',
           flexDirection: 'column',
-          gap: { xs: 0.5, sm: 1 }
+          gap: { xs: 0.5, sm: 1 },
+          maxHeight: '300px', // Set a maximum height
+          overflowY: 'auto',  // Enable vertical scrolling
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'transparent',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: theme.palette.mode === 'dark'
+              ? 'rgba(255, 255, 255, 0.2)'
+              : 'rgba(0, 0, 0, 0.2)',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            background: theme.palette.mode === 'dark'
+              ? 'rgba(255, 255, 255, 0.3)'
+              : 'rgba(0, 0, 0, 0.3)',
+          }
         }}>
-          {["Mike Anderson", "John Doe", "Rachel Kim"].map((name) => (
+          {admins.map((admin) => (
             <Box
-              key={name}
+              key={admin.id}
               sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -58,13 +87,16 @@ export default function RestaurantAdmins() {
                   fontSize: { xs: 16, sm: 20 }
                 }}
               >
-                {name
+                {admin.name
                   .split(" ")
                   .map((n) => n[0])
                   .join("")}
               </Avatar>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="body2">{name}</Typography>
+                <Typography variant="body2">{admin.name}</Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {admin.email}
+                </Typography>
               </Box>
             </Box>
           ))}

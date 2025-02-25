@@ -6,6 +6,7 @@ import AddRestaurant from "@/components/add-restaurant";
 import { Metadata } from "next";
 import RecentActivity from "@/components/recent-activity";
 import RestaurantAdmins from "@/components/restaurant-admins";
+import { getDashboardStats } from "@/actions/actions.stats";
 
 export const metadata: Metadata = {
   title: "Super Admin",
@@ -43,7 +44,9 @@ const StatCard = ({
   </Card>
 );
 
-export default function MainPage() {
+export default async function MainPage() {
+  const stats = await getDashboardStats();
+
   return (
     <section className="p-4 md:p-6 space-y-4 md:space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6">
@@ -59,26 +62,26 @@ export default function MainPage() {
         <StatCard
           icon={<RestaurantIcon className="text-blue-500" />}
           title="Total Restaurants"
-          value="124"
+          value={stats.totalRestaurants.toString()}
           trend="+12.5%"
         />
         <StatCard
           icon={<MenuBookIcon className="text-purple-500" />}
           title="Active Menus"
-          value="25"
+          value={stats.activeMenus.toString()}
           trend="+8.1%"
         />
         <StatCard
           icon={<GroupIcon className="text-green-500" />}
           title="Total Admins"
-          value="22"
+          value={stats.totalAdmins.toString()}
           trend="+22.4%"
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4 mt-4 md:mt-6">
         <RecentActivity />
-        <RestaurantAdmins />
+        <RestaurantAdmins admins={stats.recentAdmins} />
       </div>
     </section>
   );
