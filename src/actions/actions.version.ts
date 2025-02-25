@@ -3,7 +3,6 @@
 import { initAdmin } from "@/firebase/adminFirebase";
 import { VersionDataType } from "@/types";
 import { getFirestore } from "firebase-admin/firestore";
-import { unstable_cache } from 'next/cache';
 import { revalidatePath } from 'next/cache';
 
 export async function saveMenuVersion(
@@ -47,7 +46,7 @@ export async function saveMenuVersion(
   }
 }
 
-export const getMenuVersions = unstable_cache(
+export const getMenuVersions =
   async (restaurantId: string, menuId: string) => {
     try {
       await initAdmin();
@@ -84,10 +83,7 @@ export const getMenuVersions = unstable_cache(
         versions: []
       };
     }
-  },
-  ['menu-versions'],
-  { revalidate: 60 }
-);
+  }
 
 export async function switchToVersion(
   restaurantId: string,

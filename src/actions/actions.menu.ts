@@ -353,6 +353,13 @@ export const deleteMenuSection = async (menuId: string, sectionId: string) => {
       sections: menuSnapshot.data()?.sections.map((section: any) => ({
         ...section,
         createdAt: formatFirebaseTimestamp(section.createdAt),
+        items: section.items.map((item: MenuItem) => ({
+          ...item,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          createdAt: formatFirebaseTimestamp(item.createdAt as any),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          updatedAt: formatFirebaseTimestamp(item.updatedAt as any)
+        }))
       })),
       createdAt: formatFirebaseTimestamp(menuSnapshot.data()?.createdAt),
       updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),
@@ -613,22 +620,6 @@ export const reorderItems = async (menuId: string, sectionId: string, reorderedL
       sections: currentSections,
       updatedAt: new Date()
     });
-
-    // Get the updated menu data
-    // const menuSnapshot = await menuRef.get();
-    // const menu = {
-    //     id: menuSnapshot.id,
-    //     ...menuSnapshot.data(),
-    //     name: menuSnapshot.data()?.name,
-    //     startDate: menuSnapshot.data()?.startDate && formatFirebaseTimestamp(menuSnapshot.data()?.startDate),),
-    //     endDate: menuSnapshot.data()?.endDate && formatFirebaseTimestamp(menuSnapshot.data()?.endDate),  ),
-    //     sections: menuSnapshot.data()?.sections.map((section: MenuSection) => ({
-    //         ...section,
-    //         createdAt: formatFirebaseTimestamp(section?.createdAt),
-    //     })),
-    //     createdAt: formatFirebaseTimestamp(menuSnapshot.data()?.createdAt),
-    //     updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),
-    // } as Menu;
 
     revalidatePath(`/restaurant/menu/${menuId}`);
     return { success: true, items: reorderedList };
