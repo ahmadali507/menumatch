@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -8,6 +9,9 @@ import {
   TextField,
   FormControl,
   FormLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
 } from "@mui/material";
 import { createRestaurant } from "@/actions/actions.admin";
 import { useMutation } from "@tanstack/react-query";
@@ -18,7 +22,7 @@ import { auth } from "@/firebase/firebaseconfig";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import ImageCropDialog from "./image-crop";
 import ImageUpload from "./image-upload";
-
+import { locationData } from '@/lib/dummy';
 
 export default function AddRestaurantForm() {
   const router = useRouter();
@@ -32,6 +36,17 @@ export default function AddRestaurantForm() {
     handleDeleteImage,
     setCropDialogOpen,
   } = useImageUpload();
+
+  // Add state for location dropdowns
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedState, setSelectedState] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+
+  // Add helper functions for location data
+  const countries = Object.keys(locationData);
+  const states = selectedCountry ? Object.keys(locationData[selectedCountry].states) : [];
+  const cities = selectedCountry && selectedState ? 
+    locationData[selectedCountry].states[selectedState] : [];
 
   const mutation = useMutation({
     mutationFn: async (data: TAddRestaurantSchema & { 
@@ -79,8 +94,17 @@ export default function AddRestaurantForm() {
     register,
     handleSubmit,
     formState: { errors },
+    setValue
   } = useForm<TAddRestaurantSchema>({
     resolver: zodResolver(addRestaurantSchema),
+    defaultValues: {
+      location: {
+        country: '',
+        state: '',
+        city: '',
+        address: ''
+      }
+    }
   });
 
   const onSubmit = async (data: TAddRestaurantSchema) => {
@@ -139,29 +163,94 @@ export default function AddRestaurantForm() {
               helperText={errors.location?.address?.message}
             />
           </FormControl>
-          <FormControl fullWidth error={!!errors.location?.city}>
-            <FormLabel>City</FormLabel>
-            <TextField
-              {...register("location.city")}
-              error={!!errors.location?.city}
-              helperText={errors.location?.city?.message}
-            />
-          </FormControl>
-          <FormControl fullWidth error={!!errors.location?.state}>
-            <FormLabel>State</FormLabel>
-            <TextField
-              {...register("location.state")}
-              error={!!errors.location?.state}
-              helperText={errors.location?.state?.message}
-            />
-          </FormControl>
+
+          {/* Country Dropdown */}
           <FormControl fullWidth error={!!errors.location?.country}>
             <FormLabel>Country</FormLabel>
-            <TextField
+            <Select
               {...register("location.country")}
+              value={selectedCountry}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSelectedCountry(value);
+                setSelectedState('');
+                setSelectedCity('');
+                setValue('location.country', value);
+                setValue('location.state', '');
+                setValue('location.city', '');
+              }}
               error={!!errors.location?.country}
-              helperText={errors.location?.country?.message}
-            />
+            >
+              <MenuItem value="" disabled>Select Country</MenuItem>
+              {countries.map((country) => (
+                <MenuItem key={country} value={country}>
+                  {country}
+                </MenuItem>
+              ))}
+            </Select>
+            {errors.location?.country && (
+              <FormHelperText error>{errors.location.country.message}</FormHelperText>
+            )}
+          </FormControl>
+
+          {/* State Dropdown */}
+          <FormControl 
+            fullWidth 
+            error={!!errors.location?.state}
+            disabled={!selectedCountry}
+          >
+            <FormLabel>State</FormLabel>
+            <Select
+              {...register("location.state")}
+              value={selectedState}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSelectedState(value);
+                setSelectedCity('');
+                setValue('location.state', value);
+                setValue('location.city', '');
+              }}
+              error={!!errors.location?.state}
+            >
+              <MenuItem value="" disabled>Select State</MenuItem>
+              {states.map((state) => (
+                <MenuItem key={state} value={state}>
+                  {state}
+                </MenuItem>
+              ))}
+            </Select>
+            {errors.location?.state && (
+              <FormHelperText error>{errors.location.state.message}</FormHelperText>
+            )}
+          </FormControl>
+
+          {/* City Dropdown */}
+          <FormControl 
+            fullWidth 
+            error={!!errors.location?.city}
+            disabled={!selectedState}
+          >
+            <FormLabel>City</FormLabel>
+            <Select
+              {...register("location.city")}
+              value={selectedCity}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSelectedCity(value);
+                setValue('location.city', value);
+              }}
+              error={!!errors.location?.city}
+            >
+              <MenuItem value="" disabled>Select City</MenuItem>
+              {cities.map((city) => (
+                <MenuItem key={city} value={city}>
+                  {city}
+                </MenuItem>
+              ))}
+            </Select>
+            {errors.location?.city && (
+              <FormHelperText error>{errors.location.city.message}</FormHelperText>
+            )}
           </FormControl>
         </div>
       </div>
