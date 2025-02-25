@@ -58,3 +58,43 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     };
   }
 }
+
+export type RestaurantStats = {
+  totalMenus: number;
+  totalAdmins: number;
+  totalOrders: number;
+  recentOrders: number;
+};
+
+export async function getRestaurantStats(restaurantId: string): Promise<RestaurantStats> {
+  await initAdmin();
+  const firestore = getFirestore();
+
+  try {
+    const [menusSnap, adminsSnap] = await Promise.all([
+      firestore.collection('restaurants').doc(restaurantId).collection('menus').get(),
+      firestore.collection('users')
+        .where('restaurantId', '==', restaurantId)
+        .where('role', '==', 'admin')
+        .get(),
+    ]);
+
+    // Dummy trends for now
+    return {
+      totalMenus: menusSnap.size,
+      totalAdmins: adminsSnap.size,
+      totalOrders: 150, // Dummy data
+      recentOrders: 24, // Dummy data
+
+    };
+  } catch (error) {
+    console.error('Error fetching restaurant stats:', error);
+    return {
+      totalMenus: 0,
+      totalAdmins: 0,
+      totalOrders: 0,
+      recentOrders: 0,
+
+    };
+  }
+}

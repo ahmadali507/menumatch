@@ -12,13 +12,13 @@ import QuickActions from "@/components/restaurant/dashboard/quick-actions";
 import Stats from "@/components/restaurant/dashboard/stats";
 import EditRestaurantIcon from '@mui/icons-material/EditLocation';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
-import { Suspense } from 'react';
-import DashboardLoader from '@/components/restaurant/dashboard/dashboard-loader';
+import { getRestaurantStats } from "@/actions/actions.stats"
 
 import { Metadata } from "next";
 import Link from "next/link";
 import { routes } from "@/lib/routes";
 import PageTitle from "@/components/restaurant/dashboard/page-title";
+import { getRestaurantIdForAdmin } from "@/actions/actions.menu";
 
 export const metadata: Metadata = {
   title: "Restaurant Dashboard",
@@ -52,15 +52,15 @@ const quickActions: { title: string; icon: React.ReactNode, link: string, color:
   { title: "Create Menu", icon: <AnalyticsIcon />, color: "warning", link: "/restaurant/menu/add" },
 ];
 
-export default function RestaurantAdminPage() {
-  return (
-    <Suspense fallback={<DashboardLoader />}>
-      <RestaurantContent />
-    </Suspense>
-  );
-}
+export default async function RestaurantContent() {
 
-async function RestaurantContent() {
+  const restaurantId = await getRestaurantIdForAdmin();
+  if (!restaurantId) {
+    return null;
+  }
+
+  const stats = await getRestaurantStats(restaurantId);
+
   return (
     <section className="pb-6 space-y-4 sm:space-y-6 sm:px-6 lg:px-8">
       <PageTitle title="Restaurant Overview" description="This is an overview of performance of your restaurant">
@@ -92,7 +92,7 @@ async function RestaurantContent() {
 
       {/* Overview Cards */}
       <div className="px-2 sm:px-0">
-        <Stats />
+        <Stats stats={stats} />
       </div>
 
       {/* Main Content Grid */}
