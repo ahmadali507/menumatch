@@ -2,6 +2,7 @@
 import { Menu } from "@/types";
 import {
   Card,
+  CardHeader,
   Typography,
   Box,
   Chip,
@@ -95,28 +96,65 @@ export default function MenuCard({ menu }: MenuCardProps) {
 
   const menuStatus = getMenuStatus(menu);
 
+  console.log("the manu cards", menu.id)
   return (
     <StyledCard>
-      {/* Modified CardHeader to be more responsive */}
-      <Box sx={{ p: 2 }}>
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 2 }}>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', width: '100%' }}>
-            <Avatar sx={{ bgcolor: 'primary.main' }}>
-              <RestaurantMenuIcon />
-            </Avatar>
-            <Link className="hover:underline" href={`${routes.menu}/${menu.id}`} passHref>
-              <Typography variant="h6" component="h3" noWrap>
+      <CardHeader
+        avatar={
+          <Avatar sx={{ bgcolor: 'primary.main' }}>
+            <RestaurantMenuIcon />
+          </Avatar>
+        }
+        title={
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Link href={`${routes.menu}/${menu.id}`} passHref>
+              <Typography
+                variant="h6"
+                component="h3"
+                noWrap
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  '&:hover': {
+                    textDecoration: 'underline'
+                  },
+                  // Responsive width adjustment
+                  maxWidth: {
+                    xs: '250px',
+                    sm: '300px',
+                    md: '400px'
+                  }
+                }}
+              >
                 {menu.name}
               </Typography>
             </Link>
+            {user?.role === "admin" && (
+              <Box
+                sx={{
+                  display: { xs: 'flex', sm: 'none' },
+                  gap: 1,
+                  alignItems: 'center'
+                }}
+              >
+                <Link href={`${routes.menu}/${menu.id}`} passHref>
+                  <IconButton size="small" color="primary" aria-label="edit menu">
+                    <EditIcon />
+                  </IconButton>
+                </Link>
+                <DeleteMenu menuId={menu?.id} />
+              </Box>
+            )}
           </Box>
-          {user?.role === "admin" && (
-            <Box sx={{
-              display: 'flex',
-              gap: 1,
-              justifyContent: { xs: 'flex-start', sm: 'flex-end' },
-              ml: { xs: '44px', sm: 0 } // Align with the title on mobile
-            }}>
+        }
+        action={
+          user?.role === "admin" && (
+            <Box
+              sx={{
+                display: { xs: 'none', sm: 'flex' },
+                gap: 1
+              }}
+            >
               <Link href={`${routes.menu}/${menu.id}`} passHref>
                 <IconButton size="small" color="primary" aria-label="edit menu">
                   <EditIcon />
@@ -124,13 +162,14 @@ export default function MenuCard({ menu }: MenuCardProps) {
               </Link>
               <DeleteMenu menuId={menu?.id} />
             </Box>
-          )}
-        </Box>
-      </Box>
+          )
+        }
+      />
+
 
       <Divider />
 
-      <Stack spacing={2} sx={{ p: 2, height: '100%', minHeight: '160px' }}>
+      <Stack spacing={2} sx={{ height: '100%', minHeight: '160px' }}> {/* Added minHeight */}
         <Stack spacing={1} sx={{ flex: 1 }}> {/* Added flex: 1 to take remaining space */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             {menu.availabilityType === "ramadan" &&
@@ -214,7 +253,6 @@ export default function MenuCard({ menu }: MenuCardProps) {
           alignItems="center"
           flexWrap="wrap"
           useFlexGap
-          gap={1}
         >
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Chip
