@@ -1,3 +1,4 @@
+import { UserData } from "@/types";
 import { FoodBankSharp, Home, Logout, Restaurant, Settings } from "@mui/icons-material";
 
 
@@ -8,8 +9,8 @@ export type SidebarNavItemProps = {
   badge?: string;
 };
 
-export const navItems: Record<string, SidebarNavItemProps[]> = {
-  superAdmin: [
+export const navItems: Record<UserData['role'], SidebarNavItemProps[]> = {
+  "super_admin": [
     { title: "Home", href: "/", icon: Home },
     { title: "Restaurants", href: "/restaurants", icon: Restaurant },
     // {title:"Admins", href:"/admins", icon:Person},

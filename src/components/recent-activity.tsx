@@ -45,20 +45,23 @@ export default function RecentActivity({ activities }: RecentActivityProps) {
   const itemsToShow = activities || defaultActivities;
 
   return (
-    <Card sx={{ gridColumn: 'span 2', p: 3 }}>
-      <Typography variant="h6" sx={{ mb: 2 }}>
+    <Card sx={{
+      gridColumn: { xs: 'span 1', md: 'span 2' },
+      p: { xs: 2, sm: 3 }
+    }}>
+      <Typography variant="h6" sx={{ mb: { xs: 1.5, sm: 2 } }}>
         Recent Activity
       </Typography>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1, sm: 2 } }}>
         {itemsToShow.map((activity) => (
           <Box
             key={activity.id}
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 2,
-              p: 1.5,
+              gap: { xs: 1, sm: 2 },
+              p: { xs: 1, sm: 1.5 },
               borderRadius: 1,
               backgroundColor: theme.palette.background.paper,
               transition: 'background-color 0.2s ease',
@@ -72,8 +75,8 @@ export default function RecentActivity({ activities }: RecentActivityProps) {
           >
             <Box
               sx={{
-                width: 40,
-                height: 40,
+                width: { xs: 32, sm: 40 },
+                height: { xs: 32, sm: 40 },
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',

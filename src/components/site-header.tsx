@@ -3,10 +3,8 @@ import { useState } from 'react';
 import { useUser } from "@/context/userContext";
 import NavbarBreadcrumbs from "./breadcrumbs";
 import UserDropdown from "./user-dropdown";
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import MenuIcon from '@mui/icons-material/Menu';
 import { IconButton, Drawer } from "@mui/material";
-// import ThemeToggle from "@/components/theme/ThemeToggle";
 import ColorModeSelect from "./theme/ColorModeSelect";
 import { SidebarNav } from "./sidebar";
 
@@ -28,29 +26,30 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className="pl-4 pr-6 py-3 h-14 flex justify-between z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-2">
-          <div className='mx-2 lg:hidden'>
-
+      <header className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 h-12 sm:h-14 flex justify-between z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <div className='mx-1 sm:mx-2 lg:hidden'>
             <IconButton
               color="inherit"
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
-              sx={{ display: { lg: 'none' } }}
+              size="small"
+              sx={{
+                display: { lg: 'none' },
+                padding: { xs: '4px', sm: '8px' }
+              }}
             >
-              <MenuIcon />
+              <MenuIcon sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />
             </IconButton>
           </div>
-          <NavbarBreadcrumbs />
-
+          <div className="hidden sm:block">
+            <NavbarBreadcrumbs />
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <ColorModeSelect />
           {/* <ThemeToggle/> */}
-          <IconButton color="inherit" size="medium">
-            <NotificationsIcon />
-          </IconButton>
           {user ? (
             <UserDropdown
               name={user?.name as string}
@@ -60,7 +59,7 @@ export function SiteHeader() {
               clearUser={clearUser}
             />
           ) : (
-            <div className='bg-gray-600 rounded-full h-10 w-10 cursor-pointer flex justify-center items-center' />
+            <div className='bg-gray-600 rounded-full h-8 w-8 sm:h-10 sm:w-10 cursor-pointer flex justify-center items-center' />
           )}
         </div>
       </header>

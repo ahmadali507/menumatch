@@ -23,42 +23,39 @@ const StatCard = ({
   value: string;
   trend?: string;
 }) => (
-  <Card className="p-6 flex flex-col gap-4 hover:shadow-lg transition-shadow">
+  <Card className="p-4 md:p-6 flex flex-col gap-3 md:gap-4 hover:shadow-lg transition-shadow">
     <div className="flex justify-between items-center">
-      <div className="p-2 rounded-lg bg-gray-900">{icon}</div>
+      <div className="p-1.5 md:p-2 rounded-lg bg-gray-900">{icon}</div>
       {trend && (
-        <span
-          className={`font-bold ${trend.startsWith("+") ? "text-green-500" : "text-red-500"
-            }`}
-        >
+        <span className={`text-sm md:text-base font-bold ${trend.startsWith("+") ? "text-green-500" : "text-red-500"}`}>
           {trend}
         </span>
       )}
     </div>
     <div>
-      <Typography color="text.secondary" gutterBottom>
+      <Typography color="text.secondary" gutterBottom variant="body2" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
         {title}
       </Typography>
-      <Typography variant="h4">{value}</Typography>
+      <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
+        {value}
+      </Typography>
     </div>
   </Card>
 );
 
 export default function MainPage() {
-  // const theme = useTheme()
-
   return (
-    <section className="p-6 space-y-6">
-      <div className="flex justify-between items-center mb-6">
-        <Typography component="h2" variant="h4">
+    <section className="p-4 md:p-6 space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6">
+        <Typography component="h2" variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
           Overview
         </Typography>
-        <div className="flex gap-2">
+        <div className="w-full sm:w-auto">
           <AddRestaurant />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         <StatCard
           icon={<RestaurantIcon className="text-blue-500" />}
           title="Total Restaurants"
@@ -77,18 +74,11 @@ export default function MainPage() {
           value="22"
           trend="+22.4%"
         />
-        {/* <StatCard
-          icon={<TimelineIcon className="text-orange-500" />}
-          title="Total Revenue"
-          value="$45.2k"
-          trend="+16.2%"
-        /> */}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4 mt-4 md:mt-6">
         <RecentActivity />
         <RestaurantAdmins />
-
       </div>
     </section>
   );
