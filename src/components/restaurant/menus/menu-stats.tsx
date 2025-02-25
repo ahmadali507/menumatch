@@ -2,6 +2,7 @@
 import { Grid, Stack, Typography, Box } from "@mui/material";
 import EventIcon from '@mui/icons-material/Event';
 import { Menu } from "@/types";
+import { format } from "date-fns";
 
 export default function MenuStats({ menu }: { menu: Menu }) {
   return (
@@ -18,8 +19,7 @@ export default function MenuStats({ menu }: { menu: Menu }) {
             : <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <EventIcon fontSize="small" color="action" />
               <Typography variant="body2">
-                {/* {menu.startDate ? format(menu.startDate as Date, "EEEE, MMMM d, yyyy") : "Not Set"} */}
-                {/* {menu.startDate?.toLocaleDateString()} */}
+                {menu.startDate ? format(new Date(menu.startDate), "EEEE, MMMM d, yyyy") : "Not Set"}
               </Typography>
             </Box>}
         </Stack>
@@ -36,8 +36,7 @@ export default function MenuStats({ menu }: { menu: Menu }) {
             : <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <EventIcon fontSize="small" color="action" />
               <Typography variant="body2">
-                {/* {menu.endDate ? format(menu.endDate as Date, "EEEE, MMMM d, yyyy") : "Not Set"} */}
-                {/* {menu.endDate?.toLocaleDateString()} */}
+                {menu.endDate ? format(new Date(menu.endDate), "EEEE, MMMM d, yyyy") : "Not Set"}
               </Typography>
             </Box>}
         </Stack>
@@ -50,8 +49,7 @@ export default function MenuStats({ menu }: { menu: Menu }) {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <EventIcon fontSize="small" color="action" />
             <Typography variant="body2">
-              {/* {format(menu.createdAt as Date, "EEEE, MMMM d, yyyy")} */}
-              {/* {JSON.stringify(menu.createdAt)} */}
+              {format(new Date(menu.createdAt), "EEEE, MMMM d, yyyy")}
             </Typography>
           </Box>
         </Stack>

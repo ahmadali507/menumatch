@@ -9,8 +9,6 @@ import NavList from "./nav-list";
 export function SidebarNav({ role }: { role: keyof typeof navItems }) {
   const pathname = usePathname();
 
-  console.log("these are items", navItems[role], navItems, role);
-
   return (
     <div className="flex h-full flex-col gap-y-2 overflow-hidden">
       <div className="flex h-14 items-center border-gray-600 px-6">
