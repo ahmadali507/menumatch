@@ -274,7 +274,7 @@ export default function MenuCard({ menu }: MenuCardProps) {
             />
           </Box>
         </Stack>
-        <div className="flex items-center gap-2 text-sm text-gray-600">
+        <div className="flex items-center gap-2 text-sm">
           <LanguageIcon fontSize="small" />
           <span>{languageName}</span>
         </div>

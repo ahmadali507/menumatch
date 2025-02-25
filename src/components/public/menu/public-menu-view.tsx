@@ -1,11 +1,12 @@
 'use client';
 import { useState } from 'react';
-import { Box, Container, Fade, useTheme } from '@mui/material';
+import { Box, Container, Fade, useTheme, Typography } from '@mui/material';
 import { Menu, RestaurantType } from '@/types';
 import PublicMenuHeader from "./public-menu-header"
 import PublicMenuSection from "./public-menu-section";
 import LabelFilter from "./label-filter";
 import ThemeSwitcher from "./theme-switcher";
+import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 
 export default function PublicMenuView({ menu, restaurant }: {
   menu: Menu,
@@ -53,19 +54,58 @@ export default function PublicMenuView({ menu, restaurant }: {
           </div>
 
           {/* Menu Sections */}
-          <div className="space-y-8">
-            {menu.sections.map((section) => (
-              <PublicMenuSection
-                key={section.id}
-                section={section}
-                selectedLabels={selectedLabels}
-              />
-            ))}
-          </div>
+          {menu.sections.length > 0 ? (
+            <div className="space-y-8">
+              {menu.sections.map((section) => (
+                <PublicMenuSection
+                  key={section.id}
+                  section={section}
+                  selectedLabels={selectedLabels}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptySection />
+          )}
         </Container>
       </Box>
     </Fade>
 
   );
 
+}
+
+function EmptySection() {
+  return <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 0.5,
+      py: 8
+    }}
+  >
+    <RestaurantMenuIcon
+      sx={{
+        fontSize: '4rem',
+        color: 'text.secondary',
+        opacity: 0.5
+      }}
+    />
+    <Typography
+      variant="h6"
+      color="text.secondary"
+      align="center"
+    >
+      No sections available in this menu yet
+    </Typography>
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+    >
+      Check back later for updates
+    </Typography>
+  </Box>
 }

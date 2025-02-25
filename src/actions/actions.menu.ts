@@ -9,13 +9,12 @@ import { getUser } from "./actions.cookies";
 import { formatFirebaseTimestamp } from "@/lib/format";
 import QRCode from 'qrcode';
 import { RAMADAN_DATES } from "@/lib/utils";
-import { getAuth } from "firebase-admin/auth";
 import { LanguageCode } from "@/lib/languages";
 
 // Update the existing addMenu function
-export const addMenu = async ({ restaurantId, data }: { 
-  restaurantId: string; 
-  data: TAddMenuFormSchema & { language: LanguageCode } 
+export const addMenu = async ({ restaurantId, data }: {
+  restaurantId: string;
+  data: TAddMenuFormSchema & { language: LanguageCode }
 }) => {
   await initAdmin();
   const firestore = getFirestore();
@@ -175,13 +174,16 @@ export const getMenu = async (restaurantId: string, menuId: string) => {
         sections: menuSnapshot.data()?.sections.map((section: any) => ({
           ...section,
           createdAt: formatFirebaseTimestamp(section.createdAt),
+          items: section.items.map((item: MenuItem) => ({
+            ...item,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            createdAt: formatFirebaseTimestamp(item.createdAt as any),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            updatedAt: formatFirebaseTimestamp(item.updatedAt as any)
+          }))
         })),
         createdAt: formatFirebaseTimestamp(menuSnapshot.data()?.createdAt),
         updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),
-        // "qrCode": {
-        //   ...menuSnapshot.data()?.qrCode,
-        //   "createdAt": formatFirebaseTimestamp(menuSnapshot.data()?.qrCode.createdAt)
-        // }
       } as Menu;
 
     return {
@@ -199,30 +201,16 @@ export const getMenu = async (restaurantId: string, menuId: string) => {
 }
 
 
-export async function deleteMenu({ menuId, idToken }: { menuId: string; idToken?: string }) {
+export async function deleteMenu({ menuId }: { menuId: string }) {
   await initAdmin();
   const firestore = getFirestore();
 
   try {
-    let restaurantId;
-
-    // If idToken is provided (super_admin flow)
-    if (idToken) {
-      const auth = getAuth();
-      const claims = await auth.verifyIdToken(idToken);
-      if (claims.role !== "super_admin") {
-        throw new Error("Not authorized to delete menu");
-      }
-      const restaurantId = await getRestaurantIdForAdmin();
-      // Get restaurant ID from the menu document
-      const menuDoc = await firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId).get();
-      // restaurantId = menuDoc.data()?.restaurantId;
-
-      console.log("menuDoc", menuDoc);
-    } else {
-      // Admin flow - use existing function
-      restaurantId = await getRestaurantIdForAdmin();
-    }
+    const restaurantId = await getRestaurantIdForAdmin();
+    // Get restaurant ID from the menu document
+    const menuDoc = await firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId).get();
+    // restaurantId = menuDoc.data()?.restaurantId;
+    console.log("menuDoc", menuDoc);
 
     if (!restaurantId) throw new Error("Restaurant ID not found");
 
@@ -424,6 +412,13 @@ export const deleteMenuItem = async (menuId: string, sectionId: string, itemId: 
       sections: menuSnapshot.data()?.sections.map((section: any) => ({
         ...section,
         createdAt: formatFirebaseTimestamp(section.createdAt),
+        items: section.items.map((item: MenuItem) => ({
+          ...item,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          createdAt: formatFirebaseTimestamp(item.createdAt as any),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          updatedAt: formatFirebaseTimestamp(item.updatedAt as any)
+        }))
       })),
       createdAt: formatFirebaseTimestamp(menuSnapshot.data()?.createdAt),
       updatedAt: formatFirebaseTimestamp(menuSnapshot.data()?.updatedAt),

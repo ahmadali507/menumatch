@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@mui/material';
 import HistoryIcon from '@mui/icons-material/History';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getMenuVersions, switchToVersion } from '@/actions/actions.version';
 import { useToast } from '@/context/toastContext';
 import { format } from 'date-fns';
@@ -32,6 +32,8 @@ export default function SwitchVersion({ menuId, restaurantId }: SwitchVersionPro
   const { showToast } = useToast();
   const router = useRouter();
 
+  const queryClient = useQueryClient();
+
   const { data: versionsData, isLoading } = useQuery({
     queryKey: ['menu-versions', menuId],
     queryFn: () => getMenuVersions(restaurantId, menuId),
@@ -42,6 +44,8 @@ export default function SwitchVersion({ menuId, restaurantId }: SwitchVersionPro
     onSuccess: (data) => {
       if (data.success) {
         showToast('Menu version switched successfully. Refresh the page to take effect! ', 'success');
+
+        queryClient.invalidateQueries({ queryKey: ['menu-versions', menuId] });
         router.refresh();
         handleClose();
       } else {

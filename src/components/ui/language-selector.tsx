@@ -1,6 +1,5 @@
-import { FormControl, InputLabel, Select, MenuItem, Box, Typography } from '@mui/material';
+import { FormControl, Select, MenuItem, Box, Typography } from '@mui/material';
 import { SUPPORTED_LANGUAGES, LanguageCode } from '@/lib/languages';
-import TranslateIcon from '@mui/icons-material/Translate';
 import { useTheme } from '@mui/material/styles';
 
 interface LanguageSelectorProps {
@@ -15,29 +14,13 @@ export default function LanguageSelector({ value, onChange, disabled }: Language
 
   return (
     <Box sx={{ mb: 3 }}>
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: 1, 
-        mb: 2 
-      }}>
-        <TranslateIcon sx={{ color: 'primary.main' }} />
-        <Typography 
-          variant="subtitle1" 
-          sx={{ 
-            fontWeight: 500,
-            color: 'text.primary' 
-          }}
-        >
-          Menu Language
-        </Typography>
-      </Box>
-      <FormControl 
-        fullWidth 
+      <FormControl
         sx={{
+          width: {
+            xs: '100%',
+            sm: '50%'
+          },
           '& .MuiOutlinedInput-root': {
-            borderRadius: 2,
-            backgroundColor: isDarkMode ? 'grey.990' : 'grey.100',
             '&:hover': {
               '& .MuiOutlinedInput-notchedOutline': {
                 borderColor: 'primary.main',
@@ -66,16 +49,6 @@ export default function LanguageSelector({ value, onChange, disabled }: Language
           }
         }}
       >
-        <InputLabel 
-          sx={{ 
-            color: 'text.secondary',
-            '&.Mui-focused': {
-              color: 'primary.main'
-            }
-          }}
-        >
-          Select Language
-        </InputLabel>
         <Select
           value={value}
           label="Select Language"
@@ -101,8 +74,8 @@ export default function LanguageSelector({ value, onChange, disabled }: Language
           }}
         >
           {SUPPORTED_LANGUAGES.map((lang) => (
-            <MenuItem 
-              key={lang.code} 
+            <MenuItem
+              key={lang.code}
               value={lang.code}
               sx={{
                 py: 1.5,
@@ -113,8 +86,8 @@ export default function LanguageSelector({ value, onChange, disabled }: Language
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography>{lang.name}</Typography>
-                <Typography 
-                  variant="caption" 
+                <Typography
+                  variant="caption"
                   sx={{ color: isDarkMode ? 'grey.400' : 'text.secondary' }}
                 >
                   ({lang.code.toUpperCase()})

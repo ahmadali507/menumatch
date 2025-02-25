@@ -78,8 +78,8 @@ export default function AddMenuForm() {
   });
 
   const onSubmit = (data: TAddMenuFormSchema) => {
-    mutation.mutate({ 
-      restaurantId: user?.restaurantId as string, 
+    mutation.mutate({
+      restaurantId: user?.restaurantId as string,
       data: {
         ...data,
         language: data.language as LanguageCode
@@ -93,21 +93,12 @@ export default function AddMenuForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+    <form onSubmit={handleSubmit(onSubmit)}>
       {/* Language Selector */}
-      <div className="space-y-4">
-        <Typography variant="h6">Menu Language</Typography>
-        <FormControl fullWidth error={!!errors.language}>
-          <FormLabel>Select Language</FormLabel>
-          <LanguageSelector
-            value={watch('language') as LanguageCode}
-            onChange={handleLanguageChange}
-          />
-        </FormControl>
-      </div>
+
 
       {/* Basic Details */}
-      <div className="space-y-4">
+      <div className="space-y-4 mt-4">
         <Typography variant="h6">Menu Details</Typography>
         <FormControl fullWidth error={!!errors.name}>
           <FormLabel>Menu Name</FormLabel>
@@ -118,6 +109,14 @@ export default function AddMenuForm() {
             helperText={errors.name?.message}
             // take full width on small screens and 50% on large
             sx={{ width: { xs: '100%', md: '50%' } }}
+          />
+        </FormControl>
+
+        <FormControl fullWidth error={!!errors.language}>
+          <FormLabel>Select Language</FormLabel>
+          <LanguageSelector
+            value={watch('language') as LanguageCode}
+            onChange={handleLanguageChange}
           />
         </FormControl>
 
@@ -135,7 +134,7 @@ export default function AddMenuForm() {
                   '& .MuiTypography-root': {
                     color: availabilityType === 'indefinite' ? 'primary.contrastText' : 'text.primary'
                   },
-                  '& .MuiTypography-body2': {
+                  '& .MsuiTypography-body2': {
                     color: availabilityType === 'indefinite' ? 'primary.contrastText' : 'text.secondary'
                   },
                   '& .MuiSvgIcon-root': {
@@ -222,7 +221,7 @@ export default function AddMenuForm() {
 
       {/* Schedule - Only show if custom availability selected */}
       {availabilityType === 'custom' && (
-        <div className="space-y-4">
+        <div className="mt-4">
           <Typography variant="h6">Schedule</Typography>
           <Box sx={{ mb: 2 }}>
             <Typography variant="body2" color="text.secondary">

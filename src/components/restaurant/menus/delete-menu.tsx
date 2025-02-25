@@ -6,20 +6,15 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/context/toastContext";
 import { deleteMenu } from "@/actions/actions.menu";
-import { auth } from "@/firebase/firebaseconfig";
-// import { useAuth } from "@/context/authContext";
 
 export default function DeleteMenu({ menuId }: { menuId: string }) {
   const [open, setOpen] = useState(false);
   const { showToast } = useToast();
   const queryClient = useQueryClient();
-  const user = auth.currentUser; 
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      if (!user) throw new Error("Not authenticated");
-      const idToken = await user.getIdToken(true);
-      return deleteMenu({ menuId, idToken });
+      return deleteMenu({ menuId });
     },
     onSuccess: (response) => {
       if (!response?.success) {

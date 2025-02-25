@@ -488,7 +488,7 @@ export const getRestaurantData = async (restaurantId: string) => {
       },
       orders: restaurantSnap.data()?.orders || [],
       admins: [],
-      menus: []
+      menus: [],
     } as RestaurantType;
 
     // Add admin information
@@ -513,6 +513,12 @@ export const getRestaurantData = async (restaurantId: string) => {
           sections: doc.data()?.sections.map((section: any) => ({
             ...section,
             createdAt: formatFirebaseTimestamp(section.createdAt),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            items: section.items.map((item: any) => ({
+              ...item,
+              createdAt: formatFirebaseTimestamp(item.createdAt),
+              updatedAt: formatFirebaseTimestamp(item.updatedAt),
+            })),
           })),
           createdAt: formatFirebaseTimestamp(doc.data()?.createdAt),
           updatedAt: formatFirebaseTimestamp(doc.data()?.updatedAt),
