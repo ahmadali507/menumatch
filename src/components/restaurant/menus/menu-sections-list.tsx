@@ -18,6 +18,7 @@ import SwitchVersion from './switch-version';
 export default function MenuSectionsList({ menuId, restaurantId }: { sections: MenuSectionType[], menuId: string, restaurantId: string }) {
 
   const { menu, setMenu } = useMenu();
+  console.log(menu, "menu"); 
   const { showToast } = useToast();
   const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
 
@@ -92,7 +93,7 @@ export default function MenuSectionsList({ menuId, restaurantId }: { sections: M
         }}>
           <SaveVersion menuId={menuId} restaurantId={restaurantId} />
           <SwitchVersion menuId={menuId} restaurantId={restaurantId} />
-          <AddSection menuId={menuId} />
+          <AddSection menuId={menuId} restaurantId = {restaurantId} />
         </Box>
       </Box>
 

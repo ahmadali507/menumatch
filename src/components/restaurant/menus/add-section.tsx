@@ -10,18 +10,18 @@ import { useRouter } from 'next/navigation';
 import { useMenu } from '@/context/menuContext';
 import { Menu } from '@/types';
 
-export default function AddSection({ menuId }: { menuId: string }) {
+export default function AddSection({ menuId, restaurantId }: { menuId: string, restaurantId: string }) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [sectionName, setSectionName] = useState('');
   const router = useRouter();
   const { showToast } = useToast();
 
   const { menu, setMenu } = useMenu();
-
+  
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      return addMenuSection(menuId, sectionName);
+      return addMenuSection(menuId, sectionName, restaurantId);
     },
     onSuccess: (response) => {
       if (!response.success) {

@@ -112,6 +112,9 @@ export async function switchToVersion(
       });
 
     revalidatePath(`/restaurant/menu/${menuId}`);
+    revalidatePath(`/restaurants/${restaurantId}/menu/${menuId}`); // Super admin path
+    revalidatePath(`/restaurants/${restaurantId}`); // Super admin restaurant page
+
 
     return { success: true };
   } catch (error) {

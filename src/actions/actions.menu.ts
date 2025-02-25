@@ -233,10 +233,10 @@ export async function deleteMenu({ menuId }: { menuId: string }) {
   }
 }
 
-export async function addMenuSection(menuId: string, sectionName: string) {
+export async function addMenuSection(menuId: string, sectionName: string, restaurantId: string) {
   await initAdmin();
   const firestore = getFirestore();
-  const restaurantId = await getRestaurantIdForAdmin();
+  // const restaurantId = await getRestaurantIdForAdmin();
 
   try {
     const menuRef = firestore
