@@ -67,6 +67,10 @@ export default function SaveVersion({ menuId, restaurantId }: SaveVersionProps) 
         startIcon={<SaveIcon />}
         onClick={handleClick}
         size="small"
+        sx={{
+          width: { xs: '100%', sm: 'auto' },
+          whiteSpace: 'nowrap'
+        }}
       >
         Save Version
       </Button>

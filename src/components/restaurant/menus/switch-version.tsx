@@ -80,6 +80,10 @@ export default function SwitchVersion({ menuId, restaurantId }: SwitchVersionPro
         startIcon={<HistoryIcon />}
         onClick={handleClick}
         size="small"
+        sx={{
+          width: { xs: '100%', sm: 'auto' },
+          whiteSpace: 'nowrap'
+        }}
       >
         Switch Version
       </Button>

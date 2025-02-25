@@ -12,7 +12,13 @@ export default function MenuOverview({ menu }: { menu: Menu }) {
   const totalItems = menu.sections.reduce((acc, section) => acc + section.items.length, 0);
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <Box sx={{
+      display: 'flex',
+      flexDirection: { xs: 'column', sm: 'row' },
+      alignItems: { xs: 'flex-start', sm: 'center' },
+      justifyContent: 'space-between',
+      gap: 2
+    }}>
       <Stack direction="row" spacing={2} alignItems="center">
         <Box sx={{
           bgcolor: 'primary.main',
@@ -24,7 +30,11 @@ export default function MenuOverview({ menu }: { menu: Menu }) {
         </Box>
         <div>
           <Typography variant="h5" fontWeight="medium">{menu.name}</Typography>
-          <Stack direction="row" spacing={3} mt={0.5}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={{ xs: 1, sm: 3 }}
+            mt={0.5}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <MenuBookIcon fontSize="small" color="action" />
               <Typography variant="body2" color="text.secondary">

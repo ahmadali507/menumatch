@@ -16,7 +16,7 @@ export default function AddSection({ menuId }: { menuId: string }) {
   const router = useRouter();
   const { showToast } = useToast();
 
-  const {menu, setMenu} = useMenu(); 
+  const { menu, setMenu } = useMenu();
 
 
   const { mutate, isPending } = useMutation({
@@ -29,7 +29,7 @@ export default function AddSection({ menuId }: { menuId: string }) {
         return;
       }
       router.refresh();
-      if(response.success && response.section){
+      if (response.success && response.section) {
         console.log("Adding section", response.section);
         const updatedMenu: Menu = {
           ...menu!,
@@ -76,10 +76,13 @@ export default function AddSection({ menuId }: { menuId: string }) {
   return (
     <>
       <Button
-        variant="outlined"
-        startIcon={<AddIcon />}
+        variant="contained"
         onClick={handleClick}
-        size="small"
+        startIcon={<AddIcon />}
+        sx={{
+          width: { xs: '100%', sm: 'auto' },
+          whiteSpace: 'nowrap'
+        }}
       >
         Add Section
       </Button>

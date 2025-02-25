@@ -34,7 +34,7 @@ export default async function SingleMenuPage({ params }: { params: Promise<{ men
     <MenuProvider initialMenu={menu}>
       <section className="space-y-6">
         <MenuOverview menu={menu} />
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
           <MenuStats menu={menu} />
           <AddPromotionalContent menuId={menu?.id} initialContent={menu?.promoContent} />
         </div>

@@ -61,7 +61,7 @@ export default function MenuQRCode({ menuId, qrCode }: MenuQRCodeProps) {
       alignItems="center"
       sx={{
         ml: { xs: 0, sm: 'auto' },
-        width: { xs: '100%', sm: 'auto' }
+        width: { sm: 'auto' }
       }}
     >
       {qrCode?.url ? (

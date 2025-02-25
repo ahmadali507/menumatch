@@ -1,18 +1,18 @@
+"use client";
 import { Grid, Stack, Typography, Box } from "@mui/material";
 import EventIcon from '@mui/icons-material/Event';
-import { format } from "date-fns";
 import { Menu } from "@/types";
 
 export default function MenuStats({ menu }: { menu: Menu }) {
   return (
-    <div className="flex gap-10 items-center">
+    <div className="flex flex-col sm:flex-row gap-4 sm:gap-10 items-start sm:items-center">
       <Grid item xs={12} sm={6}>
         <Stack spacing={1}>
           <Typography variant="caption" color="text.secondary">
             Start Date
           </Typography>
           {menu.availabilityType === "indefinite" ?
-            <Typography variant="body2" sx={{ color: "lightgreen" }}>
+            <Typography variant="body2" sx={{ color: theme => theme.palette.mode === 'dark' ? '#90EE90' : '#006400' }}>
               Always Available
             </Typography>
             : <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -30,7 +30,7 @@ export default function MenuStats({ menu }: { menu: Menu }) {
             End Date
           </Typography>
           {menu.availabilityType === "indefinite" ?
-            <Typography variant="body2" sx={{ color: "lightgreen" }}>
+            <Typography variant="body2" sx={{ color: theme => theme.palette.mode === 'dark' ? '#90EE90' : '#006400' }}>
               Always Available
             </Typography>
             : <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

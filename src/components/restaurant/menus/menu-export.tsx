@@ -80,6 +80,7 @@ export default function MenuExport({ menu }: MenuExportProps) {
         aria-controls={open ? 'export-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
+        sx={{ maxWidth: "200px" }}
       >
         Export Data
       </Button>

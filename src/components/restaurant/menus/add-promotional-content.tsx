@@ -9,7 +9,6 @@ import {
   Box,
   Paper,
   Typography,
-  Divider,
   useTheme
 } from "@mui/material";
 import dynamic from "next/dynamic";
@@ -89,6 +88,11 @@ export default function AddPromotionalContent({ menuId, initialContent }: {
         variant="contained"
         onClick={() => setOpen(true)}
         startIcon={<AddIcon />}
+        size="small"
+        sx={{
+          whiteSpace: 'nowrap',
+          minWidth: { xs: '100%', sm: 'auto' }
+        }}
       >
         Add Promotional Content
       </Button>
@@ -101,9 +105,14 @@ export default function AddPromotionalContent({ menuId, initialContent }: {
       >
         <DialogTitle>Add Promotional Content</DialogTitle>
         <DialogContent>
-          <Box sx={{ height: '60vh', display: 'flex', gap: 3 }}>
+          <Box sx={{
+            height: { xs: 'auto', sm: '60vh' },
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: 3
+          }}>
             {/* Editor Section */}
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ flex: 1, minHeight: { xs: '40vh', sm: 'auto' } }}>
               <Typography variant="subtitle2" gutterBottom>
                 Editor
               </Typography>
@@ -117,10 +126,8 @@ export default function AddPromotionalContent({ menuId, initialContent }: {
               />
             </Box>
 
-            <Divider orientation="vertical" flexItem />
-
             {/* Preview Section */}
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ flex: 1, minHeight: { xs: '40vh', sm: 'auto' } }}>
               <Typography variant="subtitle2" gutterBottom>
                 Live Preview
               </Typography>

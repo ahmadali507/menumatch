@@ -67,9 +67,29 @@ export default function MenuSectionsList({ menuId, restaurantId }: { sections: M
 
   return (
     <Box className="space-y-4">
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">Menu Sections</Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
+      <Box sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', sm: 'row' },
+        justifyContent: 'space-between',
+        alignItems: { xs: 'stretch', sm: 'center' },
+        gap: { xs: 2, sm: 0 },
+        mb: 3
+      }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontSize: { xs: '1.5rem', sm: '2rem' },
+            mb: { xs: 1, sm: 0 }
+          }}
+        >
+          Menu Sections
+        </Typography>
+        <Box sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+          width: { xs: '100%', sm: 'auto' }
+        }}>
           <SaveVersion menuId={menuId} restaurantId={restaurantId} />
           <SwitchVersion menuId={menuId} restaurantId={restaurantId} />
           <AddSection menuId={menuId} />
