@@ -39,6 +39,7 @@ import { useToast } from "@/context/toastContext";
 import LoadingButton from "../ui/loading-button";
 import { useMenu } from "@/context/menuContext";
 import { addMenuSectionItem } from "@/actions/actions.menu";
+// import { useUser } from "@/context/userContext";
 
 const commonAllergens = [
   "Milk",
@@ -75,8 +76,10 @@ export default function AddItemForm() {
   });
 
 
-  const params = useParams();
 
+  // const {user} = useUser(); 
+  const params = useParams();
+  
   const { menu, setMenu } = useMenu();
   const [imagePending, setImagePending] = useState(false);
 
@@ -86,7 +89,7 @@ export default function AddItemForm() {
   const { showToast } = useToast();
   const mutation = useMutation({
     mutationFn: async (data: ItemSchemaType) => {
-      return await addMenuSectionItem(params.menuId as string, params.sectionId as string, data);
+      return await addMenuSectionItem(params.menuId as string, params.sectionId as string, data, params?.restaurantId as string || null);
     },
     onSuccess: (response) => {
       if (!response.success) {

@@ -34,9 +34,9 @@ export const addRestaurantSchema = z.object({
   cuisine: z.string().min(1, "Cuisine is required"),
   location: z.object({
     address: z.string().min(1, "Address is required"),
-    city: z.string().min(1, "City is required"),
-    state: z.string().min(1, "State is required"),
     country: z.string().min(1, "Country is required"),
+    state: z.string().min(1, "State is required"),
+    city: z.string().min(1, "City is required"),
   }),
   contact: z.object({
     phone: z.string().min(10, "Valid phone number required"),

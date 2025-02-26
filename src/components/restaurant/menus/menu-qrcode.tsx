@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { generateMenuQRCode } from "@/actions/actions.menu";
 import { useToast } from "@/context/toastContext";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 
 interface MenuQRCodeProps {
   menuId: string;
@@ -18,9 +19,9 @@ interface MenuQRCodeProps {
 
 export default function MenuQRCode({ menuId, qrCode }: MenuQRCodeProps) {
   const { showToast } = useToast();
-
+  const {restaurantId} = useParams(); 
   const qrCodeMutation = useMutation({
-    mutationFn: async () => generateMenuQRCode(menuId),
+    mutationFn: async () => generateMenuQRCode(menuId, restaurantId as string || null),
     onSuccess: (response) => {
       if (response.success) {
         showToast("QR code generated successfully", "success");

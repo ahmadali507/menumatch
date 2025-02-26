@@ -24,6 +24,7 @@ import DeleteMenu from "./delete-menu";
 import { SUPPORTED_LANGUAGES } from '@/lib/languages';
 import LanguageIcon from '@mui/icons-material/Language';
 import { useUser } from "@/context/userContext";
+import { useParams } from "next/navigation";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   transition: 'box-shadow 0.3s ease-in-out',
@@ -44,6 +45,8 @@ export default function MenuCard({ menu }: MenuCardProps) {
   const languageName = SUPPORTED_LANGUAGES.find(l => l.code === menu.language)?.name || menu.language;
 
   const { user } = useUser();
+  const { restaurantId } = useParams();
+  console.log("restaurant Id as super_admin", restaurantId); 
   // Helper function to determine menu status
   const getMenuStatus = (menu: Menu): ({ status: string; statusText: string; color: 'success' | 'error' | 'warning' }) => {
     const now = new Date();
@@ -110,7 +113,7 @@ export default function MenuCard({ menu }: MenuCardProps) {
         }
         title={
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Link href={`${routes.menu}/${menu.id}`} passHref>
+            <Link                 href={user?.role == "super_admin" ? `/restaurants/${restaurantId}/menu/${menu.id}`:`${routes.menu}/${menu.id}`}  passHref>
               <Typography
                 variant="h6"
                 component="h3"
@@ -132,7 +135,7 @@ export default function MenuCard({ menu }: MenuCardProps) {
                 {menu.name}
               </Typography>
             </Link>
-            {user?.role === "admin" && (
+            
               <Box
                 sx={{
                   display: { xs: 'flex', sm: 'none' },
@@ -140,14 +143,14 @@ export default function MenuCard({ menu }: MenuCardProps) {
                   alignItems: 'center'
                 }}
               >
-                <Link href={`${routes.menu}/${menu.id}`} passHref>
+                <Link 
+                href={user?.role == "super_admin" ? `/restaurants/${restaurantId}/menu/${menu.id}`:`${routes.menu}/${menu.id}`} passHref>
                   <IconButton size="small" color="primary" aria-label="edit menu">
                     <EditIcon />
                   </IconButton>
                 </Link>
                 <DeleteMenu menuId={menu?.id} />
               </Box>
-            )}
           </Box>
         }
         action={
