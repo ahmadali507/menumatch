@@ -445,12 +445,13 @@ export const deleteMenuItem = async (menuId: string, sectionId: string, itemId: 
   }
 }
 
-export async function generateMenuQRCode(menuId: string) {
+export async function generateMenuQRCode(menuId: string, restaurantId: string | null) {
   await initAdmin();
   const firestore = getFirestore();
-  const restaurantId = await getRestaurantIdForAdmin();
 
-  try {
+  if(restaurantId === null){
+    restaurantId = await getRestaurantIdForAdmin();
+}  try {
     const menuRef = firestore
       .collection("restaurants")
       .doc(restaurantId)

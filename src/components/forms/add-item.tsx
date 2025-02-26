@@ -39,7 +39,7 @@ import { useToast } from "@/context/toastContext";
 import LoadingButton from "../ui/loading-button";
 import { useMenu } from "@/context/menuContext";
 import { addMenuSectionItem } from "@/actions/actions.menu";
-import { useUser } from "@/context/userContext";
+// import { useUser } from "@/context/userContext";
 
 const commonAllergens = [
   "Milk",
