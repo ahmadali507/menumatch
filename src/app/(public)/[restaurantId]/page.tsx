@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import { getRestaurantData } from "@/actions/actions.admin";
 import { getAllMenus } from "@/actions/actions.menu";
-import PublicMenuCard from "@/components/public/menu/public-menu-card";
 import { Box, Container, Typography, Grid } from "@mui/material";
 import PublicRestaurantHeader from "@/components/public/menu/public-restaurant-header";
 import LanguageSelector from "@/components/public/language-selector";
+import PublicMenuCard from "@/components/public/menu/public-menu-card";
+import ThemeSwitcher from "@/components/public/menu/theme-switcher";
 
 export default async function RestaurantPublicPage({
   params,
@@ -30,9 +31,13 @@ export default async function RestaurantPublicPage({
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      <ThemeSwitcher />
       <PublicRestaurantHeader restaurant={restaurantData} />
 
-      <Box sx={{ my: 3, display: 'flex', justifyContent: 'flex-end' }}>
+      <Box sx={{ my: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold' }}>
+          Menus
+        </Typography>
         <LanguageSelector restaurantId={restaurantId} currentLanguage={selectedLanguage} />
       </Box>
 
@@ -42,6 +47,7 @@ export default async function RestaurantPublicPage({
             <Grid item xs={12} sm={6} md={4} key={menu.id}>
               <PublicMenuCard
                 menu={menu}
+                menuId={menu.id}
                 restaurantId={restaurantId}
               />
             </Grid>

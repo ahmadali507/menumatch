@@ -5,107 +5,247 @@ import {
   CardHeader,
   Typography,
   Box,
-  Avatar,
+  Chip,
   Stack,
+  Avatar,
+  Divider,
   styled
 } from "@mui/material";
-import { format, isAfter, isBefore } from "date-fns";
+import { format, isAfter, isBefore, formatDistanceToNow } from "date-fns";
 import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
+import LayersIcon from "@mui/icons-material/Layers";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import RamadanIcon from '@mui/icons-material/Star';
 import Link from "next/link";
+import { SUPPORTED_LANGUAGES } from '@/lib/languages';
+import LanguageIcon from '@mui/icons-material/Language';
 
+// Styled components
 const StyledCard = styled(Card)(({ theme }) => ({
-  transition: 'transform 0.2s ease-in-out',
+  transition: 'box-shadow 0.3s ease-in-out',
   '&:hover': {
-    transform: 'translateY(-4px)',
     boxShadow: theme.shadows[4],
   },
-  height: '100%',
+  height: '100%', // Make all cards same height
   display: 'flex',
   flexDirection: 'column',
 }));
 
 type PublicMenuCardProps = {
-  menu: Menu;
+  menu: Omit<Menu, "sections"> & { sectionsCount: number };
+  onDelete?: (id: string) => void;
   restaurantId: string;
+  menuId: string;
 };
 
-export default function PublicMenuCard({ menu, restaurantId }: PublicMenuCardProps) {
-  const getMenuStatus = (menu: Menu) => {
+export default function PublicMenuCard({ menu, menuId, restaurantId }: PublicMenuCardProps) {
+  const languageName = SUPPORTED_LANGUAGES.find(l => l.code === menu.language)?.name || menu.language;
+
+  const publicMenuRouteLink = `/${restaurantId}/menu/${menuId}`;
+
+  // Helper function to determine menu status
+  const getMenuStatus = (menu: Omit<Menu, "sections">): ({ status: string; statusText: string; color: 'success' | 'error' | 'warning' }) => {
     const now = new Date();
 
     switch (menu.availabilityType) {
       case 'indefinite':
         return {
-          status: 'active',
-          statusText: 'Available',
-          color: 'success'
+          status: menu.status === 'active' ? 'active' : 'inactive',
+          statusText: menu.status === 'active' ? 'Always Available' : 'Inactive',
+          color: menu.status === 'active' ? 'success' : 'error'
         };
 
       case 'custom':
       case 'ramadan':
-        if (!menu.startDate || !menu.endDate) return { status: 'invalid', statusText: 'Unavailable', color: 'error' };
-        if (isBefore(now, menu.startDate)) return { status: 'upcoming', statusText: 'Coming Soon', color: 'warning' };
-        if (isAfter(now, menu.endDate)) return { status: 'expired', statusText: 'Unavailable', color: 'error' };
-        return { status: 'active', statusText: 'Available', color: 'success' };
+        if (!menu.startDate || !menu.endDate) {
+          return {
+            status: 'invalid',
+            statusText: 'Invalid Dates',
+            color: 'error'
+          };
+        }
+
+        if (isBefore(now, menu.startDate as Date)) {
+          return {
+            status: 'upcoming',
+            statusText: 'Upcoming',
+            color: 'warning'
+          };
+        }
+
+        if (isAfter(now, menu.endDate as Date)) {
+          return {
+            status: 'expired',
+            statusText: 'Expired',
+            color: 'error'
+          };
+        }
+
+        return {
+          status: 'active',
+          statusText: 'Currently Active',
+          color: 'success'
+        };
 
       default:
-        return { status: 'invalid', statusText: 'Unavailable', color: 'error' };
+        return {
+          status: 'invalid',
+          statusText: 'Invalid Type',
+          color: 'error'
+        };
     }
   };
 
   const menuStatus = getMenuStatus(menu);
 
+  console.log("the manu cards", menu.id)
   return (
-    <Link href={`/${restaurantId}/menu/${menu.id}`} passHref style={{ textDecoration: 'none' }}>
-      <StyledCard>
-        <CardHeader
-          avatar={
-            <Avatar sx={{ bgcolor: 'primary.main' }}>
-              <RestaurantMenuIcon />
-            </Avatar>
-          }
-          title={
-            <Typography variant="h6" component="h3">
-              {menu.name}
-            </Typography>
-          }
-        />
+    <StyledCard>
+      <CardHeader
+        avatar={
+          <Avatar sx={{ bgcolor: 'primary.main' }}>
+            <RestaurantMenuIcon />
+          </Avatar>
+        }
+        title={
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Link href={publicMenuRouteLink} passHref>
+              <Typography
+                variant="h6"
+                component="h3"
+                noWrap
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  '&:hover': {
+                    textDecoration: 'underline'
+                  },
+                  // Responsive width adjustment
+                  maxWidth: {
+                    xs: '250px',
+                    sm: '300px',
+                    md: '400px'
+                  }
+                }}
+              >
+                {menu.name}
+              </Typography>
+            </Link>
 
-        <Stack spacing={2} sx={{ p: 2, flex: 1 }}>
+          </Box>
+        }
+
+      />
+
+
+      <Divider />
+
+      <Stack spacing={2} sx={{ height: '100%', minHeight: '160px' }}> {/* Added minHeight */}
+        <Stack spacing={1} sx={{ flex: 1 }}> {/* Added flex: 1 to take remaining space */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            {menu.availabilityType === "ramadan" && (
+            {menu.availabilityType === "ramadan" &&
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <RamadanIcon color="success" sx={{ fontSize: 20 }} />
-                <Typography variant="caption" sx={{ color: "lightgreen" }}>
+                <RamadanIcon
+                  color="success"
+                  sx={{ fontSize: 20 }}
+                />
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: "lightgreen",
+                    fontWeight: 500,
+                    textTransform: 'uppercase'
+                  }}
+                >
                   Ramadan Menu
                 </Typography>
-              </Box>
-            )}
+              </Box>}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <AccessTimeIcon color={menuStatus.color as any} sx={{ fontSize: 20 }} />
-              <Typography variant="caption" sx={{ color: theme => theme.palette[menuStatus.color as any].main }}>
+              <AccessTimeIcon
+                color={menuStatus.color}
+                sx={{ fontSize: 20 }}
+              />
+              <Typography
+                variant="caption"
+                sx={{
+                  color: theme => theme.palette[menuStatus.color].main,
+                  fontWeight: 500,
+                  textTransform: 'uppercase'
+                }}
+              >
                 {menuStatus.statusText}
               </Typography>
             </Box>
           </Box>
 
-          {menu.availabilityType !== 'indefinite' && menu.startDate && menu.endDate && (
+          {menu.availabilityType !== 'indefinite' ? (
             <Stack spacing={0.5}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Available from
+                <Typography variant="body2" color="text.secondary" sx={{ minWidth: 80 }}>
+                  Starts
                 </Typography>
                 <Typography variant="body2">
-                  {format(menu.startDate, 'MMM d')} - {format(menu.endDate, 'MMM d, yyyy')}
+                  {format(menu.startDate as Date, 'EEEE, MMMM d, yyyy')}
                 </Typography>
               </Box>
-            </Stack>
-          )}
 
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ minWidth: 80 }}>
+                  Ends
+                </Typography>
+                <Typography variant="body2">
+                  {format(menu.endDate as Date, 'EEEE, MMMM d, yyyy')}
+                </Typography>
+              </Box>
+
+              {menuStatus.status !== 'invalid' && (
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                  {menuStatus.status === 'active'
+                    ? `Expires ${formatDistanceToNow(menu.endDate as Date, { addSuffix: true })}`
+                    : menuStatus.status === 'upcoming'
+                      ? `Starts ${formatDistanceToNow(menu.startDate as Date, { addSuffix: true })}`
+                      : `Expired ${formatDistanceToNow(menu.endDate as Date, { addSuffix: true })}`
+                  }
+                </Typography>
+              )}
+            </Stack>
+          ) : (
+            <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                This menu is always available to customers
+              </Typography>
+            </Box>
+          )}
         </Stack>
-      </StyledCard>
-    </Link>
+
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          flexWrap="wrap"
+          useFlexGap
+        >
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Chip
+              label={menuStatus.statusText}
+              color={menuStatus.color}
+              size="small"
+            />
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <LayersIcon sx={{ fontSize: 16 }} color="action" />
+            <Chip
+              label={`${menu.sectionsCount} sections`}
+              size="small"
+              variant="outlined"
+            />
+          </Box>
+        </Stack>
+        <div className="flex items-center gap-2 text-sm">
+          <LanguageIcon fontSize="small" />
+          <span>{languageName}</span>
+        </div>
+      </Stack>
+    </StyledCard>
   );
 }

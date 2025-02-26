@@ -1,7 +1,8 @@
 'use client';
 
-import { FormControl, Select, MenuItem } from '@mui/material';
+import { FormControl, Select, MenuItem, Box, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
 
 const LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -17,24 +18,31 @@ export default function LanguageSelector({
   restaurantId: string;
 }) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const handleLanguageChange = (newLang: string) => {
-    router.push(`/${restaurantId}?lang=${newLang}`);
+    startTransition(() => {
+      router.push(`/${restaurantId}?lang=${newLang}`);
+    });
   };
 
   return (
-    <FormControl size="small">
-      <Select
-        value={currentLanguage}
-        onChange={(e) => handleLanguageChange(e.target.value)}
-        sx={{ minWidth: 120 }}
-      >
-        {LANGUAGES.map((lang) => (
-          <MenuItem key={lang.code} value={lang.code}>
-            {lang.label}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <FormControl size="small">
+        <Select
+          value={currentLanguage}
+          onChange={(e) => handleLanguageChange(e.target.value)}
+          sx={{ minWidth: 120 }}
+          disabled={isPending}
+        >
+          {LANGUAGES.map((lang) => (
+            <MenuItem key={lang.code} value={lang.code}>
+              {lang.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      {isPending && <CircularProgress size={20} />}
+    </Box>
   );
 }

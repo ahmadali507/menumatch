@@ -45,8 +45,8 @@ export default function PublicRestaurantHeader({
                 </Typography>
               </div>
 
-              <div className="flex md:justify-start gap-2 mt-4 mb-2">
-                <LocationOnIcon sx={{ color: 'grey.400', mt: 1 }} />
+              <div className="flex items-center md:justify-start gap-2 mt-4 mb-2">
+                <LocationOnIcon sx={{ color: 'grey.400' }} />
                 <Typography
                   variant="subtitle1"
                   lineHeight={1.25}

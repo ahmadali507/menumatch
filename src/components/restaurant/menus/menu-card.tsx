@@ -25,7 +25,6 @@ import { SUPPORTED_LANGUAGES } from '@/lib/languages';
 import LanguageIcon from '@mui/icons-material/Language';
 import { useUser } from "@/context/userContext";
 
-// Styled components
 const StyledCard = styled(Card)(({ theme }) => ({
   transition: 'box-shadow 0.3s ease-in-out',
   '&:hover': {

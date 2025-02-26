@@ -710,7 +710,7 @@ export const addMenuPromo = async (menuId: string, content: string) => {
 
 export async function getAllMenus(restaurantId: string): Promise<{
   success: boolean;
-  menus: Menu[];
+  menus: (Omit<Menu, "sections"> & { sectionsCount: number })[];
   error?: string;
 }> {
   try {
@@ -723,14 +723,13 @@ export async function getAllMenus(restaurantId: string): Promise<{
       "name": doc.data().name,
       "status": doc.data().status,
       "availabilityType": doc.data().availabilityType,
-      // "sections": doc.data().sections,
+      sectionsCount: doc.data().sections.length,
       "language": doc.data().language,
       createdAt: formatFirebaseTimestamp(doc.data().createdAt),
       updatedAt: formatFirebaseTimestamp(doc.data().updatedAt),
       startDate: doc.data().startDate && formatFirebaseTimestamp(doc.data().startDate),
       endDate: doc.data().endDate && formatFirebaseTimestamp(doc.data().endDate),
-
-    })) as Menu[];
+    }));
 
     return {
       success: true,
