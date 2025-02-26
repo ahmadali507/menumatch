@@ -743,3 +743,52 @@ export async function getAllMenus(restaurantId: string): Promise<{
     };
   }
 }
+
+export async function updateMenuData(menuId: string, menuData: Menu) {
+  await initAdmin();
+  const firestore = getFirestore();
+
+  try {
+
+    const restaurantId = await getRestaurantIdForAdmin();
+
+    const menuRef = firestore
+      .collection("restaurants")
+      .doc(restaurantId)
+      .collection("menus")
+      .doc(menuId);
+
+    const menuDoc = await menuRef.get();
+    if (!menuDoc.exists) {
+      throw new Error("Menu not found");
+    }
+
+
+    // remove the 'id' property from the imported data
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, ...rest } = menuData;
+
+    // Update the menu document
+    await menuRef.update({
+      ...rest,
+      updatedAt: new Date()
+    });
+
+    revalidatePath(`/restaurant/menu/${menuId}`);
+
+    return {
+      success: true as const,
+      menu: {
+        ...menuData,
+        updatedAt: new Date()
+      }
+    };
+
+  } catch (error) {
+    console.error('Error updating menu:', error);
+    return {
+      success: false as const,
+      error: (error as Error).message || 'Failed to update menu'
+    };
+  }
+}

@@ -6,6 +6,7 @@ import RamadanIcon from '@mui/icons-material/Star';
 import { Menu } from "@/types";
 import MenuQRCode from "./menu-qrcode";
 import MenuExport from "./menu-export";
+import MenuImport from "./menu-import";
 
 export default function MenuOverview({ menu }: { menu: Menu }) {
   const isActive = menu.startDate! <= new Date() && menu.endDate! >= new Date();
@@ -78,6 +79,7 @@ export default function MenuOverview({ menu }: { menu: Menu }) {
           menuId={menu.id}
           qrCode={menu.qrCode}
         />
+        <MenuImport menuId={menu.id} />
         <MenuExport menu={menu} />
       </div>
 
