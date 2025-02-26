@@ -1,6 +1,38 @@
-import { Paper, Typography, Grid } from '@mui/material';
+import { Paper, Typography, Grid, Box } from '@mui/material';
+import FastfoodIcon from '@mui/icons-material/Fastfood';
 import { MenuSection } from '@/types';
 import MenuItemCard from "./public-menu-item"
+
+function NoItemsSection() {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 0.5,
+        py: 4,
+        opacity: 0.7
+      }}
+    >
+      <FastfoodIcon
+        sx={{
+          fontSize: '3rem',
+          color: 'text.secondary',
+          opacity: 0.5
+        }}
+      />
+      <Typography
+        variant="subtitle1"
+        color="text.secondary"
+        align="center"
+      >
+        No items available in this section
+      </Typography>
+    </Box>
+  );
+}
 
 export default function PublicMenuSection({
   section,
@@ -13,8 +45,6 @@ export default function PublicMenuSection({
     if (selectedLabels.length === 0) return true;
     return item.labels?.some(label => selectedLabels.includes(label));
   });
-
-  if (filteredItems.length === 0) return null;
 
   return (
     <Paper
@@ -46,13 +76,17 @@ export default function PublicMenuSection({
       >
         {section.name}
       </Typography>
-      <Grid container spacing={3}>
-        {filteredItems.map((item) => (
-          <Grid item xs={12} sm={6} md={4} key={item.id}>
-            <MenuItemCard item={item} />
-          </Grid>
-        ))}
-      </Grid>
+      {filteredItems.length > 0 ? (
+        <Grid container spacing={3}>
+          {filteredItems.map((item) => (
+            <Grid item xs={12} sm={6} md={4} key={item.id}>
+              <MenuItemCard item={item} />
+            </Grid>
+          ))}
+        </Grid>
+      ) : (
+        <NoItemsSection />
+      )}
     </Paper>
   );
 }
