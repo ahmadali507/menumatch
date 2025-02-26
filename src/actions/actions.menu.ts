@@ -707,3 +707,40 @@ export const addMenuPromo = async (menuId: string, content: string) => {
     };
   }
 };
+
+export async function getAllMenus(restaurantId: string): Promise<{
+  success: boolean;
+  menus: Menu[];
+  error?: string;
+}> {
+  try {
+    await initAdmin();
+    const firestore = getFirestore();
+    const menusRef = firestore.collection("restaurants").doc(restaurantId).collection("menus");
+    const snapshot = await menusRef.get();
+    const menus = snapshot.docs.map(doc => ({
+      id: doc.id,
+      "name": doc.data().name,
+      "status": doc.data().status,
+      "availabilityType": doc.data().availabilityType,
+      // "sections": doc.data().sections,
+      "language": doc.data().language,
+      createdAt: formatFirebaseTimestamp(doc.data().createdAt),
+      updatedAt: formatFirebaseTimestamp(doc.data().updatedAt),
+      startDate: doc.data().startDate && formatFirebaseTimestamp(doc.data().startDate),
+      endDate: doc.data().endDate && formatFirebaseTimestamp(doc.data().endDate),
+
+    })) as Menu[];
+
+    return {
+      success: true,
+      menus
+    };
+  } catch (error) {
+    return {
+      success: false,
+      menus: [],
+      error: (error as Error).message || 'Failed to fetch menus'
+    };
+  }
+}

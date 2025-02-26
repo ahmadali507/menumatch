@@ -79,15 +79,22 @@ export default async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
+     * Match specific routes:
+     * - /restaurants/* (super admin routes)
+     * - /admins/* (admin management)
+     * - /settings/* (user settings)
+     * - /restaurant/menu/* (restaurant admin routes)
+     * 
+     * Exclude:
      * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-     * - Dynamic route for restaurant menus
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|auth|\\w+/menu/\\w+).*)',
-    '/restaurant/menu/:path*'  // Include restaurant menu admin routes
-
+    '/restaurants/:path*',
+    '/admins/:path*',
+    '/settings/:path*',
+    '/restaurant/:path*',
+    '/',  // Only match root path
   ],
 }

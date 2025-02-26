@@ -15,6 +15,7 @@ import LabelSearch from "./label-search";
 import SaveVersion from './save-version';
 import SwitchVersion from './switch-version';
 
+
 export default function MenuSectionsList({ menuId, restaurantId }: { sections: MenuSectionType[], menuId: string, restaurantId: string }) {
 
   const { menu, setMenu } = useMenu();

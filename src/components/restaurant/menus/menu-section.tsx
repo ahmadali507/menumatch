@@ -19,6 +19,7 @@ import { SortableContext, arrayMove } from '@dnd-kit/sortable';
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import Button from '@mui/material/Button';
 
 import { format } from "date-fns";
 import AddItemToMenu from "./actions/add-item-menu";
@@ -30,6 +31,8 @@ import { reorderItems, updateMenuSectionName } from "@/actions/actions.menu";
 import { useMenu } from "@/context/menuContext";
 // import { dummyMenuSection } from "@/lib/dummy";
 
+const ITEMS_PER_PAGE = 6;
+
 interface MenuSectionProps {
   menuId: string;
   section: MenuSectionType;
@@ -39,6 +42,7 @@ interface MenuSectionProps {
 export default function MenuSection({ menuId, section, selectedLabels }: MenuSectionProps) {
   const [, setItems] = useState(section.items);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [itemsToShow, setItemsToShow] = useState(ITEMS_PER_PAGE);
 
   const { menu, setMenu } = useMenu();
   const {
@@ -110,6 +114,19 @@ export default function MenuSection({ menuId, section, selectedLabels }: MenuSec
 
   };
 
+  const handleSeeMore = () => {
+    setItemsToShow(prev => prev + ITEMS_PER_PAGE);
+  };
+
+  const displayedItems = useMemo(() => {
+    const filtered = !selectedLabels.length
+      ? section.items
+      : section.items.filter(item =>
+        selectedLabels.some(label => item.labels?.includes(label))
+      );
+    return filtered.slice(0, itemsToShow);
+  }, [section.items, selectedLabels, itemsToShow]);
+
   const filteredItems = useMemo(() => {
     if (!selectedLabels.length) return section.items;
 
@@ -117,6 +134,8 @@ export default function MenuSection({ menuId, section, selectedLabels }: MenuSec
       selectedLabels.some(label => item.labels?.includes(label))
     );
   }, [section.items, selectedLabels]);
+
+  const hasMoreItems = filteredItems.length > itemsToShow;
 
   if (selectedLabels.length > 0 && filteredItems.length === 0) {
     return null;
@@ -209,23 +228,52 @@ export default function MenuSection({ menuId, section, selectedLabels }: MenuSec
 
         <Collapse in={isExpanded} timeout="auto">
           {filteredItems.length > 0 ? (
-            <DndContext
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext items={filteredItems.map(item => item.id as string)}>
-                <Grid container spacing={3}>
-                  {filteredItems.map((item, index) => (
-                    <MenuItemCard
-                      menuId={menuId}
-                      sectionId={section.id}
-                      key={item.name + index}
-                      item={item}
-                    />
-                  ))}
-                </Grid>
-              </SortableContext>
-            </DndContext>
+            <>
+              <DndContext
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext items={displayedItems.map(item => item.id as string)}>
+                  <Grid container spacing={3}>
+                    {displayedItems.map((item, index) => (
+                      <MenuItemCard
+                        menuId={menuId}
+                        sectionId={section.id}
+                        key={item.name + index}
+                        item={item}
+                      />
+                    ))}
+                  </Grid>
+                </SortableContext>
+              </DndContext>
+
+              {hasMoreItems && (
+                <Box sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  mt: 3,
+                  pb: 2
+                }}>
+                  <Button
+                    onClick={handleSeeMore}
+                    variant="outlined"
+                    color="primary"
+                    size="medium"
+                    sx={{
+                      minWidth: 200,
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        backgroundColor: 'rgba(25, 118, 210, 0.08)',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 2px 8px rgba(25, 118, 210, 0.25)',
+                      },
+                    }}
+                  >
+                    Show More ({filteredItems.length - itemsToShow} remaining)
+                  </Button>
+                </Box>
+              )}
+            </>
           ) : (
             <EmptyState />
           )}

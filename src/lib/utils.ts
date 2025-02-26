@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import { storage } from "../firebase/firebaseconfig";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { twMerge } from "tailwind-merge"
+import { MenuItem } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -120,3 +121,22 @@ export const RAMADAN_DATES = {
   2033: { start: new Date(2032, 11, 4), end: new Date(2033, 0, 2) },
   2034: { start: new Date(2033, 10, 23), end: new Date(2033, 11, 22) },
 } as const;
+
+export function generateDummyMenuItems(count: number): MenuItem[] {
+  return Array.from({ length: count }, (_, i) => ({
+    id: `item-${i + 1}`,
+    name: "Margherita Pizza",
+    description: "Classic Italian pizza with fresh tomatoes, mozzarella, and basil",
+    price: 12.99,
+    image: "https://source.unsplash.com/random/400x300/?pizza",
+    labels: ["vegetarian", "popular"],
+    variants: [],
+    addons: [],
+    category: "Pizza",
+    available: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ingredients: [],
+    allergens: [],
+  }));
+}
