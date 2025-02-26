@@ -32,6 +32,7 @@ import MenuItemImageUpload from '@/components/forms/menu-item-image-upload';
 import ImageCropDialog from '@/components/forms/image-crop';
 import { uploadImageToStorage, validateImage } from '@/lib/utils';
 import { useMenu } from '@/context/menuContext';
+import { useParams } from 'next/navigation';
 
 interface EditItemDialogProps {
   open: boolean;
@@ -53,6 +54,7 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
   const [ingredientInput, setIngredientInput] = useState("");
 
   const { menu, setMenu } = useMenu();
+  const {restaurantId} = useParams(); 
 
   const {
     register,
@@ -85,7 +87,7 @@ export default function EditItemDialog({ open, onClose, item, menuId, sectionId 
         photoURL = originalPhoto;
       }
 
-      return await updateSectionItem(menuId, sectionId, item.id as string, {
+      return await updateSectionItem(restaurantId as string || null, menuId, sectionId, item.id as string, {
         ...data,
         photo: photoURL as string,
       });

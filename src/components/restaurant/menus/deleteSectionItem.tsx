@@ -9,7 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/context/toastContext";
 import { deleteMenuSection } from "@/actions/actions.menu";
 import { deleteMenuItem } from "@/actions/actions.menu";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useMenu } from "@/context/menuContext";
 
 interface DeleteSectionItemProps {
@@ -23,12 +23,13 @@ export default function DeleteSectionItem({ menuId, sectionId, itemId }: DeleteS
   const { showToast } = useToast();
   const router = useRouter();
   const { menu, setMenu } = useMenu();
+  const {restaurantId} = useParams();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
       return itemId 
-        ? deleteMenuItem(menuId, sectionId, itemId)
-        : deleteMenuSection(menuId, sectionId);
+        ? deleteMenuItem(menuId, sectionId, itemId, restaurantId as string || null)
+        : deleteMenuSection(menuId, sectionId, restaurantId as string || null);
     },
     onSuccess: (response) => {
       if (!response.success) {

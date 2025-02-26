@@ -273,12 +273,14 @@ export async function addMenuSection(menuId: string, sectionName: string, restau
 }
 
 
-export const addMenuSectionItem = async (menuId: string, sectionId: string, item: MenuItem) => {
+export const addMenuSectionItem = async (menuId: string, sectionId: string, item: MenuItem, restaurantId: string|null) => {
   await initAdmin();
   const firestore = getFirestore();
-  const restaurantId = await getRestaurantIdForAdmin();
+  if(restaurantId === null){
+     restaurantId = await getRestaurantIdForAdmin();
+  }
   try {
-    const menuRef = firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId);
+    const menuRef = firestore.collection("restaurants").doc(restaurantId as string).collection("menus").doc(menuId);
     const menuDoc = await menuRef.get();
     if (!menuDoc.exists) {
       throw new Error("Menu not found");
@@ -306,6 +308,7 @@ export const addMenuSectionItem = async (menuId: string, sectionId: string, item
 
 
     revalidatePath(`/restaurant/menu/${menuId}`);
+    revalidatePath(`/restaurants/${restaurantId}/menu/${menuId}`);
     return { success: true, item: item };
   } catch (error) {
     return { success: false, error: (error as Error).message }
@@ -314,10 +317,12 @@ export const addMenuSectionItem = async (menuId: string, sectionId: string, item
 
 
 
-export const deleteMenuSection = async (menuId: string, sectionId: string) => {
+export const deleteMenuSection = async (menuId: string, sectionId: string, restaurantId: string|null) => {
   await initAdmin();
   const firestore = getFirestore();
-  const restaurantId = await getRestaurantIdForAdmin();
+  if(restaurantId === null){
+        restaurantId = await getRestaurantIdForAdmin();
+  }
 
   try {
     const menuRef = firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId);
@@ -375,10 +380,12 @@ export const deleteMenuSection = async (menuId: string, sectionId: string) => {
     return { success: false, error: (error as Error).message }
   }
 }
-export const deleteMenuItem = async (menuId: string, sectionId: string, itemId: string) => {
+export const deleteMenuItem = async (menuId: string, sectionId: string, itemId: string, restaurantId: string | null) => {
   await initAdmin();
   const firestore = getFirestore();
-  const restaurantId = await getRestaurantIdForAdmin();
+  if(restaurantId === null){
+    restaurantId = await getRestaurantIdForAdmin();
+  }
 
   try {
     const menuRef = firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId);
@@ -532,10 +539,12 @@ export const updateMenuSectionName = async (menuId: string, sectionId: string, n
 
 /////////// edit single item in a section /////////////////////
 
-export const updateSectionItem = async (menuId: string, sectionId: string, itemId: string, data: MenuItem) => {
+export const updateSectionItem = async (restaurantId: string | null, menuId: string, sectionId: string, itemId: string, data: MenuItem) => {
   await initAdmin();
   const firestore = getFirestore();
-  const restaurantId = await getRestaurantIdForAdmin();
+  if(restaurantId === null){
+    restaurantId = await getRestaurantIdForAdmin();
+  }
 
   try {
     const menuRef = firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId);
