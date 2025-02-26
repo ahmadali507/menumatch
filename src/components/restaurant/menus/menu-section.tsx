@@ -29,6 +29,7 @@ import MenuItemCard from "./menu-item";
 import DeleteSectionItem from "./deleteSectionItem";
 import { reorderItems, updateMenuSectionName } from "@/actions/actions.menu";
 import { useMenu } from "@/context/menuContext";
+import { useParams } from "next/navigation";
 // import { dummyMenuSection } from "@/lib/dummy";
 
 const ITEMS_PER_PAGE = 6;
@@ -61,10 +62,11 @@ export default function MenuSection({ menuId, section, selectedLabels }: MenuSec
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const {restaurantId} = useParams(); 
   const handleSectionNameUpdate = async (newName: string) => {
 
     console.log('Section name updated:', newName);
-    return await updateMenuSectionName(menuId, section.id, newName);
+    return await updateMenuSectionName(menuId, section.id, newName, restaurantId as string || null);
     // Add your update logic here
   };
 
@@ -99,7 +101,7 @@ export default function MenuSection({ menuId, section, selectedLabels }: MenuSec
             )
           };
           setMenu(updatedMenu);
-          const response = await reorderItems(menuId, section.id, reorderedItems);
+          const response = await reorderItems(restaurantId as string || null, menuId, section.id, reorderedItems);
           if (!response.success) {
             console.error("Failed to reorder items", response.error);
             return;
