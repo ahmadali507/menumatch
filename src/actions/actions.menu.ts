@@ -28,41 +28,56 @@ export const addMenu = async ({ restaurantId, data }: {
       };
     }
 
+    const now = new Date();
+    let status: "active" | "inactive" = 'active'; // Default status
     let menuData: Omit<Menu, "id"> = {
       name: data.name,
       sections: [],
-      language: data.language, // Add language field
+      language: data.language,
       availabilityType: data.availabilityType,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      status: 'active'
+      createdAt: now,
+      updatedAt: now,
+      status: 'active' // Will be updated based on dates
     };
 
     // Handle different availability types
     switch (data.availabilityType) {
       case 'custom':
+        // Check if current date is within range
+        status = (now >= data.startDate! && now <= data.endDate!) ? 'active' : 'inactive';
         menuData = {
           ...menuData,
           startDate: data.startDate,
-          endDate: data.endDate
+          endDate: data.endDate,
+          status
         };
         break;
+
       case 'ramadan':
-        const currentYear = new Date().getFullYear();
+        const currentYear = now.getFullYear();
         const ramadanDates = RAMADAN_DATES[currentYear as keyof typeof RAMADAN_DATES];
 
         if (!ramadanDates) {
           throw new Error('Ramadan dates not available for the current year');
         }
 
+        // Check if current date is within Ramadan period
+        status = (now >= ramadanDates.start && now <= ramadanDates.end) ? 'active' : 'inactive';
+
         menuData = {
           ...menuData,
           startDate: ramadanDates.start,
-          endDate: ramadanDates.end
+          endDate: ramadanDates.end,
+          status
         };
         break;
+
       case 'indefinite':
-        // No dates needed
+        // For indefinite menus, status is always active
+        menuData = {
+          ...menuData,
+          status: 'active'
+        };
         break;
     }
 
@@ -282,11 +297,11 @@ export async function addMenuSection(menuId: string, sectionName: string, restau
 }
 
 
-export const addMenuSectionItem = async (menuId: string, sectionId: string, item: MenuItem, restaurantId: string|null) => {
+export const addMenuSectionItem = async (menuId: string, sectionId: string, item: MenuItem, restaurantId: string | null) => {
   await initAdmin();
   const firestore = getFirestore();
-  if(restaurantId === null){
-     restaurantId = await getRestaurantIdForAdmin();
+  if (restaurantId === null) {
+    restaurantId = await getRestaurantIdForAdmin();
   }
   try {
     const menuRef = firestore.collection("restaurants").doc(restaurantId as string).collection("menus").doc(menuId);
@@ -326,11 +341,11 @@ export const addMenuSectionItem = async (menuId: string, sectionId: string, item
 
 
 
-export const deleteMenuSection = async (menuId: string, sectionId: string, restaurantId: string|null) => {
+export const deleteMenuSection = async (menuId: string, sectionId: string, restaurantId: string | null) => {
   await initAdmin();
   const firestore = getFirestore();
-  if(restaurantId === null){
-        restaurantId = await getRestaurantIdForAdmin();
+  if (restaurantId === null) {
+    restaurantId = await getRestaurantIdForAdmin();
   }
 
   try {
@@ -392,7 +407,7 @@ export const deleteMenuSection = async (menuId: string, sectionId: string, resta
 export const deleteMenuItem = async (menuId: string, sectionId: string, itemId: string, restaurantId: string | null) => {
   await initAdmin();
   const firestore = getFirestore();
-  if(restaurantId === null){
+  if (restaurantId === null) {
     restaurantId = await getRestaurantIdForAdmin();
   }
 
@@ -458,9 +473,9 @@ export async function generateMenuQRCode(menuId: string, restaurantId: string | 
   await initAdmin();
   const firestore = getFirestore();
 
-  if(restaurantId === null){
+  if (restaurantId === null) {
     restaurantId = await getRestaurantIdForAdmin();
-}  try {
+  } try {
     const menuRef = firestore
       .collection("restaurants")
       .doc(restaurantId)
@@ -552,7 +567,7 @@ export const updateMenuSectionName = async (menuId: string, sectionId: string, n
 export const updateSectionItem = async (restaurantId: string | null, menuId: string, sectionId: string, itemId: string, data: MenuItem) => {
   await initAdmin();
   const firestore = getFirestore();
-  if(restaurantId === null){
+  if (restaurantId === null) {
     restaurantId = await getRestaurantIdForAdmin();
   }
 
