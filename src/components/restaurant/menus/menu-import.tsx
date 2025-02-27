@@ -68,7 +68,7 @@ export default function MenuImport({ menuId }: { menuId: string }) {
 
   const updateMenuMutation = useMutation({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    mutationFn: async (menu: any) => await updateMenuData(menuId, menu, restaurantId as string | null),
+    mutationFn: async (menu: any) => await updateMenuData(menuId, menu, restaurantId as string || null),
     onSuccess: (data) => {
       if (data.success && data.menu) {
         // Process the menu data - ensure all dates are Date objects and IDs are stable
