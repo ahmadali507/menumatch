@@ -1,4 +1,4 @@
-import { Card, Typography, Divider, Grid, Box } from "@mui/material";
+import { Card, Typography, Divider, Grid, Box, Button } from "@mui/material";
 import Image from "next/image";
 import { RestaurantType } from "@/types";
 import RestaurantHeader from "../restaurant-header";
@@ -6,13 +6,17 @@ import RestaurantStats from "../restaurant-stats";
 import AdminsList from "../admins-list";
 import MenuCard from "../menus/menu-card";
 import ManageMenusButtonLink from "./manage-menus-button-link";
+import AddIcon from '@mui/icons-material/Add';
+import Link from "next/link";
 
 export default async function RestaurantContent({
   restaurantId,
   details,
+  isSuper = false // Add this prop to check for super admin
 }: {
   restaurantId: string;
   details: RestaurantType;
+  isSuper?: boolean;
 }) {
   return (
     <div className="flex flex-col lg:flex-row gap-6 w-full">
@@ -83,7 +87,27 @@ export default async function RestaurantContent({
           <div className="pt-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
               <Typography variant="h6">Menu Management</Typography>
-              <ManageMenusButtonLink />
+              <div className="flex items-center gap-2">
+                {isSuper && (
+                  <Link href={`/restaurants/${restaurantId}/menu/add`}>
+                    <Button
+                      variant="outlined"
+                      color="success"
+                      size="small"
+                      startIcon={<AddIcon />}
+                      sx={{
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      Add Menu
+                    </Button>
+                  </Link>
+                )}
+                <ManageMenusButtonLink />
+              </div>
             </div>
             <Typography color="text.secondary">
               Create and manage restaurant menus, categories, and items

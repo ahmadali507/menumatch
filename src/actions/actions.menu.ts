@@ -85,6 +85,7 @@ export const addMenu = async ({ restaurantId, data }: {
     const menuRef = await restaurantRef.collection("menus").add(menuData);
 
     revalidatePath("/restaurant/menu");
+    revalidatePath(`/restaurants/${restaurantId}/menu/${menuRef.id}`);
 
     console.log("Menu created with ID: ", menuRef.id);
     return {

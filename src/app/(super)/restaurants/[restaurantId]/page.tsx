@@ -46,7 +46,7 @@ export default async function RestaurantDetailsPage({ params }: {
       title="Restaurant Details"
       description="Displays detailed information about a specific restaurant"
     >
-      <RestaurantInformation restaurantId={restaurantId} details={restaurantData} />
+      <RestaurantInformation restaurantId={restaurantId} details={restaurantData} isSuper={true}/>
     </SectionLayout>
   );
 }

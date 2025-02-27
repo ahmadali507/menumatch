@@ -16,7 +16,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EventIcon from '@mui/icons-material/Event';
 import { DateTimePicker } from "@mui/x-date-pickers";
 import LoadingButton from "../ui/loading-button";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useToast } from "@/context/toastContext";
 import { addMenuFormSchema, TAddMenuFormSchema } from "@/lib/schema";
 import { addMenu } from "@/actions/actions.menu";
@@ -29,6 +29,8 @@ export default function AddMenuForm() {
   const { user } = useUser();
   const { showToast } = useToast();
   const router = useRouter();
+  // if super_admin is adding the item then the user object has no restuarantId so we use params to do that. 
+  const {restaurantId} = useParams(); 
 
   const {
     register,
@@ -79,7 +81,7 @@ export default function AddMenuForm() {
 
   const onSubmit = (data: TAddMenuFormSchema) => {
     mutation.mutate({
-      restaurantId: user?.restaurantId as string,
+      restaurantId:  restaurantId as string || user?.restaurantId as string,
       data: {
         ...data,
         language: data.language as LanguageCode
