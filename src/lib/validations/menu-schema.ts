@@ -45,6 +45,7 @@ export const menuSectionSchema = z.object({
 export const menuSchema = z.object({
   // id: z.string(),
   name: z.string(),
+  language: z.string().min(2).max(2).default('en'),
   description: z.string().optional().nullable(),
   sections: z.array(menuSectionSchema),
   startDate: z.string().or(z.date()).optional().nullable(),

@@ -68,7 +68,7 @@ export default function MenuImport({ menuId }: { menuId: string }) {
 
   const updateMenuMutation = useMutation({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    mutationFn: async (menu: any) => await updateMenuData(menuId, menu, restaurantId as string || null),
+    mutationFn: async (menuData: any) => await updateMenuData(menuId, menuData, restaurantId as string || null),
     onSuccess: (data) => {
       if (data.success && data.menu) {
         // Process the menu data - ensure all dates are Date objects and IDs are stable
@@ -105,6 +105,7 @@ export default function MenuImport({ menuId }: { menuId: string }) {
     try {
       const content = await file.text();
       const data = JSON.parse(content);
+      console.log("InitialFileDtaa", data); 
 
       // Pre-process the data to convert any date strings to Date objects
       // before validation to ensure proper type checking
@@ -136,6 +137,7 @@ export default function MenuImport({ menuId }: { menuId: string }) {
   const handleConfirmImport = () => {
     if (!confirmDialog.pendingData) return;
     // perform mutation
+    console.log("confirmed Imported Data", confirmDialog.pendingData);
     updateMenuMutation.mutate(confirmDialog.pendingData);
   };
 

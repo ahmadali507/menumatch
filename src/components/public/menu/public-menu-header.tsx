@@ -17,6 +17,7 @@ export default function PublicMenuHeader({
   menu: Menu
 }) {
 
+  console.log(menu.language); 
   const languageLabel = SUPPORTED_LANGUAGES.find(l => l.code === menu.language)?.name || "Invalid Language";
 
   return (
