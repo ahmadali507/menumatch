@@ -1,3 +1,4 @@
+'use client'
 import DeleteIcon from "@mui/icons-material/Delete";
 import LoadingButton from "@/components/ui/loading-button";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from "@mui/material";
@@ -6,15 +7,17 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/context/toastContext";
 import { deleteMenu } from "@/actions/actions.menu";
+import { useParams } from "next/navigation";
 
 export default function DeleteMenu({ menuId }: { menuId: string }) {
   const [open, setOpen] = useState(false);
+  const {restaurantId} = useParams(); 
   const { showToast } = useToast();
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      return deleteMenu({ menuId });
+      return deleteMenu({ menuId, restaurantId: restaurantId as string || null });
     },
     onSuccess: (response) => {
       if (!response?.success) {

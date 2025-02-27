@@ -52,7 +52,7 @@ export default function MenuSectionsList({ menuId, restaurantId }: { sections: M
         ...menu,
         sections: reorderedSections
       });
-      const response = await reorderSections(menuId, reorderedSections);
+      const response = await reorderSections(restaurantId as string || null, menuId, reorderedSections);
       if (!response.success) {
         setMenu({
           ...menu,

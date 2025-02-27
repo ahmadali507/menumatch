@@ -20,6 +20,7 @@ import { useToast } from "@/context/toastContext";
 import { useMutation } from "@tanstack/react-query";
 import { addMenuPromo } from "@/actions/actions.menu";
 import LoadingButton from "@/components/ui/loading-button";
+import { useParams } from "next/navigation";
 
 // Dynamic import for React Quill to prevent SSR issues
 const ReactQuill = dynamic(() => import("react-quill-new"), {
@@ -48,6 +49,7 @@ export default function AddPromotionalContent({ menuId, initialContent }: {
   menuId: string,
   initialContent?: string
 }) {
+  const {restaurantId} = useParams(); 
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState(initialContent || '');
@@ -55,7 +57,7 @@ export default function AddPromotionalContent({ menuId, initialContent }: {
 
   const { mutate: addPromo, isPending } = useMutation({
     mutationFn: async (content: string) => {
-      const result = await addMenuPromo(menuId, content);
+      const result = await addMenuPromo(menuId, content, restaurantId as string ||null);
       if (!result.success) throw new Error(result.error);
       return content;
     },

@@ -15,6 +15,7 @@ import { useMenu } from '@/context/menuContext';
 import { updateMenuData } from '@/actions/actions.menu';
 import { useToast } from '@/context/toastContext';
 import LoadingButton from '@/components/ui/loading-button';
+import { useParams } from 'next/navigation';
 
 // Helper function to check if a string is a valid ISO date
 const isISODateString = (value: string): boolean => {
@@ -53,6 +54,7 @@ export default function MenuImport({ menuId }: { menuId: string }) {
 
   const { showToast } = useToast();
 
+  const {restaurantId} = useParams();
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,7 +68,7 @@ export default function MenuImport({ menuId }: { menuId: string }) {
 
   const updateMenuMutation = useMutation({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    mutationFn: async (menu: any) => await updateMenuData(menuId, menu),
+    mutationFn: async (menu: any) => await updateMenuData(menuId, menu, restaurantId as string | null),
     onSuccess: (data) => {
       if (data.success && data.menu) {
         // Process the menu data - ensure all dates are Date objects and IDs are stable

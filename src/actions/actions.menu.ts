@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server"
 
 import { TAddMenuFormSchema } from "@/lib/schema";
@@ -143,8 +144,10 @@ export const getRestaurantMenus = async (restaurantId: string) => {
         })
       })
       ),
-      createdAt: formatFirebaseTimestamp(doc.data().createdAt),
-      updatedAt: formatFirebaseTimestamp(doc.data().updatedAt),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      createdAt: formatFirebaseTimestamp(doc.data().createdAt as any),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      updatedAt: formatFirebaseTimestamp(doc.data().updatedAt as any),
     }));
 
     return {
@@ -225,12 +228,16 @@ export const getMenu = async (restaurantId: string, menuId: string) => {
 }
 
 
-export async function deleteMenu({ menuId }: { menuId: string }) {
+export async function deleteMenu({ menuId, restaurantId }: { menuId: string , restaurantId: string | null }) {
   await initAdmin();
   const firestore = getFirestore();
 
+
+  if(restaurantId === null){
+    restaurantId = await getRestaurantIdForAdmin();
+  }
+
   try {
-    const restaurantId = await getRestaurantIdForAdmin();
     // Get restaurant ID from the menu document
     const menuDoc = await firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId).get();
     // restaurantId = menuDoc.data()?.restaurantId;
@@ -520,10 +527,12 @@ export async function generateMenuQRCode(menuId: string, restaurantId: string | 
 
 ///////////////  Update Menu Section Name //////////////////////
 
-export const updateMenuSectionName = async (menuId: string, sectionId: string, newName: string) => {
+export const updateMenuSectionName = async (menuId: string, sectionId: string, newName: string, restaurantId : string | null) => {
   await initAdmin();
   const firestore = getFirestore();
-  const restaurantId = await getRestaurantIdForAdmin();
+  if(restaurantId === null){
+    restaurantId = await getRestaurantIdForAdmin();
+  }
 
   try {
     const menuRef = firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId);
@@ -549,10 +558,16 @@ export const updateMenuSectionName = async (menuId: string, sectionId: string, n
     // Format the updated section before returning
     const updatedSection = {
       ...currentSections[sectionIndex],
-      createdAt: formatFirebaseTimestamp(currentSections[sectionIndex].createdAt)
+      createdAt: formatFirebaseTimestamp(currentSections[sectionIndex].createdAt),
+      items: currentSections[sectionIndex].items.map((item: MenuItem) => ({
+        ...item,
+        createdAt: formatFirebaseTimestamp(item.createdAt as any),
+        updatedAt: formatFirebaseTimestamp(item.updatedAt as any)
+      }))
     };
 
     revalidatePath(`/restaurant/menu/${menuId}`);
+    revalidatePath(`/restaurants/${restaurantId}/menu/${menuId}`);
     return {
       success: true,
       section: updatedSection
@@ -623,10 +638,13 @@ export const updateSectionItem = async (restaurantId: string | null, menuId: str
 
 //////////// reordering the items in a ceratin section based onthe drag and drop functionlaity /////////////////// 
 
-export const reorderItems = async (menuId: string, sectionId: string, reorderedList: MenuItem[]) => {
+export const reorderItems = async (restaurantId: string|null, menuId: string, sectionId: string, reorderedList: MenuItem[]) => {
   await initAdmin();
   const firestore = getFirestore();
-  const restaurantId = await getRestaurantIdForAdmin();
+  // const restaurantId = await getRestaurantIdForAdmin();
+  if(restaurantId === null){
+    restaurantId = await getRestaurantIdForAdmin(); 
+  }
 
   try {
     const menuRef = firestore
@@ -664,12 +682,15 @@ export const reorderItems = async (menuId: string, sectionId: string, reorderedL
 
 ////// now writing a function to reorder the sectiosn ////////// 
 
-export const reorderSections = async (menuId: string, reorderedList: MenuSection[]) => {
+export const reorderSections = async (restaurantId: string | null, menuId: string, reorderedList: MenuSection[]) => {
   await initAdmin();
   const firestore = getFirestore();
+  if(restaurantId === null){
+    restaurantId = await getRestaurantIdForAdmin(); 
+  }
 
+  
   try {
-    const restaurantId = await getRestaurantIdForAdmin();
     const menuRef = firestore.collection("restaurants").doc(restaurantId).collection("menus").doc(menuId);
 
     const menuDoc = await menuRef.get();
@@ -701,10 +722,13 @@ export const reorderSections = async (menuId: string, reorderedList: MenuSection
   }
 }
 
-export const addMenuPromo = async (menuId: string, content: string) => {
+export const addMenuPromo = async (menuId: string, content: string,restaurantId: string | null) => {
   await initAdmin();
   const firestore = getFirestore();
-  const restaurantId = await getRestaurantIdForAdmin();
+  // const restaurantId = await getRestaurantIdForAdmin();
+  if(restaurantId === null){
+    restaurantId = await getRestaurantIdForAdmin(); 
+  }
 
   try {
     const menuRef = firestore
@@ -769,13 +793,16 @@ export async function getAllMenus(restaurantId: string): Promise<{
   }
 }
 
-export async function updateMenuData(menuId: string, menuData: Menu) {
+export async function updateMenuData(menuId: string, menuData: Menu, restaurantId: string | null) {
   await initAdmin();
   const firestore = getFirestore();
 
   try {
 
-    const restaurantId = await getRestaurantIdForAdmin();
+    // const restaurantId = await getRestaurantIdForAdmin();
+    if(restaurantId === null){
+      restaurantId = await getRestaurantIdForAdmin(); 
+    }
 
     const menuRef = firestore
       .collection("restaurants")
