@@ -62,7 +62,6 @@ export default function CreateAdminForm() {
   } = useMutation({
     mutationFn: async (data: AdminFormData) => {
       const currentUser = auth.currentUser;
-      console.log("user", currentUser);
       const idToken = await currentUser?.getIdToken(true);
       return addRestaurantAdmin(
         {

@@ -1,6 +1,7 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from "@mui/material";
 import { resAdminType } from "@/types";
 import { useState } from "react";
+import LoadingButton from "../ui/loading-button";
 
 interface EditAdminDialogProps {
   admin: resAdminType;
@@ -9,11 +10,11 @@ interface EditAdminDialogProps {
   isLoading: boolean;
 }
 
-export default function EditAdminDialog({ 
-  admin, 
-  onClose, 
+export default function EditAdminDialog({
+  admin,
+  onClose,
   onSubmit,
-  isLoading 
+  isLoading
 }: EditAdminDialogProps) {
   const [formData, setFormData] = useState({
     name: admin.name,
@@ -50,13 +51,14 @@ export default function EditAdminDialog({
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose} disabled={isLoading}>Cancel</Button>
-          <Button 
-            type="submit" 
-            variant="contained" 
-            disabled={isLoading}
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            loading={isLoading}
+            loadingText="Updating..."
           >
-            {isLoading ? 'Updating...' : 'Update'}
-          </Button>
+            Update
+          </LoadingButton>
         </DialogActions>
       </form>
     </Dialog>

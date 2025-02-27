@@ -137,6 +137,10 @@ export const createRestaurant = async (formData: FormData, idToken: string) => {
     // Add to Firestore
     const restaurantRef = await firestore.collection('restaurants').add(restaurantData);
 
+    revalidatePath("/restaurants");
+    revalidatePath("/");
+    revalidatePath("/restaurant")
+
     return {
       success: true,
       restaurantId: restaurantRef.id
@@ -256,6 +260,8 @@ export const editRestaurant = async (
 
     await restaurantRef.update(updateData);
 
+    revalidatePath("/restaurants");
+
     return {
       success: true,
       restaurant: {
@@ -285,6 +291,7 @@ export const deleteRestaurant = async (restaurantId: string, idToken: string) =>
     await firestore.collection("restaurants").doc(restaurantId).delete();
 
     revalidatePath("/restaurants");
+    revalidatePath("/");
     return { success: true, message: "Restaurant deleted successfully" };
   } catch (error) {
     console.error("Error deleting restaurant:", error);
@@ -441,6 +448,7 @@ export const deleteAdmin = async (adminId: string, idToken: string) => {
     await firestore.collection("users").doc(adminId).delete();
 
     revalidatePath("/restaurants");
+    revalidatePath("/");
 
     return {
       success: true,

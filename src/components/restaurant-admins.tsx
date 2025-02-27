@@ -1,5 +1,5 @@
 "use client";
-import { AvatarGroup, Card, Avatar, Typography, Box, useTheme } from "@mui/material";
+import { Card, Avatar, Typography, Box, useTheme } from "@mui/material";
 
 type Admin = {
   id: string;
@@ -19,24 +19,6 @@ export default function RestaurantAdmins({ admins }: { admins: Admin[] }) {
         <Typography variant="h6" sx={{ mb: { xs: 1.5, sm: 2 } }}>
           Restaurant Admins
         </Typography>
-
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          mb: { xs: 1.5, sm: 2 }
-        }}>
-          <AvatarGroup max={4}>
-            {admins.map((admin) => (
-              <Avatar key={admin.id} sx={{ fontSize: 20 }}>
-                {admin.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </Avatar>
-            ))}
-          </AvatarGroup>
-        </Box>
 
         <Box sx={{
           display: 'flex',

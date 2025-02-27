@@ -39,6 +39,7 @@ import { useToast } from "@/context/toastContext";
 import LoadingButton from "../ui/loading-button";
 import { useMenu } from "@/context/menuContext";
 import { addMenuSectionItem } from "@/actions/actions.menu";
+import { useUser } from "@/context/userContext";
 // import { useUser } from "@/context/userContext";
 
 const commonAllergens = [
@@ -75,11 +76,11 @@ export default function AddItemForm() {
     },
   });
 
-
+  const { user } = useUser();
 
   // const {user} = useUser(); 
   const params = useParams();
-  
+
   const { menu, setMenu } = useMenu();
   const [imagePending, setImagePending] = useState(false);
 
@@ -114,7 +115,8 @@ export default function AddItemForm() {
       showToast("Item added successfully", "success");
 
       router.refresh();
-      router.push(`/restaurant/menu/${params.menuId}`);
+      const finalRedirect = user?.role === "admin" ? `/restaurant/menu/${params.menuId}` : `/restaurants/${params.restaurantId!}/menu/${params.menuId!}`
+      router.push(finalRedirect);
       // reset(); // Reset form
     },
     onError: (error: Error) => {
